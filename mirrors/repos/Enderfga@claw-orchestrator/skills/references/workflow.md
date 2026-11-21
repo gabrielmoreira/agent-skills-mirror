@@ -50,6 +50,15 @@ half-finished node left no result to trust. A node that had finished just before
 the process died continues at its successor; a router is evaluated again, since
 its choice is not recorded. A run parked at a `human_gate` parks there again.
 
+A process that stops cleanly leaves its runs the same way. On SIGTERM or SIGINT —
+a host reboot, a service restart, an upgrade, Ctrl-C — `clawo serve` marks each
+live run `suspended` (`{ at, reason }` on the record; `execution: suspended` in
+`workflow_status`), freezes its checkpoint, stops its executors without
+recording their failures, and hands the claim back. The run stays non-terminal
+with its running node to be run again, exactly as after a crash, and the next
+resume clears the mark and copies it onto the resume entry. A shutdown is not a
+cancel: only `workflow_cancel` ends a run as `cancelled`.
+
 Steers survive a restart. They are logged when they arrive and recorded as
 consumed when the node that took them finishes, so on resume every steer no
 finished node consumed is queued again — including one a node was holding when
@@ -71,7 +80,10 @@ called, files it wrote — before doing it again. A `goal` node that picks its
 thread back up has that conversation already and gets no note.
 
 Resume is explicit — `workflow_resume` or `clawo workflow resume` — not automatic.
-Resuming a run that already ended returns it unchanged. Custom-engine configs are
+Resuming a run that already ended returns it unchanged. A resume re-checks with the
+contract the run started with; rules a caller declares at the resume are recorded as
+drift when they differ, never applied, and every resume is listed on the run
+(`resumes`) — see [verification.md](./verification.md#which-rules-a-verdict-was-reached-under). Custom-engine configs are
 never written to disk (they can carry credentials), so a run whose agents used one
 is resumed through `workflow_resume` with `agentCustomEngineRefs:
 { "<agent>": "<REF>" }`, each config read as JSON from `CLAWO_CUSTOM_ENGINE_<REF>`
@@ -569,7 +581,13 @@ after the forum in _Test-Time Compute Scales Better with Parallel Agent Teams_
 (arXiv 2611.09798). It is `true`, or a config:
 
 ```json
-{ "forum": { "push": "mentions", "digestMs": 60000, "score": { "file": "tools/check-last.json" } } }
+{
+  "forum": {
+    "push": "mentions",
+    "digestMs": 60000,
+    "score": { "file": "tools/check-last.json", "pick": ["ok", "failures"] }
+  }
+}
 ```
 
 - **Who is on it.** Every fan-out agent (by its `name`), and every `agent` and
@@ -577,17 +595,31 @@ after the forum in _Test-Time Compute Scales Better with Parallel Agent Teams_
   carries the forum and its name, so a resume puts it back on.
 - **How agents use it.** Each one gets a brief in front of its prompt with the
   exact commands — `clawo forum post --title "…" --body "…" [--re p00012]`,
-  `list` (titles, with NEW on the unread ones) and `read <id>` — with the Node
+  `list` (who is on the forum and whether each is running, finished or not
+  started, then the titles, with NEW on the unread ones) and `read <id>` — with the Node
   binary, CLI path, forum directory and its own name filled in, so any engine that
   can run a shell command uses it and no `clawo` on the `PATH` is needed. The
   brief sets the norms: post a clear WIN or FAIL with the exact change and what
   was measured, `ASK @name` for something a teammate has to answer, answer with
   `--re`, `DONE` when finished, and `list` before each new step. A title starts
-  with its tags (`FAIL: …`, `[ASK] …`); `@name` addresses an agent; a post id in
+  with its tags (`FAIL: …`, `[ASK] …`), one of `WIN`, `FAIL`, `ASK`, `FIX`, `DONE`
+  and `INFO`; other leading capitals (a room code in `R1 FAIL: …`) are passed over,
+  and a post with none counts as `OTHER`. `@name` addresses an agent when the name
+  is on the forum (`@0.88` in a body addresses nobody); a post id in
   the text or `--re` refers to another post.
-- **Score.** With `score.file` (relative to the posting agent's working
-  directory) or `score.command` (an argv run there, 30 s bound by default), each
-  post carries the agent's current score, parsed as JSON when it is JSON.
+- **What a poster is told.** `post` adds a note when the post has no tag (an
+  untagged ASK or FAIL is not pushed), when a name it addresses is not on the
+  forum, has not started (the post will be in its brief), or has finished — and,
+  when its node is on no loop of the workflow, that it does not run again and
+  nobody will answer as it. Whether a node is on a loop is read from the spec:
+  its `next`, a router's routes and default, and node order.
+- **Score.** With `score.file` (relative to the directory the posting agent works
+  in — its node's `cwd`, not wherever its shell is) or `score.command` (an argv
+  run there, 30 s bound by default), each post carries the agent's current score,
+  parsed as JSON when it is JSON. `score.pick` keeps only the named fields
+  (`"ok"`, `"summary.passed"`). A post keeps at most 2,000 characters of score;
+  `read` shows it as one line of at most 300 after the body, and `list` and a push
+  show 60.
 - **What reaches an agent without reading.** `push: "mentions"` (default): an ASK
   or FAIL that names it. `"all"`: every post by someone else. `"digest"`: those
   mentions at once, and the titles of the rest every `digestMs` (default 60 s).
@@ -612,9 +644,14 @@ after the forum in _Test-Time Compute Scales Better with Parallel Agent Teams_
 <runId>`: posts by agent and tag, reads and lists per agent, every ASK with the
   post that answered it (a later post by someone else that refers to it) and how
   long that took, the open ASKs, and for every post that names an agent when that
-  agent first had it — pushed into its work, or read — and how long after the
-  post. A push is counted when the post is handed to the turn in flight; the
-  engine takes it in at its next tool round.
+  agent first had it — pushed into its work, in a digest, in the brief it read when
+  it started (`via: "brief"`, which lists the posts that name it), or read — and how
+  long after the post. A post the named agent never saw but a later agent did (in
+  its brief, or by reading it) carries `handedTo` — this is how a FAIL addressed to
+  a fan-out agent that had finished reaches the node after it — and is counted in
+  `handedMentions`; `unseenMentions` counts only the posts nobody saw. A push is
+  counted when the post is handed to the turn in flight; the engine takes it in at
+  its next tool round.
 
 ## Control
 

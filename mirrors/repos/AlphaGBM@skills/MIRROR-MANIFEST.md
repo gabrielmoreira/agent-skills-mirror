@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AlphaGBM/skills` — 26 default patterns, 0 followed patterns, 116 file(s) materialized.
+Mirror of `AlphaGBM/skills` — 26 default patterns, 0 followed patterns, 122 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AlphaGBM/skills` — 26 default patterns, 0 followed patterns, 116 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 116 |
+| Files         | 122 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -127,54 +127,60 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 66 | ✓ | [`skills/options/alphagbm-vol-surface/SKILL.md`](skills/options/alphagbm-vol-surface/SKILL.md) |
 | 67 | ✓ | [`skills/options/README.md`](skills/options/README.md) |
 | 68 | ✓ | [`skills/README.md`](skills/README.md) |
-| 69 | ✓ | [`skills/stocks/alphagbm-dca-plan/agents/openai.yaml`](skills/stocks/alphagbm-dca-plan/agents/openai.yaml) |
-| 70 | ✓ | [`skills/stocks/alphagbm-dca-plan/references/access.md`](skills/stocks/alphagbm-dca-plan/references/access.md) |
-| 71 | ✓ | [`skills/stocks/alphagbm-dca-plan/scripts/review_engine.py`](skills/stocks/alphagbm-dca-plan/scripts/review_engine.py) |
-| 72 | ✓ | [`skills/stocks/alphagbm-dca-plan/scripts/run.py`](skills/stocks/alphagbm-dca-plan/scripts/run.py) |
-| 73 | ✓ | [`skills/stocks/alphagbm-dca-plan/SKILL.md`](skills/stocks/alphagbm-dca-plan/SKILL.md) |
-| 74 | ✓ | [`skills/stocks/alphagbm-dividend-strategy/agents/openai.yaml`](skills/stocks/alphagbm-dividend-strategy/agents/openai.yaml) |
-| 75 | ✓ | [`skills/stocks/alphagbm-dividend-strategy/references/access.md`](skills/stocks/alphagbm-dividend-strategy/references/access.md) |
-| 76 | ✓ | [`skills/stocks/alphagbm-dividend-strategy/scripts/review_engine.py`](skills/stocks/alphagbm-dividend-strategy/scripts/review_engine.py) |
-| 77 | ✓ | [`skills/stocks/alphagbm-dividend-strategy/scripts/run.py`](skills/stocks/alphagbm-dividend-strategy/scripts/run.py) |
-| 78 | ✓ | [`skills/stocks/alphagbm-dividend-strategy/SKILL.md`](skills/stocks/alphagbm-dividend-strategy/SKILL.md) |
-| 79 | ✓ | [`skills/stocks/alphagbm-etf-strategy/agents/openai.yaml`](skills/stocks/alphagbm-etf-strategy/agents/openai.yaml) |
-| 80 | ✓ | [`skills/stocks/alphagbm-etf-strategy/references/access.md`](skills/stocks/alphagbm-etf-strategy/references/access.md) |
-| 81 | ✓ | [`skills/stocks/alphagbm-etf-strategy/scripts/review_engine.py`](skills/stocks/alphagbm-etf-strategy/scripts/review_engine.py) |
-| 82 | ✓ | [`skills/stocks/alphagbm-etf-strategy/scripts/run.py`](skills/stocks/alphagbm-etf-strategy/scripts/run.py) |
-| 83 | ✓ | [`skills/stocks/alphagbm-etf-strategy/SKILL.md`](skills/stocks/alphagbm-etf-strategy/SKILL.md) |
-| 84 | ✓ | [`skills/stocks/alphagbm-grid-plan/agents/openai.yaml`](skills/stocks/alphagbm-grid-plan/agents/openai.yaml) |
-| 85 | ✓ | [`skills/stocks/alphagbm-grid-plan/references/access.md`](skills/stocks/alphagbm-grid-plan/references/access.md) |
-| 86 | ✓ | [`skills/stocks/alphagbm-grid-plan/scripts/review_engine.py`](skills/stocks/alphagbm-grid-plan/scripts/review_engine.py) |
-| 87 | ✓ | [`skills/stocks/alphagbm-grid-plan/scripts/run.py`](skills/stocks/alphagbm-grid-plan/scripts/run.py) |
-| 88 | ✓ | [`skills/stocks/alphagbm-grid-plan/SKILL.md`](skills/stocks/alphagbm-grid-plan/SKILL.md) |
-| 89 | ✓ | [`skills/stocks/alphagbm-market-sentiment/references/legacy.md`](skills/stocks/alphagbm-market-sentiment/references/legacy.md) |
-| 90 | ✓ | [`skills/stocks/alphagbm-market-sentiment/SKILL.md`](skills/stocks/alphagbm-market-sentiment/SKILL.md) |
-| 91 | ✓ | [`skills/stocks/alphagbm-momentum-following/agents/openai.yaml`](skills/stocks/alphagbm-momentum-following/agents/openai.yaml) |
-| 92 | ✓ | [`skills/stocks/alphagbm-momentum-following/references/access.md`](skills/stocks/alphagbm-momentum-following/references/access.md) |
-| 93 | ✓ | [`skills/stocks/alphagbm-momentum-following/scripts/review_engine.py`](skills/stocks/alphagbm-momentum-following/scripts/review_engine.py) |
-| 94 | ✓ | [`skills/stocks/alphagbm-momentum-following/scripts/run.py`](skills/stocks/alphagbm-momentum-following/scripts/run.py) |
-| 95 | ✓ | [`skills/stocks/alphagbm-momentum-following/SKILL.md`](skills/stocks/alphagbm-momentum-following/SKILL.md) |
-| 96 | ✓ | [`skills/stocks/alphagbm-research-reader/agents/openai.yaml`](skills/stocks/alphagbm-research-reader/agents/openai.yaml) |
-| 97 | ✓ | [`skills/stocks/alphagbm-research-reader/references/access.md`](skills/stocks/alphagbm-research-reader/references/access.md) |
-| 98 | ✓ | [`skills/stocks/alphagbm-research-reader/references/editorial-routing.md`](skills/stocks/alphagbm-research-reader/references/editorial-routing.md) |
-| 99 | ✓ | [`skills/stocks/alphagbm-research-reader/references/investment-review.md`](skills/stocks/alphagbm-research-reader/references/investment-review.md) |
-| 100 | ✓ | [`skills/stocks/alphagbm-research-reader/references/news-impact.md`](skills/stocks/alphagbm-research-reader/references/news-impact.md) |
-| 101 | ✓ | [`skills/stocks/alphagbm-research-reader/references/report-breakdown.md`](skills/stocks/alphagbm-research-reader/references/report-breakdown.md) |
-| 102 | ✓ | [`skills/stocks/alphagbm-research-reader/scripts/review_engine.py`](skills/stocks/alphagbm-research-reader/scripts/review_engine.py) |
-| 103 | ✓ | [`skills/stocks/alphagbm-research-reader/scripts/run.py`](skills/stocks/alphagbm-research-reader/scripts/run.py) |
-| 104 | ✓ | [`skills/stocks/alphagbm-research-reader/SKILL.md`](skills/stocks/alphagbm-research-reader/SKILL.md) |
-| 105 | ✓ | [`skills/stocks/alphagbm-smart-money/agents/openai.yaml`](skills/stocks/alphagbm-smart-money/agents/openai.yaml) |
-| 106 | ✓ | [`skills/stocks/alphagbm-smart-money/references/access.md`](skills/stocks/alphagbm-smart-money/references/access.md) |
-| 107 | ✓ | [`skills/stocks/alphagbm-smart-money/references/transactions.md`](skills/stocks/alphagbm-smart-money/references/transactions.md) |
-| 108 | ✓ | [`skills/stocks/alphagbm-smart-money/scripts/review_engine.py`](skills/stocks/alphagbm-smart-money/scripts/review_engine.py) |
-| 109 | ✓ | [`skills/stocks/alphagbm-smart-money/scripts/run.py`](skills/stocks/alphagbm-smart-money/scripts/run.py) |
-| 110 | ✓ | [`skills/stocks/alphagbm-smart-money/SKILL.md`](skills/stocks/alphagbm-smart-money/SKILL.md) |
-| 111 | ✓ | [`skills/stocks/alphagbm-stock-analysis/agents/openai.yaml`](skills/stocks/alphagbm-stock-analysis/agents/openai.yaml) |
-| 112 | ✓ | [`skills/stocks/alphagbm-stock-analysis/references/access.md`](skills/stocks/alphagbm-stock-analysis/references/access.md) |
-| 113 | ✓ | [`skills/stocks/alphagbm-stock-analysis/scripts/review_engine.py`](skills/stocks/alphagbm-stock-analysis/scripts/review_engine.py) |
-| 114 | ✓ | [`skills/stocks/alphagbm-stock-analysis/scripts/run.py`](skills/stocks/alphagbm-stock-analysis/scripts/run.py) |
-| 115 | ✓ | [`skills/stocks/alphagbm-stock-analysis/SKILL.md`](skills/stocks/alphagbm-stock-analysis/SKILL.md) |
-| 116 | ✓ | [`skills/stocks/README.md`](skills/stocks/README.md) |
+| 69 | ✓ | [`skills/stocks/alphagbm-causal-research/agents/openai.yaml`](skills/stocks/alphagbm-causal-research/agents/openai.yaml) |
+| 70 | ✓ | [`skills/stocks/alphagbm-causal-research/references/execution.md`](skills/stocks/alphagbm-causal-research/references/execution.md) |
+| 71 | ✓ | [`skills/stocks/alphagbm-causal-research/references/sectors.md`](skills/stocks/alphagbm-causal-research/references/sectors.md) |
+| 72 | ✓ | [`skills/stocks/alphagbm-causal-research/references/worksheet.md`](skills/stocks/alphagbm-causal-research/references/worksheet.md) |
+| 73 | ✓ | [`skills/stocks/alphagbm-causal-research/scripts/calculate.py`](skills/stocks/alphagbm-causal-research/scripts/calculate.py) |
+| 74 | ✓ | [`skills/stocks/alphagbm-causal-research/SKILL.md`](skills/stocks/alphagbm-causal-research/SKILL.md) |
+| 75 | ✓ | [`skills/stocks/alphagbm-dca-plan/agents/openai.yaml`](skills/stocks/alphagbm-dca-plan/agents/openai.yaml) |
+| 76 | ✓ | [`skills/stocks/alphagbm-dca-plan/references/access.md`](skills/stocks/alphagbm-dca-plan/references/access.md) |
+| 77 | ✓ | [`skills/stocks/alphagbm-dca-plan/scripts/review_engine.py`](skills/stocks/alphagbm-dca-plan/scripts/review_engine.py) |
+| 78 | ✓ | [`skills/stocks/alphagbm-dca-plan/scripts/run.py`](skills/stocks/alphagbm-dca-plan/scripts/run.py) |
+| 79 | ✓ | [`skills/stocks/alphagbm-dca-plan/SKILL.md`](skills/stocks/alphagbm-dca-plan/SKILL.md) |
+| 80 | ✓ | [`skills/stocks/alphagbm-dividend-strategy/agents/openai.yaml`](skills/stocks/alphagbm-dividend-strategy/agents/openai.yaml) |
+| 81 | ✓ | [`skills/stocks/alphagbm-dividend-strategy/references/access.md`](skills/stocks/alphagbm-dividend-strategy/references/access.md) |
+| 82 | ✓ | [`skills/stocks/alphagbm-dividend-strategy/scripts/review_engine.py`](skills/stocks/alphagbm-dividend-strategy/scripts/review_engine.py) |
+| 83 | ✓ | [`skills/stocks/alphagbm-dividend-strategy/scripts/run.py`](skills/stocks/alphagbm-dividend-strategy/scripts/run.py) |
+| 84 | ✓ | [`skills/stocks/alphagbm-dividend-strategy/SKILL.md`](skills/stocks/alphagbm-dividend-strategy/SKILL.md) |
+| 85 | ✓ | [`skills/stocks/alphagbm-etf-strategy/agents/openai.yaml`](skills/stocks/alphagbm-etf-strategy/agents/openai.yaml) |
+| 86 | ✓ | [`skills/stocks/alphagbm-etf-strategy/references/access.md`](skills/stocks/alphagbm-etf-strategy/references/access.md) |
+| 87 | ✓ | [`skills/stocks/alphagbm-etf-strategy/scripts/review_engine.py`](skills/stocks/alphagbm-etf-strategy/scripts/review_engine.py) |
+| 88 | ✓ | [`skills/stocks/alphagbm-etf-strategy/scripts/run.py`](skills/stocks/alphagbm-etf-strategy/scripts/run.py) |
+| 89 | ✓ | [`skills/stocks/alphagbm-etf-strategy/SKILL.md`](skills/stocks/alphagbm-etf-strategy/SKILL.md) |
+| 90 | ✓ | [`skills/stocks/alphagbm-grid-plan/agents/openai.yaml`](skills/stocks/alphagbm-grid-plan/agents/openai.yaml) |
+| 91 | ✓ | [`skills/stocks/alphagbm-grid-plan/references/access.md`](skills/stocks/alphagbm-grid-plan/references/access.md) |
+| 92 | ✓ | [`skills/stocks/alphagbm-grid-plan/scripts/review_engine.py`](skills/stocks/alphagbm-grid-plan/scripts/review_engine.py) |
+| 93 | ✓ | [`skills/stocks/alphagbm-grid-plan/scripts/run.py`](skills/stocks/alphagbm-grid-plan/scripts/run.py) |
+| 94 | ✓ | [`skills/stocks/alphagbm-grid-plan/SKILL.md`](skills/stocks/alphagbm-grid-plan/SKILL.md) |
+| 95 | ✓ | [`skills/stocks/alphagbm-market-sentiment/references/legacy.md`](skills/stocks/alphagbm-market-sentiment/references/legacy.md) |
+| 96 | ✓ | [`skills/stocks/alphagbm-market-sentiment/SKILL.md`](skills/stocks/alphagbm-market-sentiment/SKILL.md) |
+| 97 | ✓ | [`skills/stocks/alphagbm-momentum-following/agents/openai.yaml`](skills/stocks/alphagbm-momentum-following/agents/openai.yaml) |
+| 98 | ✓ | [`skills/stocks/alphagbm-momentum-following/references/access.md`](skills/stocks/alphagbm-momentum-following/references/access.md) |
+| 99 | ✓ | [`skills/stocks/alphagbm-momentum-following/scripts/review_engine.py`](skills/stocks/alphagbm-momentum-following/scripts/review_engine.py) |
+| 100 | ✓ | [`skills/stocks/alphagbm-momentum-following/scripts/run.py`](skills/stocks/alphagbm-momentum-following/scripts/run.py) |
+| 101 | ✓ | [`skills/stocks/alphagbm-momentum-following/SKILL.md`](skills/stocks/alphagbm-momentum-following/SKILL.md) |
+| 102 | ✓ | [`skills/stocks/alphagbm-research-reader/agents/openai.yaml`](skills/stocks/alphagbm-research-reader/agents/openai.yaml) |
+| 103 | ✓ | [`skills/stocks/alphagbm-research-reader/references/access.md`](skills/stocks/alphagbm-research-reader/references/access.md) |
+| 104 | ✓ | [`skills/stocks/alphagbm-research-reader/references/editorial-routing.md`](skills/stocks/alphagbm-research-reader/references/editorial-routing.md) |
+| 105 | ✓ | [`skills/stocks/alphagbm-research-reader/references/investment-review.md`](skills/stocks/alphagbm-research-reader/references/investment-review.md) |
+| 106 | ✓ | [`skills/stocks/alphagbm-research-reader/references/news-impact.md`](skills/stocks/alphagbm-research-reader/references/news-impact.md) |
+| 107 | ✓ | [`skills/stocks/alphagbm-research-reader/references/report-breakdown.md`](skills/stocks/alphagbm-research-reader/references/report-breakdown.md) |
+| 108 | ✓ | [`skills/stocks/alphagbm-research-reader/scripts/review_engine.py`](skills/stocks/alphagbm-research-reader/scripts/review_engine.py) |
+| 109 | ✓ | [`skills/stocks/alphagbm-research-reader/scripts/run.py`](skills/stocks/alphagbm-research-reader/scripts/run.py) |
+| 110 | ✓ | [`skills/stocks/alphagbm-research-reader/SKILL.md`](skills/stocks/alphagbm-research-reader/SKILL.md) |
+| 111 | ✓ | [`skills/stocks/alphagbm-smart-money/agents/openai.yaml`](skills/stocks/alphagbm-smart-money/agents/openai.yaml) |
+| 112 | ✓ | [`skills/stocks/alphagbm-smart-money/references/access.md`](skills/stocks/alphagbm-smart-money/references/access.md) |
+| 113 | ✓ | [`skills/stocks/alphagbm-smart-money/references/transactions.md`](skills/stocks/alphagbm-smart-money/references/transactions.md) |
+| 114 | ✓ | [`skills/stocks/alphagbm-smart-money/scripts/review_engine.py`](skills/stocks/alphagbm-smart-money/scripts/review_engine.py) |
+| 115 | ✓ | [`skills/stocks/alphagbm-smart-money/scripts/run.py`](skills/stocks/alphagbm-smart-money/scripts/run.py) |
+| 116 | ✓ | [`skills/stocks/alphagbm-smart-money/SKILL.md`](skills/stocks/alphagbm-smart-money/SKILL.md) |
+| 117 | ✓ | [`skills/stocks/alphagbm-stock-analysis/agents/openai.yaml`](skills/stocks/alphagbm-stock-analysis/agents/openai.yaml) |
+| 118 | ✓ | [`skills/stocks/alphagbm-stock-analysis/references/access.md`](skills/stocks/alphagbm-stock-analysis/references/access.md) |
+| 119 | ✓ | [`skills/stocks/alphagbm-stock-analysis/scripts/review_engine.py`](skills/stocks/alphagbm-stock-analysis/scripts/review_engine.py) |
+| 120 | ✓ | [`skills/stocks/alphagbm-stock-analysis/scripts/run.py`](skills/stocks/alphagbm-stock-analysis/scripts/run.py) |
+| 121 | ✓ | [`skills/stocks/alphagbm-stock-analysis/SKILL.md`](skills/stocks/alphagbm-stock-analysis/SKILL.md) |
+| 122 | ✓ | [`skills/stocks/README.md`](skills/stocks/README.md) |
 
 ---
 

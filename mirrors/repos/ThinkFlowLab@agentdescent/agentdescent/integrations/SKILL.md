@@ -146,7 +146,8 @@ after `doctor`. Do not invent a keyless path for those cards.
    and answers "will start work" before a run exists. If it refuses, give the
    user its `next` (renew the plan, fix the model name or key) and do **not**
    call `start` -- a refused probe is the run failing in round one, found one
-   step earlier.
+   step earlier. A refusal prints `ok: false` and `ready: false` on both
+   surfaces, so the same check reads the same answer whichever one you drive.
    To keep improving across sessions, offer `agentdescent campaign <spec>
    --sessions N`; it works on a copy, reports the workspace/final target and
    never touches the live target. Run its `--dry-run` first. A campaign has no

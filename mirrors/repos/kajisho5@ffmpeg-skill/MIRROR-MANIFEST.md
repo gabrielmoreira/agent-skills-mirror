@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kajisho5/ffmpeg-skill` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `kajisho5/ffmpeg-skill` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kajisho5/ffmpeg-skill` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 19 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,18 +66,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`.claude/skills/cross-surface-changes/SKILL.md`](.claude/skills/cross-surface-changes/SKILL.md) |
 | 6 | ✓ | [`.claude/skills/defect-reports/SKILL.md`](.claude/skills/defect-reports/SKILL.md) |
 | 7 | ✓ | [`.claude/skills/destructive-operations/SKILL.md`](.claude/skills/destructive-operations/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/git-hygiene/SKILL.md`](.claude/skills/git-hygiene/SKILL.md) |
-| 9 | ✓ | [`.claude/skills/github-actions/SKILL.md`](.claude/skills/github-actions/SKILL.md) |
-| 10 | ✓ | [`.claude/skills/mcp-server-design/SKILL.md`](.claude/skills/mcp-server-design/SKILL.md) |
-| 11 | ✓ | [`.claude/skills/release-management/SKILL.md`](.claude/skills/release-management/SKILL.md) |
-| 12 | ✓ | [`.claude/skills/reproducing-ci-locally/SKILL.md`](.claude/skills/reproducing-ci-locally/SKILL.md) |
-| 13 | ✓ | [`.claude/skills/review-page-ui/SKILL.md`](.claude/skills/review-page-ui/SKILL.md) |
-| 14 | ✓ | [`.claude/skills/sibling-sweep/SKILL.md`](.claude/skills/sibling-sweep/SKILL.md) |
-| 15 | ✓ | [`.claude/skills/verifying-external-behavior/SKILL.md`](.claude/skills/verifying-external-behavior/SKILL.md) |
-| 16 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 17 | ✓ | [`mcp/server.py`](mcp/server.py) |
-| 18 | ✓ | [`SKILL.md`](SKILL.md) |
-| 19 | ✓ | [`skills/ffmpeg-skill/SKILL.md`](skills/ffmpeg-skill/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/edge-probe/SKILL.md`](.claude/skills/edge-probe/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/first-try-probe/SKILL.md`](.claude/skills/first-try-probe/SKILL.md) |
+| 10 | ✓ | [`.claude/skills/git-hygiene/SKILL.md`](.claude/skills/git-hygiene/SKILL.md) |
+| 11 | ✓ | [`.claude/skills/github-actions/SKILL.md`](.claude/skills/github-actions/SKILL.md) |
+| 12 | ✓ | [`.claude/skills/mcp-server-design/SKILL.md`](.claude/skills/mcp-server-design/SKILL.md) |
+| 13 | ✓ | [`.claude/skills/release-management/SKILL.md`](.claude/skills/release-management/SKILL.md) |
+| 14 | ✓ | [`.claude/skills/reproducing-ci-locally/SKILL.md`](.claude/skills/reproducing-ci-locally/SKILL.md) |
+| 15 | ✓ | [`.claude/skills/review-page-ui/SKILL.md`](.claude/skills/review-page-ui/SKILL.md) |
+| 16 | ✓ | [`.claude/skills/sibling-sweep/SKILL.md`](.claude/skills/sibling-sweep/SKILL.md) |
+| 17 | ✓ | [`.claude/skills/verifying-external-behavior/SKILL.md`](.claude/skills/verifying-external-behavior/SKILL.md) |
+| 18 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 19 | ✓ | [`mcp/server.py`](mcp/server.py) |
+| 20 | ✓ | [`SKILL.md`](SKILL.md) |
+| 21 | ✓ | [`skills/ffmpeg-skill/SKILL.md`](skills/ffmpeg-skill/SKILL.md) |
 
 ---
 

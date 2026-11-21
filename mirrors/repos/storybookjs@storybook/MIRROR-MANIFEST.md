@@ -7,7 +7,7 @@ ref: next
 
 # Mirror Manifest
 
-Mirror of `storybookjs/storybook` — 26 default patterns, 1 followed patterns, 61 file(s) materialized.
+Mirror of `storybookjs/storybook` — 26 default patterns, 1 followed patterns, 88 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `storybookjs/storybook` — 26 default patterns, 1 followed patterns, 
 | Ref           | `next` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 61 |
+| Files         | 88 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -104,22 +104,49 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 43 | ✓ | [`.cursor/rules/cursor-cloud.mdc`](.cursor/rules/cursor-cloud.mdc) |
 | 44 | ✓ | [`.cursor/rules/spy-mocking.mdc`](.cursor/rules/spy-mocking.mdc) |
 | 45 | ✓ | [`.cursorrules`](.cursorrules) |
-| 46 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 47 | ✓ | [`code/lib/claude-plugin/skills/component-docs/SKILL.md`](code/lib/claude-plugin/skills/component-docs/SKILL.md) |
-| 48 | ✓ | [`code/lib/claude-plugin/skills/storybook-init/SKILL.md`](code/lib/claude-plugin/skills/storybook-init/SKILL.md) |
-| 49 | ✓ | [`code/lib/claude-plugin/skills/storybook-setup/SKILL.md`](code/lib/claude-plugin/skills/storybook-setup/SKILL.md) |
-| 50 | ✓ | [`code/lib/claude-plugin/skills/storybook-upgrade/SKILL.md`](code/lib/claude-plugin/skills/storybook-upgrade/SKILL.md) |
-| 51 | ✓ | [`code/lib/claude-plugin/skills/test-stories/SKILL.md`](code/lib/claude-plugin/skills/test-stories/SKILL.md) |
-| 52 | ✓ | [`code/lib/claude-plugin/skills/ui-review/SKILL.md`](code/lib/claude-plugin/skills/ui-review/SKILL.md) |
-| 53 | ✓ | [`code/lib/claude-plugin/skills/write-stories/SKILL.md`](code/lib/claude-plugin/skills/write-stories/SKILL.md) |
-| 54 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/component-docs/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/component-docs/SKILL.md) |
-| 55 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/init/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/init/SKILL.md) |
-| 56 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/setup/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/setup/SKILL.md) |
-| 57 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/test-stories/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/test-stories/SKILL.md) |
-| 58 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/ui-review/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/ui-review/SKILL.md) |
-| 59 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/upgrade/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/upgrade/SKILL.md) |
-| 60 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/write-stories/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/write-stories/SKILL.md) |
-| 61 | → | [`code/lib/cli-storybook/src/automigrate/README.md`](code/lib/cli-storybook/src/automigrate/README.md) |
+| 46 | ✓ | [`.obvious/guidelines/comments-and-jsdoc.md`](.obvious/guidelines/comments-and-jsdoc.md) |
+| 47 | ✓ | [`.obvious/guidelines/development.md`](.obvious/guidelines/development.md) |
+| 48 | ✓ | [`.obvious/guidelines/nx-and-yarn-task.md`](.obvious/guidelines/nx-and-yarn-task.md) |
+| 49 | ✓ | [`.obvious/guidelines/sandboxes.md`](.obvious/guidelines/sandboxes.md) |
+| 50 | ✓ | [`.obvious/skills/build-it/SKILL.md`](.obvious/skills/build-it/SKILL.md) |
+| 51 | ✓ | [`.obvious/skills/canary/SKILL.md`](.obvious/skills/canary/SKILL.md) |
+| 52 | ✓ | [`.obvious/skills/check-pr/queries.md`](.obvious/skills/check-pr/queries.md) |
+| 53 | ✓ | [`.obvious/skills/check-pr/SKILL.md`](.obvious/skills/check-pr/SKILL.md) |
+| 54 | ✓ | [`.obvious/skills/code-review/rules.md`](.obvious/skills/code-review/rules.md) |
+| 55 | ✓ | [`.obvious/skills/code-review/SKILL.md`](.obvious/skills/code-review/SKILL.md) |
+| 56 | ✓ | [`.obvious/skills/docs-review/SKILL.md`](.obvious/skills/docs-review/SKILL.md) |
+| 57 | ✓ | [`.obvious/skills/fix-linting-types-on-pr/SKILL.md`](.obvious/skills/fix-linting-types-on-pr/SKILL.md) |
+| 58 | ✓ | [`.obvious/skills/github-qa-labels/SKILL.md`](.obvious/skills/github-qa-labels/SKILL.md) |
+| 59 | ✓ | [`.obvious/skills/handle-pr-comments/SKILL.md`](.obvious/skills/handle-pr-comments/SKILL.md) |
+| 60 | ✓ | [`.obvious/skills/invariants-hunt/SKILL.md`](.obvious/skills/invariants-hunt/SKILL.md) |
+| 61 | ✓ | [`.obvious/skills/minor-release/SKILL.md`](.obvious/skills/minor-release/SKILL.md) |
+| 62 | ✓ | [`.obvious/skills/open-pr/SKILL.md`](.obvious/skills/open-pr/SKILL.md) |
+| 63 | ✓ | [`.obvious/skills/pr/SKILL.md`](.obvious/skills/pr/SKILL.md) |
+| 64 | ✓ | [`.obvious/skills/principle-encode-lessons-in-structure/SKILL.md`](.obvious/skills/principle-encode-lessons-in-structure/SKILL.md) |
+| 65 | ✓ | [`.obvious/skills/ready-for-review/SKILL.md`](.obvious/skills/ready-for-review/SKILL.md) |
+| 66 | ✓ | [`.obvious/skills/real-world-qa/SKILL.md`](.obvious/skills/real-world-qa/SKILL.md) |
+| 67 | ✓ | [`.obvious/skills/rebuild-restart-storybook/SKILL.md`](.obvious/skills/rebuild-restart-storybook/SKILL.md) |
+| 68 | ✓ | [`.obvious/skills/second-opinion/SKILL.md`](.obvious/skills/second-opinion/SKILL.md) |
+| 69 | ✓ | [`.obvious/skills/storybook-startup-benchmark/SKILL.md`](.obvious/skills/storybook-startup-benchmark/SKILL.md) |
+| 70 | ✓ | [`.obvious/skills/storybook-upgrade/SKILL.md`](.obvious/skills/storybook-upgrade/SKILL.md) |
+| 71 | ✓ | [`.obvious/skills/update-browser-support/SKILL.md`](.obvious/skills/update-browser-support/SKILL.md) |
+| 72 | ✓ | [`.obvious/skills/update-pr-description/SKILL.md`](.obvious/skills/update-pr-description/SKILL.md) |
+| 73 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 74 | ✓ | [`code/lib/claude-plugin/skills/component-docs/SKILL.md`](code/lib/claude-plugin/skills/component-docs/SKILL.md) |
+| 75 | ✓ | [`code/lib/claude-plugin/skills/storybook-init/SKILL.md`](code/lib/claude-plugin/skills/storybook-init/SKILL.md) |
+| 76 | ✓ | [`code/lib/claude-plugin/skills/storybook-setup/SKILL.md`](code/lib/claude-plugin/skills/storybook-setup/SKILL.md) |
+| 77 | ✓ | [`code/lib/claude-plugin/skills/storybook-upgrade/SKILL.md`](code/lib/claude-plugin/skills/storybook-upgrade/SKILL.md) |
+| 78 | ✓ | [`code/lib/claude-plugin/skills/test-stories/SKILL.md`](code/lib/claude-plugin/skills/test-stories/SKILL.md) |
+| 79 | ✓ | [`code/lib/claude-plugin/skills/ui-review/SKILL.md`](code/lib/claude-plugin/skills/ui-review/SKILL.md) |
+| 80 | ✓ | [`code/lib/claude-plugin/skills/write-stories/SKILL.md`](code/lib/claude-plugin/skills/write-stories/SKILL.md) |
+| 81 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/component-docs/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/component-docs/SKILL.md) |
+| 82 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/init/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/init/SKILL.md) |
+| 83 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/setup/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/setup/SKILL.md) |
+| 84 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/test-stories/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/test-stories/SKILL.md) |
+| 85 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/ui-review/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/ui-review/SKILL.md) |
+| 86 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/upgrade/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/upgrade/SKILL.md) |
+| 87 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/write-stories/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/write-stories/SKILL.md) |
+| 88 | → | [`code/lib/cli-storybook/src/automigrate/README.md`](code/lib/cli-storybook/src/automigrate/README.md) |
 
 ---
 

@@ -1,4 +1,4 @@
 interface:
   display_name: "OpenMotion Media"
-  short_description: "通过已配置的 BYOK 多模态供应商生成并核验图片、视频、配音与音乐素材"
-  default_prompt: "使用 OpenMotion 的 $openmotion-media 先通过 openmotion_media_use 发现模型，再通过 openmotion_assets_use 生成并核验所需的图片、视频、配音或音乐素材。"
+  short_description: "Generate and verify image, video, speech, and music assets via configured multimodal providers"
+  default_prompt: "Use OpenMotion $openmotion-media to discover models via openmotion_media_use, then generate and verify needed image, video, speech, or music assets via openmotion_assets_use."

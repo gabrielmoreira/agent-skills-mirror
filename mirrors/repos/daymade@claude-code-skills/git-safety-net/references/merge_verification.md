@@ -921,6 +921,14 @@ stashes and unique uncommitted bytes retain their own preservation procedures.
    independently recheck the retained carrier. A moved ref or lost carrier reopens classification;
    the absence of a bundle does not remove this final gate. After removal, verify the commit still
    resolves through its retained carrier or required recovery artifact.
+6. When the retained carrier is an annotated archive tag, independently read back both remote
+   identities before deleting the branch: `refs/tags/<tag>` must equal the local annotated tag
+   object, and `refs/tags/<tag>^{}` must equal the frozen branch tip. A read with both exact patterns,
+   `git ls-remote --exit-code <remote> refs/tags/<tag> 'refs/tags/<tag>^{}'`, returns these rows
+   for an annotated tag; preserve command failure and missing rows as unsatisfied evidence. Comparing only the
+   peeled commit also accepts a lightweight tag and does not prove that the agreed annotated
+   archive object was retained. After branch deletion, verify that the branch is absent and both
+   tag identities still resolve.
 
 ## Worktree retirement — prove the checkout is disposable before removal
 
@@ -938,8 +946,18 @@ the worktree itself has no uncommitted files, and a detached worktree HEAD is ab
    scheduled job runs from is also in use, although it looks idle: no process holds it between runs,
    and its files stop changing once it is pinned. Before retiring, search the scheduler definitions
    for its absolute path (launchd plists in `~/Library/LaunchAgents`, `crontab -l`, systemd units).
+   Use **bidirectional ancestor-prefix matching** rather than exact string or single-parent `dirname`
+   equality: a plist often pins a parent task root (such as `~/.local/share/<task-dir>/`) while linked
+   worktrees live two or three directories deeper (for example `.../<subtask>/artifacts/source`), so
+   a match holds whenever a scheduled path is an ancestor prefix of the worktree path or vice versa.
    Real case: a detached "deploy" worktree with no open handles and no file change in ten days was
    the working copy of a LaunchAgent that ran every 30 minutes.
+   When batch-retiring a large set of verified-landed local branches (`ANCESTOR` / `LANDED-AT-MERGE`
+   with no `clean-changes:` regression / `MERGED-CONTENT`), separate zero-checkout refs (`pure`
+   branches with no linked worktree, `prunable` worktrees whose directory is already gone, and
+   verified-clean ephemeral `/private/tmp/` worktrees) from persistent task-directory or dirty
+   worktrees: retire the first tier safely while keeping persistent/scheduler-rooted and dirty
+   worktrees for individual review.
    Check known consumers outside the checkout too: task manifests, artifact indexes or local
    release receipts can store its absolute path, including files in another repository's Git
    metadata. Search the exact path only in the task's known consumer stores; do not infer global
@@ -952,6 +970,27 @@ the worktree itself has no uncommitted files, and a detached worktree HEAD is ab
    Distinguish an already obsolete record from a live dependency: preserve its original evidence
    and report its existing validation limit without inventing a new release approval. Recheck
    relocated consumers after removal; unknown required consumer coverage stops that retirement.
+
+   Apply these additional guards before batch-retiring clean `ANCESTOR` worktrees or
+   fast-forwarding a shared primary checkout:
+   - **Fresh 0-commit concurrent worktrees (false-positive `ANCESTOR`):** a worktree just
+     created from `origin/main` by another active session has zero commits ahead and zero dirty
+     files, so `merge-base --is-ancestor` reports `ANCESTOR`. Skip any worktree whose directory
+     or `.git` pointer file `mtime` falls within a recent activity window (for example, 4 hours)
+     unless its exact PR/task is verified closed and retired.
+   - **Externally managed and runtime worktrees:** exclude host-application worktree stores
+     (such as `~/.codex/worktrees/`), live service/runtime producer checkouts, and external
+     archive mounts (`/Volumes/...`) even when clean and `ANCESTOR`, so cleanup never corrupts
+     external tool registries or live runtimes.
+   - **Non-destructive `main` alignment on a shared primary checkout:** when the primary
+     checkout is on a stale `main` with mixed dirty files (for example when local symlinks
+     consume it), split tracked files that satisfy both `git diff --quiet origin/main -- <path>`
+     and `git diff --cached --quiet -- <path>` as landed residues before
+     `git merge --ff-only origin/main`, and preserve genuinely unlanded
+     hunks via patch export → fast-forward → `git apply` with before/after SHA-256 verification.
+     When another live session has the primary checkout on a feature branch, update the
+     non-checked-out `main` ref non-invasively via `git fetch origin main:main` without moving
+     `HEAD` or touching the working tree.
 2. **Inspect tracked and untracked state in the linked checkout itself:** run
    `git -C <worktree-path> status --porcelain=v1 --untracked-files=all --ignore-submodules=none`.
    The output must be empty. Do not substitute the primary checkout's status. Enumerate the
@@ -1077,6 +1116,32 @@ the worktree itself has no uncommitted files, and a detached worktree HEAD is ab
 
 The recovery artifacts created in step 6 may later follow § Retire task-owned temporary recovery
 artifacts. A copied ignored path that exists only in that backup keeps the artifact ineligible.
+
+### Archive a retained worktree without deleting it
+
+If an unmerged or dirty worktree cannot reach empty status under the current
+no-discard rules and its preservation commit is refused by the owning repository,
+do not force removal or hide the changes. When the authorized outcome permits
+retention but requires eliminating a temporary location, move the exact worktree
+to a durable task archive:
+
+```bash
+git -C <kept-checkout> worktree move <absolute-old-path> <absolute-new-archive-path>
+```
+
+Resolve scheduler and process occupancy, known consumers and destination absence
+before the move. Preserve external WIP patches/copies where required, but do not
+treat preservation alone as deletion eligibility. Afterward require old-path
+absence and new-path HEAD, branch, complete tracked/untracked status and WIP
+hashes to match the frozen source; separately prove the kept checkout did not
+change. The worktree still exists and is reported **archived**, not removed or
+merged.
+
+An explicitly retained branch may be renamed `archive/<task>` after immediately
+confirming the moved worktree's current branch. This communicates retention; it
+does not establish content containment or authorize deletion of the old remote
+branch. Do not use archiving to bypass receipt migration, an ownership conflict,
+or a requested destructive decision.
 
 ### Batch regular-file hashes without dropping manifest entries
 

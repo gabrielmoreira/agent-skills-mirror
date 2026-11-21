@@ -96,6 +96,21 @@ a signature in `port.rs`, run `rust-anything refresh <crate>`.
 - Numbers in Python and Ruby: ints that the original passes through must come back as ints;
   in Python ports use `crate::pynum::Num` for int-or-float, not `serde_json::Value`.
 - C: inputs recorded as `crash:` are undefined behavior; any result passes.
+- C pointers: a byte pointer with a length parameter is `&[u8]` (or `&mut [u8]` when the
+  function writes it), a pointer to one scalar is `Option<&mut T>`, and a returned pointer into
+  a parameter is its offset (`Option<usize>`). In `--inputs`, give buffers as hex text (a number
+  means that many zero bytes, `null` is `NULL`) and leave length parameters out; recorded
+  results then hold the return value and what the function wrote. A struct of scalar fields
+  passed or returned by value is a `#[repr(C)]` struct at the crate root (`crate::AVRational`),
+  and an object of its fields in cases. A `char **` / `const char **` the function points into
+  the first `char` string argument is `Option<&mut Option<usize>>` (the offset into it); in
+  cases give the starting offset, `true` for a `NULL` start, or `null` for a `NULL` `**`.
+  Contexts, other structs and other `**` stay blocked: bridge a small wrapper with plain
+  arguments, and say so. Pass the
+  project's build flags in `CFLAGS` (`-DHAVE_CONFIG_H`, `-I<root>`) when its sources need them.
+- C strings: `const char *` is `Option<&[u8]>`, which costs a `strlen` per argument. Where that
+  dominates (short-string helpers), type the parameter `Option<crate::CChars<'_>>` in `port.rs`
+  and run `refresh`: the port reads the bytes as it goes (`next`, `peek`, `to_bytes`).
 - Ordered maps and object keys: `indexmap` where order reaches output.
 - Regex lookaround or backreferences: `fancy-regex`, not `regex`. Either way, `\w`, `\b`, `\d`
   and case-insensitive matching treat non-ASCII text differently from the source language's

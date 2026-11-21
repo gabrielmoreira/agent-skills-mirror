@@ -1,0 +1,12 @@
+{
+  "name": "rea-video",
+  "interface": { "displayName": "rea-video" },
+  "plugins": [
+    {
+      "name": "rea-video",
+      "source": { "source": "url", "url": "https://github.com/JuneYaooo/rea-video.git" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+      "category": "Productivity"
+    }
+  ]
+}

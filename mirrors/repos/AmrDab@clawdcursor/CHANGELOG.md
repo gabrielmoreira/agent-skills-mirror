@@ -2,6 +2,85 @@
 
 All notable changes to Clawd Cursor will be documented in this file.
 
+## [2.3.0] - 2026-11-20
+
+### Security
+- **Settings in the working directory could start a program and turn off clawdcursor's safeguards (GHSA-cx4w-xx82-f6f6,
+  high).** A `.env` or `.clawdcursor-config.json` in the folder clawdcursor started in could name a program for the pill to
+  start, record consent, hide the on-screen indicator, or turn guards off. Files in the working directory are no longer
+  read. Affects 2.2.0 and earlier.
+
+### Added
+- **App guides are back.** 32 guides for desktop and web apps ship in the package. When an app opens, the agent gets its
+  essential keys in one line; `system shortcuts_list` with `context` (and `query`) reads the whole guide.
+
+### Changed
+- **Confirm mode (`CLAWD_CONFIRM=1`) holds left clicks only.** A right or middle click opens a menu or a tab and is no
+  longer held; on Linux a middle click can paste the selection. On macOS it also holds `mod+backspace` (Move to Trash).
+- **`window list` shows open apps, not every window title.** It lists each app's process name and pid, with a window count
+  when an app has several windows; the title, bounds and size appear only for windows clawdcursor opened or worked in, and for one app's windows when the
+  call names it (`processName` or `processId`). A
+  document's title can hold private text.
+- **The pill says which mode the agent is in.** `running in background` (the amber outline round its window) or `requires
+  foreground` (the full-screen amber glow while it uses the mouse and keyboard), then what it is doing: `requires
+  foreground · Clicking in Paint`. In the code the two modes are now named `foreground` and `background`.
+- **The pill keeps one small size, and its text is readable on Windows.** Text longer than "running in background" runs
+  through it like a marquee; the "·" and "—" no longer show as box-drawing characters. While the agent waits (a wait, or an
+  app it started that is still loading) the pill says "waiting" or "waiting for <app> to load". After foreground work it
+  says "running in background" without the last foreground act. The pill no longer flashes an amber ring when it appears.
+- **Only the window the agent works in now is outlined.** Its earlier windows no longer keep an outline each.
+- **The agent's drawn pointer shows only for background work.** When it uses the real mouse, your own cursor moves and
+  no second pointer follows it.
+- **`smart_click` and `smart_type` find an element by name in the background first**, the way `invoke` does (a window
+  message, then the element's own action with your window put back), instead of through the older accessibility path
+  that could take the foreground and not give it back.
+- **`smart_click` presses the only element that contains the name.** With exactly one element named like "What's New"
+  for "New", it presses that one and says so; with several, it lists them as before.
+- **Settings are no longer read from the working directory.** A `.env` file and a
+  `.clawdcursor-config.json` there are ignored: use environment variables, flags or `~/.clawdcursor`. `CLAWD_DISABLE_VISION` now takes
+  precedence over the config files.
+
+### Fixed
+- **macOS: a key press or typed text that fails is an error.** On the `smart_type`, `shortcuts_run` and `minimize_window` path it was logged and reported as done.
+- **A read inside a `batch` comes back whole, and so does the step that stops it.** The stopping step ends with its `[failed · CODE · hint · next]` line, as a direct call would. `find` prints its coordinates note after the elements, not before. A batch longer than its step cap is refused before step 1, with the cap and the step count in the message.
+- **Pictures, PDFs, text, audio and video downloaded in the agent's own browser land in your Downloads folder under their own names** (Windows, macOS, and Linux's own Downloads folder), and the next result says where. They went to a hidden temp folder with random names, where the agent could not find or use them. Other file types (programs, scripts, archives) stay there, and file names are made safe.
+- **`browser type` with a trailing newline presses Enter** after typing (and says so), as `computer type` does; the newline is no longer typed into the field.
+- **`browser type` into a wrapper element fills the input inside it** and reads that input back; when nothing editable has focus it fails instead of typing into whatever does.
+- **`browser click` by text prefers an exact match**, then a prefix, then a partial one; it skips hidden and disabled elements, says which element it clicked, and fails with a short list when several partial matches tie.
+- **A selector that matches nothing is an error** for `browser read` and `cdp_read_text`, not text returned as page content.
+- **`browser connect` takes `port`** and attaches to the browser already on that port (what `relaunch_with_cdp` asks for), launching nothing in its place.
+- **`type` says ✓ only when the field holds exactly what was typed.** A field that holds more, such as "2680" after typing "80" onto a "26" that was not selected, now reports what it holds and is no longer confirmed.
+- **A tree read or an invoke that timed out is reported as a timeout**, not as an empty window ("app may be custom-canvas",
+  with advice to take a screenshot) or an element that was not found. Windows and Linux.
+- **`window` close, minimize and focus act on one window and name it.** Every field given must match (`processName` and
+  `title` together pick the dialog, not the first window of that app); two or more matches are listed and nothing is done; a
+  `pid` with a `title` that matches none of its windows is "not found". `close` waits a second and says whether the window
+  closed or is still open (it may be asking to save). On Linux a close goes by window id, not by title text.
+- **`click` honours `button:"middle"` and `count:3`**, and refuses a button or count it cannot send instead of left-clicking once.
+- **`key "ctrl + s"` presses Ctrl+S**, and a trailing `+` is the plus key (`ctrl++`), instead of tapping Ctrl and typing "+s".
+- **A bridge command that timed out never runs afterwards**, and its time limit starts when it is sent, not when it is queued, so
+  a retry no longer acts twice.
+- **Linux: a failed key press is an error**, and the keys are released either way, so a failure no longer leaves Ctrl held. On
+  Wayland with no input tool (`ydotool`, `wtype`), clicking and typing say so instead of reporting done.
+- **`invoke` with `automationId` looks the element up by that id** (Windows, macOS), not as a name that never matched.
+- **`open_file` on a path that does not exist fails** instead of saying `Opened`.
+- **The granular `minimize_window` really minimizes**, as `minimize_window_to_taskbar` does; it used to press Win+Down, which
+  restored a maximized window.
+- **Hints name a tool and its action in words** ("the browser tool, action page_context"), not as call-shaped text such as `browser {"action":"page_context"}`: a host prefixes the tool names, so the bare name was not a tool it had. On the granular surface they name the granular tool.
+- **`within` reaches another top-level window of the same app**, such as a browser's "Restore pages?" bubble, when it matches that window's title (Windows).
+- **When a typed submit is held and the focus is not on a text field, the result says where the focus is** ("the focus is on Pane 'Profiles', not a text field") instead of blaming an autocomplete suggestion.
+- **The setup and doctor hints tell users to register `clawdcursor mcp --compact`.**
+- **Unticking "Allow clawdcursor to control this computer" in the Claude Desktop extension now withdraws consent.** The host
+  sends `CLAWDCURSOR_CONSENT=false` (or `0`), which removes the recorded consent for that copy; an unset variable changes
+  nothing.
+- **A dialog the agent's own action opened is no longer refused as a window switch.** After an action such as "Attach files" opens the app's own Open dialog, input goes to that dialog and the outline follows it, also when the app draws the dialog in another of its processes (Edge) and you have not touched the mouse or keyboard since; a different app in front is still refused.
+- **A takeover no longer says "paused by the user" when they did not press Pause.** While the user is using the computer, a step that needs the keyboard, the mouse or its window in front replies "the user is using the computer" (code `USER_ACTIVE`). The pill's Pause keeps `PAUSED`, and a pause card waiting for an answer is now `PAUSE_PENDING`.
+- **While the agent works in the background, you can use your computer and it keeps working.** A step that needs the keyboard, the mouse or its window in front is not sent while you use them; it answers at once, and the agent goes on by name in the background and tries that step again once you have been idle for 1 s. No wait, no "Paused — your turn" and no Resume click. Only the pill's Pause holds the agent until Resume. Your own click on Resume (the pill, a pause card, after a Stop) never counts as using the computer.
+- **A hold no longer outlives the session that made it.** A hold whose process has exited is ignored and removed, so a new session does not start paused.
+- **`clawdcursor resume` clears a hold**, not only a stop.
+- **A pause card is withdrawn when the session that asked for it ends.** A card shown by another clawdcursor process now blocks input and window changes only; reading the screen still works.
+- The server instructions say what a waiting reply means: call the same step again, and do not retry a Stop.
+
 ## [2.2.0] - 2026-11-18
 
 ### Added

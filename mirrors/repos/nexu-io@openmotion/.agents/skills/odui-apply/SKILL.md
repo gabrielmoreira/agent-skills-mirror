@@ -5,7 +5,7 @@ description: Apply an existing Open Design UI component in OpenMotion Studio. Us
 
 # Apply an Open Design UI component
 
-Read the repository [instructions](../../../AGENTS.md), the [component registry](../../../packages/design-system/components/registry.json), and the [component guide](../../../packages/design-system/components/README.md) before editing. The registry is the source for each component alias, implementation, example and consumer.
+Read the repository [instructions](../../../AGENTS.md), the [component registry](../../../packages/open-design-ui/registry.json), and the [component guide](../../../packages/open-design-ui/README.md) before editing. The registry is the source for each component alias, implementation, example and consumer.
 
 1. Inspect the target call site and record its behavior, accessible name, layout and visual states.
 2. Use the registry import alias, such as `open-design-ui/button` or `open-design-ui/slider`. Keep product state and handlers in the feature and preserve layout classes that remain necessary.

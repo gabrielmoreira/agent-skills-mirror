@@ -5,7 +5,7 @@ Two supported paths:
 1. **Plain pip** -- `pip install "roam-code==14.1.0"`, run any commands, upload SARIF
    yourself. Works on every CI platform (GitHub Actions, GitLab CI, Jenkins,
    Azure Pipelines, BitBucket, CircleCI, ...).
-2. **Composite GitHub Action** -- `uses: Cranot/roam-code@v14.1.0`. Adds sticky
+2. **Composite GitHub Action** -- `uses: Cranot/roam-code@v14.1.0-r1`. Adds sticky
    PR comments, guardrail-enforced SARIF upload, and quality gates with one
    block.
 
@@ -88,7 +88,7 @@ jobs:
 
       # The readable tag is shown here. For production,
       # replace the tag with its reviewed 40-character SHA (see below).
-      - uses: Cranot/roam-code@v14.1.0
+      - uses: Cranot/roam-code@v14.1.0-r1
         with:
           version: '14.1.0'
           allow-latest: 'false'
@@ -129,7 +129,7 @@ uploads SARIF findings to GitHub Code Scanning, and enforces quality gates.
 | `gate` | _(empty)_ | Quality gate expression. Supports scalar checks (`key>=value`) and trend-aware functions (`velocity(metric)<=0`, `direction(metric)!=worsening`). The action exits with code 5 when the gate fails. |
 | `gate-strict` | `false` | Make an unevaluated gate fail the job with exit 5. An unevaluated gate is always disclosed; without strict mode it is advisory. |
 | `cache` | `true` | Cache pip packages and the `.roam/` SQLite index between runs for faster incremental analysis. |
-| `python-version` | `3.11` | Python version to use. Supports 3.10 through 3.13 (roam-code requires Python 3.10+). |
+| `python-version` | `3.11` | Python version to use. Supports 3.11 through 3.13 (roam-code requires Python 3.11+). |
 
 The default shown here describes `action.yml` on the current main branch.
 An older or immutable Action revision keeps the default committed in that
@@ -244,7 +244,7 @@ the repository, and blocking there would be red on a run where nothing is
 wrong. Set `gate-strict: true` to make an unevaluable gate exit 5 as well:
 
 ```yaml
-- uses: Cranot/roam-code@v14.1.0
+- uses: Cranot/roam-code@v14.1.0-r1
   with:
     version: '14.1.0'
     gate: 'direction(health_score)!=worsening'
@@ -385,7 +385,7 @@ Set `changed-only: 'true'` to run incremental PR analysis.
 Example:
 
 ```yaml
-- uses: Cranot/roam-code@v14.1.0
+- uses: Cranot/roam-code@v14.1.0-r1
   with:
     version: '14.1.0'
     commands: 'verify pr-risk api-changes'
@@ -437,7 +437,7 @@ advisory unless `gate-strict` is enabled, as described above.
 ### Multiple commands with strict gate
 
 ```yaml
-- uses: Cranot/roam-code@v14.1.0
+- uses: Cranot/roam-code@v14.1.0-r1
   with:
     version: '14.1.0'
     commands: 'health complexity dead'
@@ -450,7 +450,7 @@ advisory unless `gate-strict` is enabled, as described above.
 ### PR risk only, no comment
 
 ```yaml
-- uses: Cranot/roam-code@v14.1.0
+- uses: Cranot/roam-code@v14.1.0-r1
   id: roam
   with:
     version: '14.1.0'
@@ -465,7 +465,7 @@ advisory unless `gate-strict` is enabled, as described above.
 ### Exact release without caching
 
 ```yaml
-- uses: Cranot/roam-code@v14.1.0
+- uses: Cranot/roam-code@v14.1.0-r1
   with:
     version: '14.1.0'
     cache: 'false'
@@ -475,7 +475,7 @@ advisory unless `gate-strict` is enabled, as described above.
 ### Use outputs in subsequent steps
 
 ```yaml
-- uses: Cranot/roam-code@v14.1.0
+- uses: Cranot/roam-code@v14.1.0-r1
   id: analysis
   with:
     version: '14.1.0'

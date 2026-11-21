@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 26 default patterns, 1 followed patterns, 71 file(s) materialized.
+Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 26 default patterns, 1 followed patterns, 75 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 26 default p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 71 |
+| Files         | 75 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -101,35 +101,39 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 40 | ✓ | [`skills/hosted-agents/references/infrastructure-patterns.md`](skills/hosted-agents/references/infrastructure-patterns.md) |
 | 41 | ✓ | [`skills/hosted-agents/scripts/sandbox_manager.py`](skills/hosted-agents/scripts/sandbox_manager.py) |
 | 42 | ✓ | [`skills/hosted-agents/SKILL.md`](skills/hosted-agents/SKILL.md) |
-| 43 | ✓ | [`skills/latent-briefing/references/attention-matching-formulation.md`](skills/latent-briefing/references/attention-matching-formulation.md) |
-| 44 | ✓ | [`skills/latent-briefing/SKILL.md`](skills/latent-briefing/SKILL.md) |
-| 45 | ✓ | [`skills/long-horizon-prompting/references/cdc-prompt-annotated.md`](skills/long-horizon-prompting/references/cdc-prompt-annotated.md) |
-| 46 | ✓ | [`skills/long-horizon-prompting/references/mass-handoff-contracts.md`](skills/long-horizon-prompting/references/mass-handoff-contracts.md) |
-| 47 | ✓ | [`skills/long-horizon-prompting/references/research-evidence.md`](skills/long-horizon-prompting/references/research-evidence.md) |
-| 48 | ✓ | [`skills/long-horizon-prompting/references/task-brief-template.md`](skills/long-horizon-prompting/references/task-brief-template.md) |
-| 49 | ✓ | [`skills/long-horizon-prompting/references/vendor-guidance.md`](skills/long-horizon-prompting/references/vendor-guidance.md) |
-| 50 | ✓ | [`skills/long-horizon-prompting/SKILL.md`](skills/long-horizon-prompting/SKILL.md) |
-| 51 | ✓ | [`skills/memory-systems/references/implementation.md`](skills/memory-systems/references/implementation.md) |
-| 52 | ✓ | [`skills/memory-systems/scripts/memory_store.py`](skills/memory-systems/scripts/memory_store.py) |
-| 53 | ✓ | [`skills/memory-systems/SKILL.md`](skills/memory-systems/SKILL.md) |
-| 54 | ✓ | [`skills/multi-agent-patterns/references/frameworks.md`](skills/multi-agent-patterns/references/frameworks.md) |
-| 55 | ✓ | [`skills/multi-agent-patterns/scripts/coordination.py`](skills/multi-agent-patterns/scripts/coordination.py) |
-| 56 | ✓ | [`skills/multi-agent-patterns/SKILL.md`](skills/multi-agent-patterns/SKILL.md) |
-| 57 | ✓ | [`skills/project-development/references/case-studies.md`](skills/project-development/references/case-studies.md) |
-| 58 | ✓ | [`skills/project-development/references/pipeline-patterns.md`](skills/project-development/references/pipeline-patterns.md) |
-| 59 | ✓ | [`skills/project-development/scripts/pipeline_template.py`](skills/project-development/scripts/pipeline_template.py) |
-| 60 | ✓ | [`skills/project-development/SKILL.md`](skills/project-development/SKILL.md) |
-| 61 | ✓ | [`skills/self-improvement-loops/references/loop-design-evidence.md`](skills/self-improvement-loops/references/loop-design-evidence.md) |
-| 62 | ✓ | [`skills/self-improvement-loops/SKILL.md`](skills/self-improvement-loops/SKILL.md) |
-| 63 | ✓ | [`skills/self-managed-context/references/evidence.md`](skills/self-managed-context/references/evidence.md) |
-| 64 | ✓ | [`skills/self-managed-context/references/harness-protocol.md`](skills/self-managed-context/references/harness-protocol.md) |
-| 65 | ✓ | [`skills/self-managed-context/SKILL.md`](skills/self-managed-context/SKILL.md) |
-| 66 | ✓ | [`skills/tool-design/references/architectural_reduction.md`](skills/tool-design/references/architectural_reduction.md) |
-| 67 | ✓ | [`skills/tool-design/references/best_practices.md`](skills/tool-design/references/best_practices.md) |
-| 68 | ✓ | [`skills/tool-design/scripts/description_generator.py`](skills/tool-design/scripts/description_generator.py) |
-| 69 | ✓ | [`skills/tool-design/SKILL.md`](skills/tool-design/SKILL.md) |
-| 70 | ✓ | [`template/SKILL.md`](template/SKILL.md) |
-| 71 | → | [`researcher/generated/corpus-summary.md`](researcher/generated/corpus-summary.md) |
+| 43 | ✓ | [`skills/instruction-surface-security/references/evaluation.md`](skills/instruction-surface-security/references/evaluation.md) |
+| 44 | ✓ | [`skills/instruction-surface-security/references/evidence.md`](skills/instruction-surface-security/references/evidence.md) |
+| 45 | ✓ | [`skills/instruction-surface-security/references/runtime-review.md`](skills/instruction-surface-security/references/runtime-review.md) |
+| 46 | ✓ | [`skills/instruction-surface-security/SKILL.md`](skills/instruction-surface-security/SKILL.md) |
+| 47 | ✓ | [`skills/latent-briefing/references/attention-matching-formulation.md`](skills/latent-briefing/references/attention-matching-formulation.md) |
+| 48 | ✓ | [`skills/latent-briefing/SKILL.md`](skills/latent-briefing/SKILL.md) |
+| 49 | ✓ | [`skills/long-horizon-prompting/references/cdc-prompt-annotated.md`](skills/long-horizon-prompting/references/cdc-prompt-annotated.md) |
+| 50 | ✓ | [`skills/long-horizon-prompting/references/mass-handoff-contracts.md`](skills/long-horizon-prompting/references/mass-handoff-contracts.md) |
+| 51 | ✓ | [`skills/long-horizon-prompting/references/research-evidence.md`](skills/long-horizon-prompting/references/research-evidence.md) |
+| 52 | ✓ | [`skills/long-horizon-prompting/references/task-brief-template.md`](skills/long-horizon-prompting/references/task-brief-template.md) |
+| 53 | ✓ | [`skills/long-horizon-prompting/references/vendor-guidance.md`](skills/long-horizon-prompting/references/vendor-guidance.md) |
+| 54 | ✓ | [`skills/long-horizon-prompting/SKILL.md`](skills/long-horizon-prompting/SKILL.md) |
+| 55 | ✓ | [`skills/memory-systems/references/implementation.md`](skills/memory-systems/references/implementation.md) |
+| 56 | ✓ | [`skills/memory-systems/scripts/memory_store.py`](skills/memory-systems/scripts/memory_store.py) |
+| 57 | ✓ | [`skills/memory-systems/SKILL.md`](skills/memory-systems/SKILL.md) |
+| 58 | ✓ | [`skills/multi-agent-patterns/references/frameworks.md`](skills/multi-agent-patterns/references/frameworks.md) |
+| 59 | ✓ | [`skills/multi-agent-patterns/scripts/coordination.py`](skills/multi-agent-patterns/scripts/coordination.py) |
+| 60 | ✓ | [`skills/multi-agent-patterns/SKILL.md`](skills/multi-agent-patterns/SKILL.md) |
+| 61 | ✓ | [`skills/project-development/references/case-studies.md`](skills/project-development/references/case-studies.md) |
+| 62 | ✓ | [`skills/project-development/references/pipeline-patterns.md`](skills/project-development/references/pipeline-patterns.md) |
+| 63 | ✓ | [`skills/project-development/scripts/pipeline_template.py`](skills/project-development/scripts/pipeline_template.py) |
+| 64 | ✓ | [`skills/project-development/SKILL.md`](skills/project-development/SKILL.md) |
+| 65 | ✓ | [`skills/self-improvement-loops/references/loop-design-evidence.md`](skills/self-improvement-loops/references/loop-design-evidence.md) |
+| 66 | ✓ | [`skills/self-improvement-loops/SKILL.md`](skills/self-improvement-loops/SKILL.md) |
+| 67 | ✓ | [`skills/self-managed-context/references/evidence.md`](skills/self-managed-context/references/evidence.md) |
+| 68 | ✓ | [`skills/self-managed-context/references/harness-protocol.md`](skills/self-managed-context/references/harness-protocol.md) |
+| 69 | ✓ | [`skills/self-managed-context/SKILL.md`](skills/self-managed-context/SKILL.md) |
+| 70 | ✓ | [`skills/tool-design/references/architectural_reduction.md`](skills/tool-design/references/architectural_reduction.md) |
+| 71 | ✓ | [`skills/tool-design/references/best_practices.md`](skills/tool-design/references/best_practices.md) |
+| 72 | ✓ | [`skills/tool-design/scripts/description_generator.py`](skills/tool-design/scripts/description_generator.py) |
+| 73 | ✓ | [`skills/tool-design/SKILL.md`](skills/tool-design/SKILL.md) |
+| 74 | ✓ | [`template/SKILL.md`](template/SKILL.md) |
+| 75 | → | [`researcher/generated/corpus-summary.md`](researcher/generated/corpus-summary.md) |
 
 ---
 

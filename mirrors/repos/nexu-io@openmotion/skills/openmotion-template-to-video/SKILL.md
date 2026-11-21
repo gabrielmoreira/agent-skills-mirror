@@ -15,7 +15,7 @@ Turn the selected editable template into the requested draft, editable project o
 
 Changes to existing content use the [shared edit workflow](../openmotion-production/references/edit.md), including required related changes and preserved content. Missing instructions and target sources must finish returning to the model before a later call applies a template, imports, writes or exports. Entering this Skill again does not create another copy, apply the template again or repeat a completed export.
 
-When selecting, obtaining or replacing assets, read the [shared material policy](../openmotion-production/references/materials.md), preserving the template's agreed structure, motion and content constraints. A generated or replacement asset takes the planned asset's place; keep the accepted motion, holds and cuts and do not add movement or re-cut unless the user asks. An unchanged preview handoff does not trigger asset acquisition.
+When selecting, obtaining or replacing assets, read the [shared material policy](../openmotion-production/references/materials.md), applying its [generation timing ladder](../openmotion-production/references/materials.md#generation-timing-ladder), [replacement rules](../openmotion-production/references/materials.md#replacing-existing-shots) and [cross-shot consistency](../openmotion-production/references/materials.md#cross-shot-consistency) while preserving the template's agreed structure, motion and content constraints. A generated or replacement asset takes the planned asset's place; keep the accepted motion, holds and cuts and do not add movement or re-cut unless the user asks. An unchanged preview handoff does not trigger asset acquisition.
 
 ## Browse or recommend catalog templates
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rstackjs/agent-skills` — 26 default patterns, 0 followed patterns, 97 file(s) materialized.
+Mirror of `rstackjs/agent-skills` — 26 default patterns, 0 followed patterns, 98 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rstackjs/agent-skills` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 97 |
+| Files         | 98 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -154,8 +154,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 93 | ✓ | [`skills/rstest-debugging/references/mocked-module-build-graph.md`](skills/rstest-debugging/references/mocked-module-build-graph.md) |
 | 94 | ✓ | [`skills/rstest-debugging/references/performance-measurement.md`](skills/rstest-debugging/references/performance-measurement.md) |
 | 95 | ✓ | [`skills/rstest-debugging/references/runtime-output-memory.md`](skills/rstest-debugging/references/runtime-output-memory.md) |
-| 96 | ✓ | [`skills/rstest-debugging/SKILL.md`](skills/rstest-debugging/SKILL.md) |
-| 97 | ✓ | [`skills/storybook-rsbuild/SKILL.md`](skills/storybook-rsbuild/SKILL.md) |
+| 96 | ✓ | [`skills/rstest-debugging/references/trace-large-test-assets.md`](skills/rstest-debugging/references/trace-large-test-assets.md) |
+| 97 | ✓ | [`skills/rstest-debugging/SKILL.md`](skills/rstest-debugging/SKILL.md) |
+| 98 | ✓ | [`skills/storybook-rsbuild/SKILL.md`](skills/storybook-rsbuild/SKILL.md) |
 
 ---
 

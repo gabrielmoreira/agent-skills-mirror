@@ -473,3 +473,55 @@ pnpm evals:l3 run --manifest <path/to/manifest.json> --grant <path/to/host-grant
 - `build` and `run` require independent host authority grants supplied outside the manifest via `--grant <path>`; self-granting from manifest fields is forbidden.
 - Without live D5 hypervisor execution, `build` and `run` engage D2 runtime adapter preflight. `build` stages `runs/<run_id>/build/` and publishes `build-receipt.json`; `run` stages an exclusive attempt directory (`runs/<run_id>/<attempt_id>/`), publishes an atomic terminal receipt (`preflight_failed` or `infrastructure_error`), and removes the `interrupted.json` marker. Both exit non-zero. `build` then `run` on the same manifest never collides. Overwriting existing attempt directories, build directories, or receipts is strictly refused.
 - Reviewer bundle export blinds all protocol arms (`A0`, `A1`, `A2`), machine paths, and structured verdict/reason metadata. It returns only scrubbed views plus exact per-artifact SHA-256 digests and byte counts; no raw artifact bytes leave the manager, so arm labels and host paths cannot leak through the export.
+
+### Supported case population
+
+The artifact-v1 manifest accepts exactly three case IDs — `payment`, `tenant` and `overload` — and the
+guest controller dispatches no others. Executable cases for testing discipline (`common-tdd`: a bug fix
+must add a failing regression test that passes after the fix) and for the `react`, `nestjs` and `golang`
+stacks are **not supported**: the frozen D1 wire schema has no test-execution surface, so those domains
+cannot be expressed as an artifact-v1 attempt. `validateManifestStructure` rejects them with
+`Unsupported case ID in case_ids`, and `manifest.test.ts` locks that closure so partial wiring cannot
+ship silently. Never substitute a transcript assertion for an executable claim.
+
+### Headline reporting
+
+`pnpm evals:report` renders an `## 🧱 Executable (L3) outcome` group after the transcript Executive
+Summary. Receipts are read only from `benchmarks/evals/l3/runs/<run_id>/<attempt_id>/receipt.json`
+(overridable with `buildEvalsReportMarkdown(results, history, { l3RunsDir })`). Counts are never merged
+with transcript assertions: `passed` requires the receipt's own `whole_case_pass` evidence, a `passed`
+terminal without it counts `unverified`, and a missing receipts directory reports the group as
+unavailable rather than passing.
+
+### Gate insertion point
+
+L3 is not a release gate yet. Insert an executable gate at one of:
+- `scripts/evals/index.ts:431` — the `case "gate":` dispatch, beside the transcript gate.
+- `.github/workflows/ci.yml:237` — immediately after the `pnpm evals:gate -- --all` step.
+
+## NVIDIA SkillEvaluator (optional)
+
+A pinned third-party audit (`skillevaluator==1.0.1`, via `uvx`) that complements our guard. The adapter installs the base package for `static`, `[llm]` for `llm`, and `[tier2]` for `dedup`. It is not part of `validate:all` and gates nothing.
+
+Get a free key at <https://build.nvidia.com>, then either `export NVIDIA_API_KEY=nvapi-...` or add it to the git-ignored `.env.skillevaluator` (see `.env.skillevaluator.example`).
+
+```bash
+pnpm skilleval -- --path skills/common/common-tdd   # Tier 1 static, keyless
+pnpm skilleval:llm -- --path skills/...             # Tier 1 + LLM security analysis
+pnpm skilleval:dedup -- --path skills/...           # Tier 2 cross-skill similarity
+```
+
+Reports land in `artifacts/skillevaluator/<mode>-<timestamp>/` (JSON + HTML, git-ignored). Add `--checks schema,quality,unicode` to scope Tier 1 (static/llm only), `--print-env` to inspect child variable names only (never values), and `--dry-run` to print the `uvx` argv without running anything.
+
+Only these extra evaluator options are accepted; other flags are rejected before key checks so mode boundaries cannot be overridden:
+- `static` and `llm`: `--profile <value>`, `--policy <file>`, `--skip <list>`, `--verbose`.
+- `dedup`: `--threshold <float>`, `--full-body`, `--catalog <file>`, `--save-catalog <file>`, `--max-entries <int>`.
+Value flags accept either `--flag value` or `--flag=value`.
+
+- `static` runs the keyless Tier 1 checks; scanners that cannot install report `INCOMPLETE` and a non-zero exit, never a pass.
+- `llm` adds LLM-backed security analysis with `--llm-verify` false-positive triage.
+- `dedup` runs `tier2 similarity-check <path> --type skill`: it embeds skill **descriptions** across the collection and reports overlap between different skills. `--full-body` compares bodies instead. Single-skill internal redundancy (`uvx ... tier2 <skill>`) is not wired.
+- Tier 3 (live agent evaluation) is not wired: it needs Docker and overlaps the L3 lane above.
+- The adapter always sets `SKILL_EVAL_LLM_PROVIDER`/`SKILL_EVAL_EMBEDDING_PROVIDER` to `nv_build` and strips `OPENAI_API_KEY`/`ANTHROPIC_API_KEY` so provider resolution stays unambiguous.
+
+CI usage: add the `NVIDIA_API_KEY` repository secret (only needed for `llm`/`dedup`), then run the **SkillEvaluator Audit** workflow manually. It has `workflow_dispatch` only and `contents: read`; reports upload as artifacts. Free-tier rate limits apply, and a version bump is a reviewed PR that updates the pin in `scripts/skillevaluator/run.ts`.

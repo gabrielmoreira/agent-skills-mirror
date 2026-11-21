@@ -739,7 +739,7 @@ OpenMotion 采用 [Apache-2.0](LICENSE)许可。第三方代码、模板、媒�
 
 | 来源 | 关联 |
 | --- | --- |
-| [OpenDesign](https://github.com/nexu-io/open-design) | OpenMotion 的开发团队，负责界面设计、资源结构和品牌方向。[设计体系](docs/design-system.md) 和 [Motion 展示](https://open-design.ai/zh/motion/) |
+| [OpenDesign](https://github.com/nexu-io/open-design) | OpenMotion 的开发团队，负责界面设计、资源结构、品牌方向，并提供 Apache-2.0 HTML 设计模板、设计系统、Skills、工艺规范与场景任务指南；[设计体系](docs/design-system.md)、[设计资源声明](library/design/NOTICE.md)和 [Motion 展示](https://open-design.ai/zh/motion/) |
 | [Hyperframes](https://github.com/heygen-com/hyperframes) | HTML 视频合成、Studio 和渲染基础，固定为 0.9.7；创作者参考、外部改编演示与组件源码；[引擎说明](docs/hyperframes.md)、[模板声明](template-library/NOTICE.md) 和[目录来源](docs/template-catalog.md) |
 | [MotionGit](https://motiongit.com/) / adunext | Kinetic Tech 源码以 Presenter Tech 打包；[许可与署名](library/templates/presenter-tech/NOTICE.md) |
 | [Hypit](https://github.com/hypit-ai/hypit) | Agent 主导热门视频复刻与可编辑版本的灵感来源；未引入运行时 |

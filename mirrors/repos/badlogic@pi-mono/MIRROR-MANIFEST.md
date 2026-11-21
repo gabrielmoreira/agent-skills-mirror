@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `badlogic/pi-mono` — 26 default patterns, 4 followed patterns, 26 file(s) materialized.
+Mirror of `badlogic/pi-mono` — 26 default patterns, 5 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `badlogic/pi-mono` — 26 default patterns, 4 followed patterns, 26 fi
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 4 |
-| Files         | 26 |
+| Followed pats | 5 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `badlogic/pi-mono` — 26 default patterns, 4 followed patterns, 26 fi
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `apps/p2/docs/plugin-practices.md`
+- `apps/p3/docs/README.md`
 - `.pi/skills/p2-ui.md`
 - `.pi/skills/interactive-testing.md`
 - `.pi/skills/release.md`
@@ -88,6 +89,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | → | [`.pi/skills/p2-ui.md`](.pi/skills/p2-ui.md) |
 | 25 | → | [`.pi/skills/release.md`](.pi/skills/release.md) |
 | 26 | → | [`apps/p2/docs/plugin-practices.md`](apps/p2/docs/plugin-practices.md) |
+| 27 | → | [`apps/p3/docs/README.md`](apps/p3/docs/README.md) |
 
 ---
 

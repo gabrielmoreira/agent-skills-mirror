@@ -7,7 +7,7 @@ Goal: Produce a PM-owned decision-complete PRD, delivery plan, and IT Department
 
 ## Steps
 1. Load context:
-   - Load baseline PRD, task-linked evidence, and canonical ledger (`docs/product/<slug>/evidence.json`) with stable slug; when intent is unclear, ask which matching ticket/brief is authoritative; link strategy, OPP, DEC, assumption, and MET refs without duplicating records or minting product IDs as requirement IDs.
+   - Load baseline PRD, task-linked evidence, and canonical ledger (`docs/product/<slug>/evidence.json`) with stable slug; read `docs/adr/README.md` when present (absent log is not a blocker); when intent is unclear, ask which matching ticket/brief is authoritative; link strategy, OPP, DEC, assumption, and MET refs without duplicating records or minting product IDs as requirement IDs.
    - Load `product-management/product-requirements` and on-demand `references/requirements-modeling.md`; report truthfully if unavailable. For BRD-lite, also load `product-management/product-business-requirements`.
    - Load ticket text, existing specs, repository patterns, `common-operator-profile`, `common-decision-discipline`, `quality-engineering-business-analysis`, and matched framework skills.
    - Carry forward `operator_profile`, `lane`, `snc_tier`, `delivery_mode`, approval, BRD objective IDs, SMART metric, scope fence, assumptions, evidence ledger, glossary, risks, and delivery context; equivalent approved evidence suffices without separate BRD/PRD/SRS filenames, and reused approved context skips rediscovery. When a PRD relies on captured stakeholder meaning, load `product-management/product-business-requirements/references/analysis-planning-and-elicitation.md`; `requirements-modeling.md` remains the sole owner of conflict, quality-versus-need, and transition semantics.
@@ -30,7 +30,7 @@ Goal: Produce a PM-owned decision-complete PRD, delivery plan, and IT Department
 6. Route:
    - Continue when assumptions are non-critical; return BLOCKED for missing owner, untestable AC, approval, or release constraint. Empirical hypothesis testing needed -> `validate-product` (when selected/installed; else record capability gap and route to `implementation-readiness`); architecture/contracts unclear -> `design-solution`; approved plan with trace and testable ACs -> `implementation-readiness`.
 ## Runtime Contract
-- Use after BRD-lite or when clear feature intent exists but the PRD does not. Brief approval does not grant deployment, spend, or runtime exposure authority. Required inputs: BRD-lite or equivalent intent, plus enough context to name users, goals, and constraints. Return BLOCKED only for missing owner, untestable AC, approval, or release constraint.
+- Use after BRD-lite or when clear feature intent exists but the PRD does not. Brief approval does not grant deployment, spend, or runtime exposure authority. Required inputs: BRD-lite or equivalent intent, plus enough context to name users, goals, and constraints. Return BLOCKED only for missing owner, untestable AC, approval, or release constraint. Load `common-decision-discipline` and apply its §8 continuation contract at entry and every handoff: the settled result selects the successor and specialized gates dominate.
 ## Handoff Payload
 - `slug`, `operator_profile`, `lane`, `snc_tier`, `delivery_mode`, `approval`, PRD or approved ticket path/revision, source IDs, decisions, RACI, rollout notes, task slices, delivery estimate, verification plan, run record path, next workflow.
 ## Blocking Questions

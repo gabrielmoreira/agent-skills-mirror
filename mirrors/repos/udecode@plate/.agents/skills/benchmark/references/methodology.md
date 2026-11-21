@@ -52,7 +52,9 @@ Record before measuring:
   observed baseline variability before reading the candidate result. A paired
   wall-clock line with both parts gives them to `scripts/paired-timing.mjs` as
   `budgetLaw`, so each run works out its ratio from its own base; a ratio
-  worked out from another run's base is not that budget.
+  worked out from another run's base is not that budget. A plant that adds a
+  fixed time, such as a busy wait, names those milliseconds as `{ "ms": N }`
+  for the same reason.
 
 Host load never gates a timing line, and no run waits for a quiet host. A
 timing verdict compares arms interleaved in one run, as
@@ -68,8 +70,9 @@ plant. A budget more than twice the candidate's ratio makes the line
 inconclusive, because the candidate could more than double and still pass,
 unless the config's `wideRoom` gives that cohort's reason.
 Compare only ratios within one run, because absolute medians drift between
-runs. An inconclusive line reruns now,
-or its claim narrows to what a deterministic work count proves. A headless
+runs. An inconclusive line reruns once in the same run, then its claim
+narrows to what a deterministic work count proves, as the Benchmark skill's
+rerun paragraph says. A headless
 line that times one synchronous operation may judge the process CPU time it
 took, read with `process.cpuUsage()` around it and printed beside wall time,
 because a host with more runnable work than cores can move wall time by more

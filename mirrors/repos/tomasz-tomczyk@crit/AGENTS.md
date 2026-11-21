@@ -17,7 +17,8 @@ crit/
 │   ├── style.css / style-live.css / theme.css
 │   ├── __tests__/       # Node.js unit tests (node --test)
 │   ├── pierre/          # Vendored @pierre/diffs + Shiki (split ESM, gzip; scripts/build-pierre.mjs)
-│   └── *.min.js         # Vendored markdown-it, DOMPurify, mermaid, diff-match-patch
+│   ├── fonts/excalidraw/ # Excalidraw's fonts for the excalidraw renderer (SHA256SUMS, LICENSES.txt)
+│   └── *.min.js         # Vendored markdown-it, DOMPurify, mermaid, rough.js, perfect-freehand + laser-pointer, diff-match-patch
 ├── integrations/        # Drop-in config files for AI coding tools (claude-code, cursor, aider, …)
 ├── test/                # Test harnesses, E2E, roundtrip docs, shared fixtures
 ├── Makefile
@@ -42,7 +43,7 @@ crit/
 13. **Comment threading** — comments support nested replies and a `resolved` boolean. Review file schema nests replies inside each comment's `replies` array.
 14. **Centralized review storage** — `~/.crit/reviews/<key>.json` keyed by cwd + branch (git mode) or cwd + args (file mode)
 15. **VCS abstraction** — `vcs.go` defines a backend interface; `git_vcs.go`, `sapling.go`, and `jj.go` are the implementations. Auto-detected, overridable via `--vcs` flag or `vcs` config key. Subcommands not yet threaded through (see TODO at `main.go:1826`).
-16. **Pluggable renderers** — `web/crit-renderers.js` registry; two registration kinds: `kind: 'fence'` (by info string, `langs`) and `kind: 'file'` (by glob, `paths`, `<label> / Source` toggle, `viewMode: 'rendered'`). Built-in mermaid (`crit-renderer-mermaid.js`) covers ```` ```mermaid ````, `*.mermaid`, `*.mmd`, and injects `mermaid.min.js` only on the first diagram (not in `index.html`). New renderers ship in `web/` (no external script loading). See `docs/renderers.md`.
+16. **Pluggable renderers** — `web/crit-renderers.js` registry; two registration kinds: `kind: 'fence'` (by info string, `langs`) and `kind: 'file'` (by glob, `paths`, `<label> / Source` toggle, `viewMode: 'rendered'`). Built-in mermaid (`crit-renderer-mermaid.js`) covers ```` ```mermaid ````, `*.mermaid`, `*.mmd`, and injects `mermaid.min.js` only on the first diagram (not in `index.html`); built-in excalidraw (`crit-renderer-excalidraw.js`) covers ```` ```excalidraw ````, `*.excalidraw`, `*.excalidraw.json`, drawing with `rough.min.js` and `freehand.min.js` (freedraw) in Excalidraw's fonts; a lone scene opens in preview mode as a canvas page (`excalidraw-canvas.html` + `crit-excalidraw-canvas.js`, served by `servePreviewExcalidraw`) where the agent's hover box and pins work per element (`#excalidraw-<id>`) (`web/fonts/excalidraw`, copied from the Excalidraw repo; `SHA256SUMS` + `LICENSES.txt` there), all loaded on first use. New renderers ship in `web/` (no external script loading). See `docs/renderers.md`.
 17. **Focus mode** — sub-views over the file list: file focus, range focus (`--range A..B`), stacked focus (range layer in a stacked PR). Lives in `focus_*.go` and `/api/focus`.
 
 <important if="you are writing a plan, design doc, or implementation proposal, or about to commit">
@@ -72,7 +73,7 @@ crit                          # Review git changes (starts daemon, blocks for fe
 crit <file|dir> [...]         # Review specific files or directories (falls through to runReview)
 crit review [...]             # Explicit review invocation (same as default)
 crit live <url>               # Review a running web app in live mode (also: crit <url>)
-crit preview <file.html>      # Review a local HTML file in preview mode (also: crit <file.html>)
+crit preview <file.html>      # Review a local HTML file in preview mode (also: crit <file.html>); an Excalidraw scene (crit <file.excalidraw>) previews as a canvas
 crit stop [--all]             # Stop daemon for current directory; --all stops every daemon
 crit status [--json]          # Show review file path, daemon status, comment stats
 crit resume [--list | <id>]   # Pick a stored review to reopen (interactive list of ~/.crit/reviews)
@@ -106,7 +107,7 @@ Two-level JSON config files, merged (project overrides global):
 - **Global**: `~/.crit.config.json` — user-wide defaults
 - **Project**: `.crit.config.json` in repo root — per-project overrides
 
-Config keys: `port`, `host`, `no_open`, `share_url`, `quiet`, `output`, `author`, `base_branch`, `ignore_patterns`, `auto_viewed_patterns`, `default_markdown_view`, `agent_cmd`, `auth_token`, `auth_user_name`, `auth_user_email`, `auth_user_id`, `plan_approve_mode`, `cleanup_on_approve`, `notify_on_round_ready`, `disable_stats`, `no_update_check`, `no_integration_check`, `vcs`, `proxy_auth`, `live_cookie`, `live_cookie_file`, `live_cdp_url`, `close_on_approve_after_ms`, `stale_review_days`, `remote_images`.
+Config keys: `port`, `host`, `no_open`, `share_url`, `quiet`, `output`, `author`, `base_branch`, `ignore_patterns`, `auto_viewed_patterns`, `default_markdown_view`, `agent_cmd`, `auth_token`, `auth_user_name`, `auth_user_email`, `auth_user_id`, `plan_approve_mode`, `cleanup_on_approve`, `notify_on_round_ready`, `disable_stats`, `no_update_check`, `no_integration_check`, `vcs`, `proxy_auth`, `live_cookie`, `live_cookie_file`, `live_cdp_url`, `close_on_approve_after_ms`, `stale_review_days`, `remote_images`, `languages`.
 
 - `base_branch` overrides auto-detected default branch (used as diff base in git mode, and by `crit pull`/`crit push`/`crit comment`)
 - `author` falls back to the configured VCS user name if not set
@@ -121,6 +122,7 @@ Config keys: `port`, `host`, `no_open`, `share_url`, `quiet`, `output`, `author`
 - `ignore_patterns` are unioned (global + project both apply); types: `*.ext`, `dir/`, `exact.file`, `path/*.ext`
 - `auto_viewed_patterns` are unioned (global + project both apply); matched client-side against file paths and applied once per launch to auto-mark matching files viewed (collapsed). No runtime default (empty). Plumbed through `/api/config` only — Go does no glob matching.
 - `default_markdown_view` (`"diff"` | `"document"`, default unset = diff in git mode) — initial view for markdown files (Document/Diff toggle) in git mode. Project **overrides** global (scalar, not unioned). Invalid values are ignored with a stderr warning. No CLI flag. Plumbed through `/api/config` only.
+- `languages` (object, default `{}`) — file pattern → review language: `"markdown"` (or `"md"`) sets `file_type: "markdown"`, `"text"` (or `plaintext`/`txt`/`plain`) turns highlighting off, `"auto"` keeps detection (lets a project undo a global rule), anything else is a Shiki grammar name sent to the frontend as the file's `lang` (wins over Pierre's detection and `LANGUAGE_OVERRIDES`). Unioned, project wins per pattern. Patterns match case-insensitively; the most specific match wins (an exact name or directory over any glob, then the longest pattern). Compiled in `ResolveDaemonCLIConfig` against `web/pierre/languages.json` (written by `scripts/build-pierre.mjs`): an unknown name is a startup error. Applied by `Session.SetLanguages` before the session is served; every `detectFileType` call takes the rules. Applies to git and files modes only (live/preview sessions return before `SetLanguages`, though the config is still validated). Patterns match repo-relative paths; a malformed glob is a startup error.
 - `vcs` selects backend: `"git"` (default), `"sl"` (sapling), or `"jj"` (Jujutsu)
 - `auth_*` keys hold cached hosted-crit-web credentials (set by `crit auth`); treat as secrets
 - `live_cookie` / `live_cookie_file` forward session cookies to the upstream app in live mode (global or project; prefer gitignored `live_cookie_file` e.g. `.crit/live-cookies.txt`). CLI: `crit live --cookie`, `--cookie-file`
@@ -169,7 +171,7 @@ make e2e-report                                       # View HTML report with sc
 
 ### Projects
 
-Ten Playwright projects. Test naming convention determines which project runs which file:
+Eleven Playwright projects. Test naming convention determines which project runs which file:
 
 | Project | Port | Fixture | Test glob |
 | --- | --- | --- | --- |
@@ -180,6 +182,7 @@ Ten Playwright projects. Test naming convention determines which project runs wh
 | `multi-file-mode` | 3127 | `setup-fixtures-multifile.sh` (code + markdown files) | `*.multifile.spec.ts` |
 | `range-mode` | 3128 | `setup-fixtures-range-mode.sh` (`--range A..B` stacked git) | `*.rangemode.spec.ts` |
 | `live-mode` | 3129 | `setup-fixtures-livemode.sh` (Go upstream + crit live) | `*.livemode.spec.ts` |
+| `preview-mode` | 3126 | `setup-fixtures-preview.sh` (a lone Excalidraw scene, opened as a canvas) | `*.previewmode.spec.ts` |
 | `share-transport` | 3132 (stub crit-web on 3133) | `setup-fixtures-sharetransport.sh` (file mode + stub crit-web) | `*.sharetransport.spec.ts` |
 | `perf` | 3134 | `setup-fixtures-perf.sh` (300 files + large markdown) | `*.perf.spec.ts` |
 | `huge` | 3136 | `setup-fixtures-huge.sh` (~2,500 files; document taller than 2^22px) | `*.huge.spec.ts` |

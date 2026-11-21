@@ -5,7 +5,7 @@ description: Run and use the local Open Design UI catalogue while designing or r
 
 # Develop with Open Design UI
 
-Read [AGENTS.md](../../../AGENTS.md) and the [component guide](../../../packages/design-system/components/README.md). The catalogue uses the same component source as Studio and does not require the Studio backend.
+Read [AGENTS.md](../../../AGENTS.md) and the [component guide](../../../packages/open-design-ui/README.md). The catalogue uses the same component source as Studio and does not require the Studio backend.
 
 1. From the repository root run `npm ci` once when dependencies are missing, then run `npm run components:dev`.
 2. Open the local URL printed by Vite. Use Components for the live state matrix, Design tokens for semantic values and Contribution guide for the workflow.

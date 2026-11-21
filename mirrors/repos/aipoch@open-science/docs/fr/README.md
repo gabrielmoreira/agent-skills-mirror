@@ -53,18 +53,18 @@
 
 > Ce document est une traduction de `README.md` en anglais. En cas de divergence, la [version anglaise](../../README.md) fait foi.
 
-### 💡 AIPOCH Open-Science v1.3.1 — Nouveautés
+### 💡 AIPOCH Open-Science v1.3.2 — Nouveautés
 
 _19 novembre 2026_
 
-- **Recherche web et lecture de pages**: L’agent intégré peut rechercher sur le web et lire des pages publiques ; les approbations de recherche affichent la requête dans une carte lisible, et les sources citées restent attachées à la conversation.
-- **Graphe de citations**: Explorez les références d’un article et les articles qui le citent sous forme de graphe interactif — recentrez sur n’importe quel article lié et filtrez par sens de citation.
-- **MCP sans ouvrir l’application**: Connecter un agent externe via MCP démarre le service Open-Science pour vous, avec des options de configuration pour plus de 30 agents et clients.
-- **Modèles Lab et cas d’organisation**: Connectez-vous avec un compte Lab pour utiliser les modèles de votre organisation et rechercher, importer ou partager des cas de recherche avec vos collègues.
-- **Listes de modèles à jour et erreurs plus claires**: Actualisez la liste des modèles d’un fournisseur depuis les Paramètres, et voyez la cause et l’étape suivante quand une requête au fournisseur échoue.
-- **Mise à jour depuis la 1.3.0**: Si le programme de mise à jour de la 1.3.0 signale qu’un autre processus utilise l’installation, quittez complètement Open-Science et installez manuellement le paquet téléchargé.
+- **Conversations longues plus légères**: Les réponses diffusées ne s’accumulent plus dans des entrées masquées, et le contenu des conversations que vous ne consultez pas est libéré dès qu’il est sûrement enregistré — les grandes sessions restent fluides sans perdre votre place.
+- **Kilo Gateway**: Ajoutez Kilo comme fournisseur officiel avec ou sans clé d’API — une actualisation anonyme du catalogue affiche les modèles gratuits accessibles depuis votre connexion, et l’intégration peut ignorer l’étape du fournisseur pour décider plus tard.
+- **Catalogues de modèles d’image**: Actualisez la liste de modèles fournie pour les services d’image officiels OpenAI, MiniMax, Bailian et Volcengine Ark avant l’enregistrement, en conservant votre modèle actif s’il est encore disponible.
+- **Premiers messages d’agent fiables**: Les nouvelles conversations avec l’Agent par défaut, Claude Code et Codex n’échouent plus avant leur première requête au modèle, et l’Agent intégré démarre les sessions planifiées avec leur prompt prévu.
+- **La traduction PDF conserve la mise en page**: Les titres, légendes, définitions et énoncés mathématiques encapsulés sont récupérés dans l’ordre de lecture, et les formules, liens et graphiques restent à leur place d’origine.
+- **Échecs de téléchargement plus clairs**: L’écran d’accueil indique la raison précise d’un échec de téléchargement d’un cas d’utilisation — manifeste manquant, paquet indisponible, délai dépassé, réseau, serveur, vérification, disque plein ou problème de stockage.
 
-[Notes complètes v1.3.1](https://github.com/aipoch/open-science/releases/tag/v1.3.1)
+[Notes complètes v1.3.2](https://github.com/aipoch/open-science/releases/tag/v1.3.2)
 
 <a id="share-your-research"></a>
 
@@ -89,6 +89,14 @@ Ouvrez la [page officielle de téléchargement](https://aipoch.com/open-science/
 | Linux ARM64                                   | AppImage ou paquet Debian Linux ARM64    |
 
 Consultez la [vérification du téléchargement](../../SECURITY.md#verifying-your-download) pour les contrôles avant installation.
+
+Sous Windows 10/11 x64, vous pouvez installer l’application de bureau depuis le [Microsoft Store](https://apps.microsoft.com/detail/XP99DM5G64X10X) ou utiliser WinGet dans PowerShell.
+
+```powershell
+winget install --id AIPOCH.Open-Science --exact --source winget
+```
+
+La version disponible peut varier selon le canal de distribution. Consultez le [guide d’installation et de mise à jour](https://aipoch.com/docs/guides/installation/) pour en savoir plus.
 
 Les archives de la CLI autonome pour macOS, Linux et Windows incluent Node.js et s’utilisent sans Homebrew ni npm.
 

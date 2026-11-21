@@ -304,7 +304,7 @@ goes into the running turn.
 ```bash
 clawo workflow list [--state <s>] [--workflow <name>] [--limit N] [--json]
 clawo workflow show <runId> [--json]
-clawo workflow resume <runId>          # re-attach to a run whose process died
+clawo workflow resume <runId> [--contract <file>]   # re-attach to a run whose process died
 clawo workflow cancel <runId>
 clawo workflow steer <runId> "<text>"  # a correction for the next agent node, or into a running goal
 clawo workflow approve <runId> [reject]
@@ -317,6 +317,13 @@ is not a failure.
 `approve` answers the gate a run is parked on: it approves unless the last
 argument is `reject`, `false` or `no`.
 
+`resume --contract <file>` declares the run contract as you hold it now. It is
+never applied — the run is verified with the contract it started with — and if
+its rules differ, the resume records the drift (see
+[verification.md](./verification.md#which-rules-a-verdict-was-reached-under)).
+`show` prints execution, resumes and verification on separate lines, with the
+fingerprint of the rules behind the verdict.
+
 Runs survive restarts, so `list` sees runs started by other processes and by
 earlier sessions.
 
@@ -325,7 +332,7 @@ earlier sessions.
 ```bash
 # An agent on a run with a forum (the brief gives it --dir and --as filled in)
 clawo forum post --dir <spool> --as <name> --title "FAIL @lighting: shadows flicker" [--body "…" | --body-file F] [--re p00012]
-clawo forum list --dir <spool> --as <name>       # every title; NEW marks the ones you have not read
+clawo forum list --dir <spool> --as <name>       # who is running / finished / not started, then every title; NEW marks the unread
 clawo forum read p00012 --dir <spool> --as <name>
 
 # Anyone, afterwards
@@ -336,7 +343,9 @@ clawo forum metrics <runId>
 The agent commands read and write the forum's files directly, so they need neither the server
 nor a token, and any engine that can run a shell command can use them. The brief each agent gets
 spells the command out with the Node binary and the CLI path, so it works without `clawo` on the
-`PATH`. See [workflow.md](./workflow.md#the-run-forum).
+`PATH`. `post` prints a `note:` line when the post has no tag, or when an agent it names is not on
+the forum, has not started, or has finished (and, when its node is on no loop, that nobody will
+answer as it). See [workflow.md](./workflow.md#the-run-forum).
 
 ## `clawo verify`
 

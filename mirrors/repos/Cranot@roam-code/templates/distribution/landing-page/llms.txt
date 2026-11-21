@@ -2,11 +2,11 @@
 
 > Roam gives coding agents reusable local code analysis and checks through the CLI or MCP. Its index returns files, functions, and their connections; pattern checks can pair code with candidate alternatives from an algorithm catalog. Agents use the returned source locations, findings, and check results to decide what to inspect, try, or test instead of implementing each analysis themselves. Refresh the index as code changes. Static checks make no model calls. Alternatives require source inspection, behavior tests, and performance measurement before claiming an improvement. People set direction and decide what ships. Configured evidence workflows can save a record of checks and supplied decisions. Missing checks remain unknown, not proof of safety. A connected agent's own model usage and data handling are separate from Roam's local analysis.
 
-roam-code (`pip install roam-code`, Python 3.10+) is a local code-analysis
+roam-code (`pip install roam-code`, Python 3.11+) is a local code-analysis
 toolkit for coding agents. Run `roam index` to refresh the index as code changes.
 The local SQLite index holds symbols, dependencies, call graphs, architecture
 layers, and git history. Imported runtime traces are separate observations,
-not facts inferred from parsing source. Roam exposes analysis through 288 CLI commands and 246 MCP
+not facts inferred from parsing source. Roam exposes analysis through 288 CLI commands and 259 MCP
 tools (17 in the default `core` preset) across 28 languages. AI agents
 (Claude Code, Cursor, Codex, Aider, your own) can call it before, during, and
 after a change when their workflow is configured to do so.
@@ -107,7 +107,7 @@ features have separate costs and data paths; see the network boundary above.
 ## Current product snapshot
 
 <!-- product-block:snapshot -->
-Source version: 14.1.0; 288 CLI commands; 259 MCP tools; 17 default core tools; 28 languages; Apache-2.0.
+Source version: 14.2.0; 288 CLI commands; 259 MCP tools; 17 default core tools; 28 languages; Apache-2.0.
 Product states: cli: AVAILABLE; mcp: AVAILABLE; prReplay: AVAILABLE; review: PLANNED; cloud: PLANNED.
 Local code analysis and mechanical checks for coding agents.
 Source snapshot, not a fresh installed-package check. Paid reports require agreed written scope.

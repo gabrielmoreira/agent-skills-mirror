@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `JuneYaooo/rea-video` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `JuneYaooo/rea-video` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `JuneYaooo/rea-video` — 26 default patterns, 0 followed patterns, 15
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,21 +59,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`skills/rea-video/references/audio.md`](skills/rea-video/references/audio.md) |
-| 3 | ✓ | [`skills/rea-video/references/capsule-cinema.md`](skills/rea-video/references/capsule-cinema.md) |
-| 4 | ✓ | [`skills/rea-video/references/chatcut.md`](skills/rea-video/references/chatcut.md) |
-| 5 | ✓ | [`skills/rea-video/references/diy.md`](skills/rea-video/references/diy.md) |
-| 6 | ✓ | [`skills/rea-video/references/hyperframes.md`](skills/rea-video/references/hyperframes.md) |
-| 7 | ✓ | [`skills/rea-video/references/materials.md`](skills/rea-video/references/materials.md) |
-| 8 | ✓ | [`skills/rea-video/references/memory.md`](skills/rea-video/references/memory.md) |
-| 9 | ✓ | [`skills/rea-video/references/output-template.md`](skills/rea-video/references/output-template.md) |
-| 10 | ✓ | [`skills/rea-video/references/remake-tools.md`](skills/rea-video/references/remake-tools.md) |
-| 11 | ✓ | [`skills/rea-video/references/remake.md`](skills/rea-video/references/remake.md) |
-| 12 | ✓ | [`skills/rea-video/references/review.md`](skills/rea-video/references/review.md) |
-| 13 | ✓ | [`skills/rea-video/references/setup.md`](skills/rea-video/references/setup.md) |
-| 14 | ✓ | [`skills/rea-video/references/taxonomy.md`](skills/rea-video/references/taxonomy.md) |
-| 15 | ✓ | [`skills/rea-video/SKILL.md`](skills/rea-video/SKILL.md) |
+| 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`skills/rea-video/references/audio.md`](skills/rea-video/references/audio.md) |
+| 4 | ✓ | [`skills/rea-video/references/capsule-cinema.md`](skills/rea-video/references/capsule-cinema.md) |
+| 5 | ✓ | [`skills/rea-video/references/chatcut.md`](skills/rea-video/references/chatcut.md) |
+| 6 | ✓ | [`skills/rea-video/references/diy.md`](skills/rea-video/references/diy.md) |
+| 7 | ✓ | [`skills/rea-video/references/hyperframes.md`](skills/rea-video/references/hyperframes.md) |
+| 8 | ✓ | [`skills/rea-video/references/materials.md`](skills/rea-video/references/materials.md) |
+| 9 | ✓ | [`skills/rea-video/references/memory.md`](skills/rea-video/references/memory.md) |
+| 10 | ✓ | [`skills/rea-video/references/output-template.md`](skills/rea-video/references/output-template.md) |
+| 11 | ✓ | [`skills/rea-video/references/remake-tools.md`](skills/rea-video/references/remake-tools.md) |
+| 12 | ✓ | [`skills/rea-video/references/remake.md`](skills/rea-video/references/remake.md) |
+| 13 | ✓ | [`skills/rea-video/references/review.md`](skills/rea-video/references/review.md) |
+| 14 | ✓ | [`skills/rea-video/references/setup.md`](skills/rea-video/references/setup.md) |
+| 15 | ✓ | [`skills/rea-video/references/taxonomy.md`](skills/rea-video/references/taxonomy.md) |
+| 16 | ✓ | [`skills/rea-video/SKILL.md`](skills/rea-video/SKILL.md) |
 
 ---
 

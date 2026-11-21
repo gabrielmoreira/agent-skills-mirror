@@ -186,6 +186,7 @@ inherits too, so a template's `api_key = ""` cannot mask `[llm]`'s key.
 | Task | What it calls the model for |
 |---|---|
 | `boundary` | Cutting a session's messages into memcells (user and agent tracks) |
+| `language` | Naming each memcell's conversation language, which its episode and everything extracted from it are written in |
 | `episode` | Extracting each memcell's episode |
 | `summary` | The episode's display summary, written offline from the stored episode (`summarize_episode`) |
 | `atomic_fact` | Atomic-fact extraction |
@@ -205,6 +206,19 @@ level: `EVEROS_LLM__<TASK>__<FIELD>`, e.g. `EVEROS_LLM__BOUNDARY__MODEL`.
 `everos config show` prints what every task resolves to -- model, endpoint host
 and the section each field came from -- and the server logs the same at
 startup (`llm.task.resolved`; the key is never printed).
+
+**The language task's own defaults.** The language call runs in the write
+path, once per memcell before its episode, and its reply is one word. When
+`[llm.language]` leaves these fields unset, they take the language task's own
+values instead of `[llm]`'s:
+
+| Field | Language default | Why |
+|---|---|---|
+| `temperature` | `0.0` | The same conversation is named the same way every time. |
+| `max_tokens` | `64` | The reply is one label; a model that thinks before it answers runs out, so give this task a model with thinking off. |
+| `timeout_seconds` | `3.0` | A synchronous `/add` waits for it. A call that runs out of time only leaves the language to the episode model. |
+| `sdk_max_retries` | `0` | The timeout is the whole wait. |
+| `invalid_reply_retries` | `0` | An unusable reply is given up, as a timeout is. |
 
 **The decider's own defaults.** The decider runs inside a search request, so
 the time and retry budget of one round is bounded by the caller waiting on it,
@@ -302,6 +316,38 @@ Episodes are folded one owner at a time. A run folds the episode that triggered 
 | Field | Type | Default | Required | Description |
 |---|---|---|---|---|
 | `max_episodes_per_call` | int | `10` | No | Most episodes one extraction call folds, the triggering one included; `1` folds each alone. |
+
+#### NVIDIA NIM
+
+[NVIDIA NIM](https://build.nvidia.com/) serves an OpenAI-compatible Chat
+Completions API, so it plugs into `[llm]` like OpenRouter does: set the model,
+key, and base URL. Model ids use the `<publisher>/<model>` form; pick one from
+the endpoint's `/models` list.
+
+```toml
+[llm]
+model = "nvidia/nemotron-3.5-super-vl-120b-a12b"
+api_key = "<NVIDIA_API_KEY>"
+base_url = "https://integrate.api.nvidia.com/v1"
+```
+
+Or keep the key out of the file and pass your `NVIDIA_API_KEY` through the
+environment:
+
+```bash
+export EVEROS_LLM__API_KEY="$NVIDIA_API_KEY"
+export EVEROS_LLM__BASE_URL=https://integrate.api.nvidia.com/v1
+export EVEROS_LLM__MODEL=nvidia/nemotron-3.5-super-vl-120b-a12b
+```
+
+Other hosted models you can use include `nvidia/nemotron-3-ultra-550b-a55b`
+and `nvidia/nemotron-3.5-lightning-30b-a3b`. For a self-hosted NIM, point
+`base_url` at your deployment instead (for example
+`http://localhost:8000/v1`) and set `model` to the id it serves.
+
+The default `response_format_mode = "json_schema"` sends a strict JSON schema
+with every extraction call. If your NIM model rejects or ignores it, set
+`response_format_mode = "json_object"`, or `"prompt_only"` as the last resort.
 
 ### `[multimodal]`
 
@@ -466,6 +512,20 @@ joins it only behind its session's backlog)
 | `retry_backoff_seconds` | float | `2.0` | Pause between attempts. |
 | `max_replays` | int | `3` | A batch in flight when the process died is replayed on the next start; after this many replays without finishing it is marked `failed` (`error_code: replays_exhausted`). |
 | `row_retention_hours` | float | `168.0` | Rows of any status are deleted this long after creation (seven days), including rows never delivered; the purge logs a warning for those. Delivered rows drop their request body at once, `failed` rows keep it. |
+
+### `[memorize.input_log]`
+
+An append-only JSONL record of accepted `/add` requests, independent of
+extraction (issue #537). The first PR ships it **disabled**; deletion and
+purge integration, plus the default-on switch, follow separately.
+
+| Field | Type | Default | Description |
+|---|---|---|---|
+| `enabled` | bool | `false` | When on, one line per accepted `/add` goes to `<root>/<app>/<project>/.input_log/YYYY-MM-DD.jsonl`. `/flush` is not logged. |
+| `retention_days` | int | `30` | Daily files older than this are removed when the scope next writes. |
+| `max_inline_bytes` | int | `1048576` | A line larger than this keeps text verbatim but replaces each `base64` attachment with its byte length and SHA-256. |
+
+A failed log write is reported at error level and **never fails `/add`**.
 
 ### `[agent_memory]`
 

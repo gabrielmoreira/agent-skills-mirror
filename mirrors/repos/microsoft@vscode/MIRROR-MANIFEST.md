@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/vscode` — 26 default patterns, 3 followed patterns, 237 file(s) materialized.
+Mirror of `microsoft/vscode` — 26 default patterns, 3 followed patterns, 238 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/vscode` — 26 default patterns, 3 followed patterns, 237 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 237 |
+| Files         | 238 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -270,34 +270,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 207 | ✓ | [`src/vs/sessions/skills/commit/SKILL.md`](src/vs/sessions/skills/commit/SKILL.md) |
 | 208 | ✓ | [`src/vs/sessions/skills/create-draft-pr/SKILL.md`](src/vs/sessions/skills/create-draft-pr/SKILL.md) |
 | 209 | ✓ | [`src/vs/sessions/skills/create-pr/SKILL.md`](src/vs/sessions/skills/create-pr/SKILL.md) |
-| 210 | ✓ | [`src/vs/sessions/skills/fix-ci/SKILL.md`](src/vs/sessions/skills/fix-ci/SKILL.md) |
-| 211 | ✓ | [`src/vs/sessions/skills/generate-chat-background/SKILL.md`](src/vs/sessions/skills/generate-chat-background/SKILL.md) |
-| 212 | ✓ | [`src/vs/sessions/skills/generate-run-commands/SKILL.md`](src/vs/sessions/skills/generate-run-commands/SKILL.md) |
-| 213 | ✓ | [`src/vs/sessions/skills/html-preview/SKILL.md`](src/vs/sessions/skills/html-preview/SKILL.md) |
-| 214 | ✓ | [`src/vs/sessions/skills/merge/SKILL.md`](src/vs/sessions/skills/merge/SKILL.md) |
-| 215 | ✓ | [`src/vs/sessions/skills/sync-upstream/SKILL.md`](src/vs/sessions/skills/sync-upstream/SKILL.md) |
-| 216 | ✓ | [`src/vs/sessions/skills/sync/SKILL.md`](src/vs/sessions/skills/sync/SKILL.md) |
-| 217 | ✓ | [`src/vs/sessions/skills/update-pr/SKILL.md`](src/vs/sessions/skills/update-pr/SKILL.md) |
-| 218 | ✓ | [`src/vs/sessions/skills/update-skills/SKILL.md`](src/vs/sessions/skills/update-skills/SKILL.md) |
-| 219 | ✓ | [`src/vs/sessions/skills/vscode-ui/SKILL.md`](src/vs/sessions/skills/vscode-ui/SKILL.md) |
-| 220 | ✓ | [`src/vs/sessions/test/e2e/README.md`](src/vs/sessions/test/e2e/README.md) |
-| 221 | ✓ | [`src/vs/workbench/contrib/imageCarousel/AGENTS.md`](src/vs/workbench/contrib/imageCarousel/AGENTS.md) |
-| 222 | ✓ | [`src/vs/workbench/contrib/modernUI/README.md`](src/vs/workbench/contrib/modernUI/README.md) |
-| 223 | ✓ | [`src/vs/workbench/contrib/onboarding/README.md`](src/vs/workbench/contrib/onboarding/README.md) |
-| 224 | ✓ | [`src/vs/workbench/contrib/terminalContrib/README.md`](src/vs/workbench/contrib/terminalContrib/README.md) |
-| 225 | ✓ | [`src/vs/workbench/services/themes/README.md`](src/vs/workbench/services/themes/README.md) |
-| 226 | ✓ | [`src/vscode-dts/README.md`](src/vscode-dts/README.md) |
-| 227 | ✓ | [`test/automation/README.md`](test/automation/README.md) |
-| 228 | ✓ | [`test/integration/browser/README.md`](test/integration/browser/README.md) |
-| 229 | ✓ | [`test/monaco/README.md`](test/monaco/README.md) |
-| 230 | ✓ | [`test/README.md`](test/README.md) |
-| 231 | ✓ | [`test/sanity/README.md`](test/sanity/README.md) |
-| 232 | ✓ | [`test/smoke/README.md`](test/smoke/README.md) |
-| 233 | ✓ | [`test/smoke/src/areas/policy/README.md`](test/smoke/src/areas/policy/README.md) |
-| 234 | ✓ | [`test/unit/README.md`](test/unit/README.md) |
-| 235 | → | [`.devcontainer/README.md`](.devcontainer/README.md) |
-| 236 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 237 | → | [`README.md`](README.md) |
+| 210 | ✓ | [`src/vs/sessions/skills/dev-container-handoff/SKILL.md`](src/vs/sessions/skills/dev-container-handoff/SKILL.md) |
+| 211 | ✓ | [`src/vs/sessions/skills/fix-ci/SKILL.md`](src/vs/sessions/skills/fix-ci/SKILL.md) |
+| 212 | ✓ | [`src/vs/sessions/skills/generate-chat-background/SKILL.md`](src/vs/sessions/skills/generate-chat-background/SKILL.md) |
+| 213 | ✓ | [`src/vs/sessions/skills/generate-run-commands/SKILL.md`](src/vs/sessions/skills/generate-run-commands/SKILL.md) |
+| 214 | ✓ | [`src/vs/sessions/skills/html-preview/SKILL.md`](src/vs/sessions/skills/html-preview/SKILL.md) |
+| 215 | ✓ | [`src/vs/sessions/skills/merge/SKILL.md`](src/vs/sessions/skills/merge/SKILL.md) |
+| 216 | ✓ | [`src/vs/sessions/skills/sync-upstream/SKILL.md`](src/vs/sessions/skills/sync-upstream/SKILL.md) |
+| 217 | ✓ | [`src/vs/sessions/skills/sync/SKILL.md`](src/vs/sessions/skills/sync/SKILL.md) |
+| 218 | ✓ | [`src/vs/sessions/skills/update-pr/SKILL.md`](src/vs/sessions/skills/update-pr/SKILL.md) |
+| 219 | ✓ | [`src/vs/sessions/skills/update-skills/SKILL.md`](src/vs/sessions/skills/update-skills/SKILL.md) |
+| 220 | ✓ | [`src/vs/sessions/skills/vscode-ui/SKILL.md`](src/vs/sessions/skills/vscode-ui/SKILL.md) |
+| 221 | ✓ | [`src/vs/sessions/test/e2e/README.md`](src/vs/sessions/test/e2e/README.md) |
+| 222 | ✓ | [`src/vs/workbench/contrib/imageCarousel/AGENTS.md`](src/vs/workbench/contrib/imageCarousel/AGENTS.md) |
+| 223 | ✓ | [`src/vs/workbench/contrib/modernUI/README.md`](src/vs/workbench/contrib/modernUI/README.md) |
+| 224 | ✓ | [`src/vs/workbench/contrib/onboarding/README.md`](src/vs/workbench/contrib/onboarding/README.md) |
+| 225 | ✓ | [`src/vs/workbench/contrib/terminalContrib/README.md`](src/vs/workbench/contrib/terminalContrib/README.md) |
+| 226 | ✓ | [`src/vs/workbench/services/themes/README.md`](src/vs/workbench/services/themes/README.md) |
+| 227 | ✓ | [`src/vscode-dts/README.md`](src/vscode-dts/README.md) |
+| 228 | ✓ | [`test/automation/README.md`](test/automation/README.md) |
+| 229 | ✓ | [`test/integration/browser/README.md`](test/integration/browser/README.md) |
+| 230 | ✓ | [`test/monaco/README.md`](test/monaco/README.md) |
+| 231 | ✓ | [`test/README.md`](test/README.md) |
+| 232 | ✓ | [`test/sanity/README.md`](test/sanity/README.md) |
+| 233 | ✓ | [`test/smoke/README.md`](test/smoke/README.md) |
+| 234 | ✓ | [`test/smoke/src/areas/policy/README.md`](test/smoke/src/areas/policy/README.md) |
+| 235 | ✓ | [`test/unit/README.md`](test/unit/README.md) |
+| 236 | → | [`.devcontainer/README.md`](.devcontainer/README.md) |
+| 237 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 238 | → | [`README.md`](README.md) |
 
 ---
 

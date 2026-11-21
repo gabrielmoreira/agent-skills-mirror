@@ -6,6 +6,18 @@
 
 OpenMotion includes built-in AIGC generation for images, video, speech and music. Explicit AIGC requests or missing visual/audio roles that native HTML/SVG/CSS cannot faithfully provide must enter [openmotion-media](../../openmotion-media/SKILL.md) to inspect the OpenDesign account, OpenDesign Cloud and configured providers; do not fake required imagery, footage, narration or music with native code. Pure native motion graphics without an explicit generation request or new speech/music stay outside media setup, login and billing prompts: do not call, suggest or ask about generation in that case. Preserve user-supplied and approved media, follow the source rules below for factual retrieval, and obtain missing spend consent before generation.
 
+### Generation timing ladder
+
+Choose the lowest-complexity, highest-control source for each shot or audio role from what must actually change on screen or in the mix — across original films, recreations, template adaptations and reusable templates:
+
+1. **Reuse or retrieve first**: keep user-supplied and confirmed project assets; for real events, existing brands or known works, retrieve authentic original material instead of fabricating factual evidence with AIGC.
+2. **Native Motion code first for editable graphics**: build typography, UI, charts, logos, captions, cards, vector geometry, graphic transitions and camera moves over clean plates in native HTML/SVG/CSS/GSAP/Canvas/WebGL. Never bake editable text, logos, UI or captions into generated pixels.
+3. **Generated still + native Motion before generated video**: when a shot needs a photographic product, portrait, texture or backdrop whose movement can be carried by native camera pushes, pans, parallax, masks or layered compositing, prefer a clean generated still (or separated subject and backdrop) over video generation — it is faster, steadier, cheaper and easier to keep consistent.
+4. **Generated video only for continuous physical motion**: generate video only when the shot requires continuous subject or environmental motion a still cannot carry (hands holding or unfolding a product, human performance, fluid/fabric/smoke, changing reflections, or real 3D parallax and occlusion). Prefer **image-to-video (I2V)** from a verified first frame whenever a specific product, person or setting must stay recognizable; reserve text-to-video (T2V) for pure atmosphere or unanchored scenery.
+5. **Audio by role**: keep usable original audio when it serves the film; generate new narration through TTS paired with [narration and editable captions](sound.md#配音与可编辑字幕协同); generate new music beds or sound effects with music/SFX models.
+
+Do not upgrade a pure motion-graphics shot to generated video just to look richer, and do not fabricate identifiable real-world product details or people with unanchored T2V.
+
 ## Tool selection and discovery
 
 Choose the material source from its content role before selecting tools, following the source rules below. Real events and identifiable subjects need corresponding original material; original scenes and supporting expression may use generation or native graphics. For a League of Legends champion's award-ceremony photo, search official or original published photos. Image generation is not a matching capability for retrieving that real event.
@@ -86,6 +98,18 @@ Platform type-name fallbacks are localized for the eleven Studio interface langu
 
 复用现有简报、动作脚本或素材记录，保留实际采用文件、来源、用途及重要限制，无需另建必填表。材料与具体动作、占时和跨段状态的配合，按需应用[制作决策与状态延续](decisions.md)。
 
+## Cross-shot consistency
+
+Apply this pipeline whenever the same product, person or recurring setting spans multiple generated shots across any entry:
+
+1. **Lock one visual anchor first**: start from the user's clean photo or generate and inspect **one** anchor still establishing exact silhouette, details, material, colorway and lighting before generating follow-up shots. Never launch multiple unreferenced text-to-video clips for the same recurring subject.
+2. **Choose the first-frame derivation path by shot relationship** (avoid feeding the same initial raw photo into every consecutive clip, which makes the subject snap back to its starting pose and framing on every cut):
+   - **Continuous action in the same scene (continuation cut)**: extract a clean handoff or end frame from the verified previous video clip (cropped or reframed to the output aspect ratio) and import it into the library as the next I2V clip's first frame. This preserves spatial continuity, lighting and pose with zero extra image spend.
+   - **New camera angle, closer framing, pose or setting (angle/scene change)**: when a reference-capable image-edit model is available and included in the approved spend plan, derive each shot's dedicated first frame from the locked anchor still (plus style/scene reference if needed) at the target canvas aspect ratio. If the user's approved budget covers only the requested video clips without extra paid image edits, stay within that budget by using a clean extracted frame or reframed crop from the previous clip or anchor, and explain any resulting angle limit plainly rather than spending unapproved credits.
+3. **Verify every first frame as action-ready before I2V**: inspect each prepared still before submitting video generation — confirm subject identity and key details match the anchor, aspect ratio matches the film canvas (omitting `ratio` or using `"adaptive"` where I2V follows the first frame), the subject starts in the **beginning pose** of the requested action rather than an already-finished state, and every moving part has clear space inside the frame.
+4. **Reuse one visual style anchor and plan cut bridges**: carry one concise lighting, color-temperature, lens and texture description across all shots, changing only framing, pose and action per shot. Connect shots intentionally with continuation frames, motion cuts, clean hard cuts or native transitions.
+5. **Cross-check frames side-by-side before delivery**: inspect the anchor still alongside each clip's start, mid and end frames to confirm shape, details, palette and cut continuity before polishing or exporting.
+
 ## Replacing existing shots
 
 Apply this when a template adaptation, recreation or edit generates media to replace shots that already exist in the source film.
@@ -94,6 +118,17 @@ When the request names which shots to replace, check each shot against that desc
 
 Write each replacement's generation input from the original shot. Look at its frames first, then keep its setting and background, lighting, shot size and camera angle, number and placement of people, action, camera movement and duration, changing only what the user asked to change. A description of the new subject, such as "outdoor hardshell jackets", changes the subject, not the setting; move the shot to a new location only when the user asks. Match the shot's role and composition, not its exact pixels or a real person's identity. Compare the result with the original shot on these points before using it.
 
+## Mixed-media recreation boundaries
+
+Apply this when a reference video combines motion graphics with live-action footage, product photography, portraits, narration or music:
+
+- **Faithfully rebuildable**: native editable typography, UI, charts, logos, captions and graphic transitions layered above generated or supplied visual plates and aligned sound, preserving the reference's story, framing, holds and hard cuts.
+- **Approximate replacement only (state plainly, never overclaim)**:
+  - **Identifiable real people and synced lip performance**: current generation routes do not clone a specific real person's likeness or voice, or produce frame-accurate lip-sync. Use a matching-vibe generated performer or user-supplied footage, and clearly tell the user when new narration plays over a speaking person whose mouth will not match.
+  - **Unprovided physical product details or complex multi-object physics**: without clean supplied or official photos, generated pixels cannot guarantee exact logos, ports or inscriptions. Prefer supplied/official imagery first; otherwise disclose the approximation.
+  - **Narration mixed inseparably with background music**: do not claim clean vocal removal when stems cannot be split; offer keeping the original mix, muting to build new narration plus music, or waiting for separate audio.
+  - **Predominantly live-action footage with minimal editable structure**: tell the user directly that OpenMotion excels at mixed motion graphics, editable overlays/captions and targeted generated shots rather than regenerating an entire live-action film shot-for-shot.
+
 ## Recorded speech, transcript review and captions
 
-For existing speech-led material, follow the [transcript workflow](../../../docs/transcripts.md) for source discovery, recognition, correction and editable captions through `openmotion_assets_use`. The [compatible API reference](../../openmotion-media/references/providers/compatible.md#speech-to-text-and-editable-captions) owns transcription provider setup and wire behavior. When a film also needs newly generated TTS voiceover or script-led captions (and the screen does not already carry those lines as synchronized display typography), follow [narration and editable captions](sound.md#配音与可编辑字幕协同) to bind real timing and keep captions editable. Continue composition edits and delivery through the existing native workflow.
+For existing speech-led material, follow the [transcript workflow](../../../docs/transcripts.md) for source discovery, recognition, correction and editable captions through `openmotion_assets_use`; configure any needed transcription provider through [openmotion-media](../../openmotion-media/SKILL.md). When a film also needs newly generated TTS voiceover or script-led captions (and the screen does not already carry those lines as synchronized display typography), follow [narration and editable captions](sound.md#配音与可编辑字幕协同) to bind real timing and keep captions editable. Continue composition edits and delivery through the existing native workflow.

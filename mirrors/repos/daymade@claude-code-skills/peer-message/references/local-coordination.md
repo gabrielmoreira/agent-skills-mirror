@@ -365,6 +365,13 @@ final，也不通过归档线程实现静默。默认 receive 保留 `action_nee
 `content conflicts` 后保留失败输入，从原宿主事件重新取件并比较字节；只在取得原件后重试。
 不能靠试删空白、重算 prepared 摘要或换通道使冲突输入通过。仅剩手抄件时保留未核实状态。
 
+当前 Claude 原生入站若已有 `type='queue-operation'`、`operation='enqueue'` 记录，
+其 `content` 才是完整的 `cross-session-message` 信封；按
+[既有 Claude receipt 形态](protocol-and-discovery.md#claude)选择该字段。
+不要用附带宿主说明的展开 user message，也不要用剥离 wrapper 的 `origin.body`
+替代它。这是原字段选择，不是文本规范化；没有该记录时仍沿所属历史 reader
+和未知覆盖出口处理，不全库扫描。
+
 保留完整原信封；有本地 prepared 摘要时，receive 先核对正文及协调元数据，再领取或判断过期/关闭。`integrity=verified_prepared_core` 只证明与该本地准备记录一致，不证明发送者身份或用户授权。正文冲突、损坏摘要或不能识别的包装明确报错，保留输入和状态，不能按旧回执忽略，也不要重写正文凑过检查。无摘要的旧记录仍按旧生命周期处理并标 `unavailable_legacy_digest`；无协调字段标 `legacy_no_metadata`，都不补造摘要或有效期。正常的新消息仍使用自己的 ID 处理，不因话题相同被丢弃。
 
 确需回信时关联原 id；短时请求已过期/关闭时回信也会被发送前抑制：
@@ -520,6 +527,56 @@ python3 "$PEER_SKILL_ROOT/scripts/peer.py" coord receive "$RECEIVED_FILE" \
 不要自行剥离 XML、补换行、重排 JSON 或用引用摘要修补原件；摘要不一致、原件缺失、
 多份冲突、读取覆盖不完整时保留 unknown。此分支只恢复同一入站的证据，不授权换通信通道、
 重启业务、回复过期请求或绕过宿主拒绝。
+
+### 从 Claude 跨会话入站原件接收
+
+Claude 宿主显示的 `<cross-session-message from-name="…">` 不走 `inspect-inbound`：该命令只接受
+`codex:<canonical UUID>`。不要按聊天显示手抄 wrapper，也不要把 `origin.body` 单独喂给
+`coord receive`——前者可能丢空白，后者缺少 `_prepared_core` 需要的 host wrapper。
+
+已知当前 Claude Session ID 与入站 `peer-message-id` 时，从该会话的精确宿主事件取件：
+
+```bash
+(
+set -eu
+umask 077
+python3 - "$SESSION_JSONL" "$INBOUND_MESSAGE_ID" "$RECEIVED_FILE" <<'PY'
+import json, os, sys
+from pathlib import Path
+session, message_id, output = sys.argv[1:]
+marker = f"[peer-message-id: {message_id}]"
+matches = []
+for line in Path(session).read_text(encoding="utf-8").splitlines():
+    if message_id not in line:
+        continue
+    row = json.loads(line)
+    content = row.get("content") if isinstance(row, dict) else None
+    lines = content.splitlines() if isinstance(content, str) else []
+    if (row.get("type") == "queue-operation" and row.get("operation") == "enqueue"
+            and lines and lines[0].startswith('<cross-session-message')
+            and len(lines) >= 3
+            and (lines[1] == marker or lines[1].startswith(marker + " "))
+            and lines[-1] == '</cross-session-message>'):
+        matches.append(content)
+if len(matches) != 1:
+    raise SystemExit("Claude inbound is not one exact enqueue host-wrapped match; retain unknown")
+fd = os.open(output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+with os.fdopen(fd, "wb") as saved:
+    saved.write(matches[0].encode("utf-8"))
+PY
+python3 "$PEER_SKILL_ROOT/scripts/peer.py" coord receive "$RECEIVED_FILE" \
+  --actor "claude-session:$SESSION_UUID"
+)
+```
+
+只接受唯一一条 `type=queue-operation` 且 `operation=enqueue` 的记录；wrapper 首行必须是
+`<cross-session-message…>`，第二行必须以该入站自身 ID 的 marker 开头（同行可带协议 hint），
+末行必须是 `</cross-session-message>`。hint 的完整合法性由 `coord receive` 的既有解析器校验，这里不重复收窄，
+以免拒绝协议允许的空格或方括号 reply 地址。用列表而不是集合计数，避免相同内容的多条 enqueue/remove 被去重后伪装成唯一命中。
+`splitlines()` 只用于遍历和校验 JSONL 记录；写回的是原始 `content` 字符串字节，不 strip、不重排、不补行尾，并以 `0600` 创建。
+零命中、多条冲突、只有 remove、JSON 损坏或找不到精确会话事件时保留 unknown；能从当前会话事件直接确认的，
+不要另起历史全量扫描。领取成功后按正文分流处理，动作完成再 `coord finish`；接收成功只证明协调记录被领取，
+不证明业务完成或用户授权。
 
 ## 覆盖与验收
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `backnotprop/plannotator` — 26 default patterns, 13 followed patterns, 56 file(s) materialized.
+Mirror of `backnotprop/plannotator` — 26 default patterns, 13 followed patterns, 57 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `backnotprop/plannotator` — 26 default patterns, 13 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 13 |
-| Files         | 56 |
+| Files         | 57 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -110,23 +110,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 37 | ✓ | [`docs/agent-guides/inbox-phones-and-security.md`](docs/agent-guides/inbox-phones-and-security.md) |
 | 38 | ✓ | [`docs/agent-guides/inbox-plans.md`](docs/agent-guides/inbox-plans.md) |
 | 39 | ✓ | [`docs/agent-guides/inbox-routines.md`](docs/agent-guides/inbox-routines.md) |
-| 40 | ✓ | [`docs/agent-guides/inbox-system.md`](docs/agent-guides/inbox-system.md) |
-| 41 | ✓ | [`docs/agent-guides/inbox-window.md`](docs/agent-guides/inbox-window.md) |
-| 42 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
-| 43 | ✓ | [`packages/ui/CLAUDE.md`](packages/ui/CLAUDE.md) |
-| 44 | → | [`docs/agent-guides/annotate.md`](docs/agent-guides/annotate.md) |
-| 45 | → | [`docs/agent-guides/claude-code-mod.md`](docs/agent-guides/claude-code-mod.md) |
-| 46 | → | [`docs/agent-guides/code-review.md`](docs/agent-guides/code-review.md) |
-| 47 | → | [`docs/agent-guides/environment.md`](docs/agent-guides/environment.md) |
-| 48 | → | [`docs/agent-guides/guides-and-shared-ui.md`](docs/agent-guides/guides-and-shared-ui.md) |
-| 49 | → | [`docs/agent-guides/inbox-machines.md`](docs/agent-guides/inbox-machines.md) |
-| 50 | → | [`docs/agent-guides/inbox.md`](docs/agent-guides/inbox.md) |
-| 51 | → | [`docs/agent-guides/mobile.md`](docs/agent-guides/mobile.md) |
-| 52 | → | [`docs/agent-guides/opencode-t3-and-codex.md`](docs/agent-guides/opencode-t3-and-codex.md) |
-| 53 | → | [`docs/agent-guides/plan-review.md`](docs/agent-guides/plan-review.md) |
-| 54 | → | [`docs/agent-guides/project-and-development.md`](docs/agent-guides/project-and-development.md) |
-| 55 | → | [`docs/agent-guides/server-and-storage.md`](docs/agent-guides/server-and-storage.md) |
-| 56 | → | [`packages/ui/README.md`](packages/ui/README.md) |
+| 40 | ✓ | [`docs/agent-guides/inbox-run-and-secrets.md`](docs/agent-guides/inbox-run-and-secrets.md) |
+| 41 | ✓ | [`docs/agent-guides/inbox-system.md`](docs/agent-guides/inbox-system.md) |
+| 42 | ✓ | [`docs/agent-guides/inbox-window.md`](docs/agent-guides/inbox-window.md) |
+| 43 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
+| 44 | ✓ | [`packages/ui/CLAUDE.md`](packages/ui/CLAUDE.md) |
+| 45 | → | [`docs/agent-guides/annotate.md`](docs/agent-guides/annotate.md) |
+| 46 | → | [`docs/agent-guides/claude-code-mod.md`](docs/agent-guides/claude-code-mod.md) |
+| 47 | → | [`docs/agent-guides/code-review.md`](docs/agent-guides/code-review.md) |
+| 48 | → | [`docs/agent-guides/environment.md`](docs/agent-guides/environment.md) |
+| 49 | → | [`docs/agent-guides/guides-and-shared-ui.md`](docs/agent-guides/guides-and-shared-ui.md) |
+| 50 | → | [`docs/agent-guides/inbox-machines.md`](docs/agent-guides/inbox-machines.md) |
+| 51 | → | [`docs/agent-guides/inbox.md`](docs/agent-guides/inbox.md) |
+| 52 | → | [`docs/agent-guides/mobile.md`](docs/agent-guides/mobile.md) |
+| 53 | → | [`docs/agent-guides/opencode-t3-and-codex.md`](docs/agent-guides/opencode-t3-and-codex.md) |
+| 54 | → | [`docs/agent-guides/plan-review.md`](docs/agent-guides/plan-review.md) |
+| 55 | → | [`docs/agent-guides/project-and-development.md`](docs/agent-guides/project-and-development.md) |
+| 56 | → | [`docs/agent-guides/server-and-storage.md`](docs/agent-guides/server-and-storage.md) |
+| 57 | → | [`packages/ui/README.md`](packages/ui/README.md) |
 
 ---
 

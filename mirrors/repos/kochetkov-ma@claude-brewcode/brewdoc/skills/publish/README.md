@@ -35,7 +35,7 @@ Claude prefers a compatible BrewPage MCP tool available in the current session. 
 
 Before an anonymous MCP create, Claude verifies an owner-only result channel or an authorized private handoff; protected storage alone cannot protect a shared tool transcript. An established owner-only context needs no extra question. Otherwise it selects authorized REST with protected receipts before writing, or leaves an MCP-only request pending.
 
-Local checks and the REST runner use `bash` and Python 3 on macOS, Linux or WSL. Local checks also require Node.js. ZIPs need `unzip`, and packing folders needs `zip`. The REST runner adds `curl`, `jq` and Python's `fcntl`, with `git` for owner history in a Git checkout. REST requests use `ClaudeCode/6.13.1 (+https://brewpage.app)`. See [local input checks and runner usage](references/publishing.md).
+Local checks and the REST runner use `bash` and Python 3 on macOS, Linux or WSL. Local checks also require Node.js. ZIPs need `unzip`, and packing folders needs `zip`. The REST runner adds `curl`, `jq` and Python's `fcntl`, with `git` for owner history in a Git checkout. REST requests use `ClaudeCode/6.13.5 (+https://brewpage.app)`. See [local input checks and runner usage](references/publishing.md).
 
 ## Ownership and receipts
 
@@ -43,7 +43,7 @@ Claude prefers a suitable connected account when you have no other owner selecte
 
 Share the exact returned reader link and check its effective access. The ordinary REST runner result omits owner keys, management links and private receipt paths. If saving the key fails after publication, Claude reports both outcomes.
 
-The runner's `--private-output` can show a management link, private receipt or recovery path. Use it only in a verified owner-only channel. If you decline saving a new anonymous key, the runner requires `--no-save --private-output` in that channel. See [private receipts and recovery](references/ownership.md).
+The runner keeps owner tokens and management links in protected files. If you decline workspace history, select a protected receipt directory with `--no-save --receipt-dir`. See [private receipts and recovery](references/ownership.md).
 
 ## Documentation
 

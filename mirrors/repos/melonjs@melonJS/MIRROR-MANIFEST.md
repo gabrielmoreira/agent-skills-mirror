@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `melonjs/melonJS` — 26 default patterns, 3 followed patterns, 32 file(s) materialized.
+Mirror of `melonjs/melonJS` — 26 default patterns, 3 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `melonjs/melonJS` — 26 default patterns, 3 followed patterns, 32 fil
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 32 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,12 +87,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | ✓ | [`packages/melonjs/skills/melonjs-renderer-backends/SKILL.md`](packages/melonjs/skills/melonjs-renderer-backends/SKILL.md) |
 | 25 | ✓ | [`packages/melonjs/skills/melonjs-scenes-and-state/SKILL.md`](packages/melonjs/skills/melonjs-scenes-and-state/SKILL.md) |
 | 26 | ✓ | [`packages/melonjs/skills/melonjs-sprites-and-animation/SKILL.md`](packages/melonjs/skills/melonjs-sprites-and-animation/SKILL.md) |
-| 27 | ✓ | [`packages/melonjs/skills/melonjs-tilemaps/SKILL.md`](packages/melonjs/skills/melonjs-tilemaps/SKILL.md) |
-| 28 | ✓ | [`packages/melonjs/skills/melonjs-ui-and-text/SKILL.md`](packages/melonjs/skills/melonjs-ui-and-text/SKILL.md) |
-| 29 | ✓ | [`packages/melonjs/skills/melonjs/SKILL.md`](packages/melonjs/skills/melonjs/SKILL.md) |
-| 30 | → | [`BACKERS.md`](BACKERS.md) |
-| 31 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 32 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 27 | ✓ | [`packages/melonjs/skills/melonjs-testing/SKILL.md`](packages/melonjs/skills/melonjs-testing/SKILL.md) |
+| 28 | ✓ | [`packages/melonjs/skills/melonjs-tilemaps/SKILL.md`](packages/melonjs/skills/melonjs-tilemaps/SKILL.md) |
+| 29 | ✓ | [`packages/melonjs/skills/melonjs-ui-and-text/SKILL.md`](packages/melonjs/skills/melonjs-ui-and-text/SKILL.md) |
+| 30 | ✓ | [`packages/melonjs/skills/melonjs/SKILL.md`](packages/melonjs/skills/melonjs/SKILL.md) |
+| 31 | → | [`BACKERS.md`](BACKERS.md) |
+| 32 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 33 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

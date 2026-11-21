@@ -22,7 +22,7 @@ The local agent gallery and setup buttons use client marks from the [source icon
 
 ## Skills page covers
 
-The Skills page bundles static WebP posters from `studio/src/motion/skill-covers/`. Screen recordings and upstream GIFs load on demand from their [public source snapshot](../../studio/skill-cover-attribution.md), the media registry or the upstream URL in `studio/src/motion/skillCatalog.ts`. Each Skill detail shows its cover source.
+The Skills page loads static WebP posters, screen recordings and upstream GIFs on demand from the media registry (`repository-media.json`), their [public source snapshots](../../studio/skill-cover-attribution.md), or the upstream URL in `studio/src/motion/skillCatalog.ts`. Each Skill detail shows its cover source.
 
 | Cover | Source and license |
 | --- | --- |

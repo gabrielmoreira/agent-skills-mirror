@@ -204,7 +204,7 @@ constants in `free-tests.yml` set that size for every event: `FREE_SUITE_RUNNER`
 side), which `free-plan` resolves into the shards' runner, shard count and plan.
 GSTA-203 chose them by a 3-run A/B against 20 × `ubicloud-standard-4` at k = 1
 (the PR that set them has the table). A `workflow_dispatch` run may
-override them with `free_runner` (`ubicloud-standard-2`, `-4` or `-8`),
+override them with `free_runner` (`ubicloud-standard-2`, `-4`, `-8` or `-16`),
 `free_shards` (1–40) and `free_jobs` (1–8) for runner-sizing experiments only;
 its job summary says so, and it is never cited as a PR or train Free Tests result.
 Each `free-suite` job's GitHub timeout comes from the plan, not a fixed number
@@ -1522,8 +1522,9 @@ window thinner than 20 runs in the last 7 days widens to the newest 20 runs, and
 fewer than 20 runs is report-only. A main push that reused its pull request's
 run ([CI reuse](pregate.md#ci-reuse)) ran no shards, so it stays out of the
 window and its denominator, and older runs take its place. Such a run has no
-artifacts and a green `reuse` job; checking that costs one job listing per
-run with no artifacts, at most 40 per read. Past that cap, or when a listing
+shard artifacts (only the planner's `free-plan`, since the planner runs beside
+`reuse`) and a green `reuse` job; checking that costs one job listing per run
+with no shard artifacts, at most 40 per read. Past that cap, or when a listing
 fails, the run counts as before and the report says so.
 `bun run test:health flake-summary <dir>`
 prints a run's ledgers as a table. A flaky file is fixed at source; the retry
@@ -1539,7 +1540,9 @@ from this file-level ledger.
 
 The aggregate job of `free-tests.yml` downloads every `flake-ledger-*` artifact
 of the run and appends `bun run scripts/test-health-report.ts flake-summary <dir>`
-to its job summary. The Windows lane uploads `flake-ledger-windows-<shard>`.
+to its job summary. The Windows lane uploads `flake-ledger-windows-<shard>`,
+and the quick tier on the install-default Bun (`quick-bun-default`) uploads
+`flake-ledger-quick`.
 
 Free-suite flake rules:
 
@@ -1622,7 +1625,9 @@ refresh to a maintainer.
 - `free-durations-record.yml` (Mondays 04:00 UTC, before test-health, and on
   dispatch) records the Linux seed on `ubicloud-standard-8` with
   `scripts/ubicloud/setup-free-suite.sh` and the Windows seed through
-  `windows-free-tests.yml`'s `record_durations` path. The recorder stays on
+  `windows-free-tests.yml`'s `record_durations` path, at two workers
+  (`GSTACK_FREE_JOBS=2`, 60-minute job): at four, files that pass nightly failed
+  under the load and the recording outran its old 30-minute job. The recorder stays on
   `ubicloud-standard-8` while the free-suite shards run on `FREE_SUITE_RUNNER`
   (`ubicloud-standard-8`); both are Ubicloud standard runners. When either recording adds
   or drops a test file, it force-updates the `bot/free-duration-seeds` branch,
@@ -1634,9 +1639,15 @@ refresh to a maintainer.
   job red but keeps its duration, and the PR body names it; the seed PR's own
   free checks decide whether the tree is healthy. An interrupted recording
   uploads no seed, and more than 5 red files on either OS proposes nothing. The
-  bot never edits the allowlist: a ratchet failure is fixed on the branch by a
-  maintainer before the PR merges, and while the open seed PR holds any commit
-  besides the bot's one refresh commit, later runs leave it alone. Only runs on
+  bot reconciles the allowlist with the recording
+  (`scripts/free-seed-allowlist.ts --reconcile`): each new file over 60 seconds
+  is admitted as an annotated exception that names the recording run and carries
+  a todo to split it, and entries for files back under 60 seconds are dropped,
+  so the seed PR passes the ratchet without a maintainer edit and the PR body
+  lists every admission. Before GST-3303 the bot left a ratchet failure for a
+  maintainer to fix by hand, and the seed went stale from 11-09 to 11-20 while
+  its PR waited. While the open seed PR holds any commit besides the bot's one
+  refresh commit, later runs leave it alone. Only runs on
   `main` push the branch; a dispatch from another ref reports only.
 
 ### Sub-shards inside one CI job
@@ -1723,7 +1734,7 @@ only, <workflow>)":
 | `free-tests.yml` | `free-suite`, `macos-named-regressions` |
 | `windows-smoke.yml` | `windows-smoke` |
 | `windows-scoped-tests.yml` | `windows-scoped-shard` |
-| `windows-setup-e2e.yml` | `windows-setup`, `held-install-journey` |
+| `windows-setup-e2e.yml` | `windows-setup`, `windows-setup-recovery`, `windows-setup-cso`, `held-install-journey`, `held-install-trial`, `held-install-later-release` |
 | `quality-gate.yml` | `quality` |
 | `evals.yml` | `build-image`, `eval-slices` |
 
@@ -1748,8 +1759,8 @@ or commit disappears), the observer's own check reports failure, and
 if it fails again, delete the job. Fork pull requests, pushes and dispatches
 skip the job. A missing token skips only its step, so the job still fetches
 the action. Its only secret is `TRUNK_API_TOKEN` (in free-tests.yml only it
-and the trunk-flaky-tests uploader, with `TRUNK_ORG_API_TOKEN`, see a secret;
-evals.yml's other jobs hold their own), so
+sees a secret; the Trunk Flaky Tests uploader in trunk-flaky-tests.yml holds
+`TRUNK_ORG_API_TOKEN`, and evals.yml's other jobs hold their own), so
 it checks out nothing and runs none of the pull request's code. It holds no GITHUB_TOKEN scopes (`permissions: {}`). At the
 pinned commit (`src/config.ts`, `src/changed-files.ts`), the action makes one
 network call: a request for verdicts to
@@ -1780,23 +1791,33 @@ skipping is a separate decision for Garry, made after that review.
 ### Trunk Flaky Tests (detection only)
 
 Since GST-1859, every free-suite shard keeps bun's JUnit report from each of
-its children, the flaky retry included (`--junit-dir`), and the
-`trunk-flaky-tests` job uploads them, failures included, to the Trunk test
-collection `7yDVXXE3` ("gstack free suite") on same-repository pull requests
-and main pushes. Trunk flags a test as flaky when it fails and then passes on
-the same code, or keeps failing on main, and lists it under Flaky Tests at
-app.trunk.io/garry-tan. That job is detection only: quarantine is off in the
-uploader and in the collection, nothing skips a test, no job needs or reads it,
-and an upload failure can't turn a check red. A child killed at its wall
-timeout, or one that crashes, writes no report, so Trunk sees none of that
-child's results, its passing files included. Such a child also skips the
-flaky retry, so the flake ledger has no entry for it; the red shard result is
-the only record. The uploader job is the only one that sees
-`TRUNK_ORG_API_TOKEN` (Trunk's v1 organization token, which the uploader
-needs), and it checks out and runs nothing of the pull request's. The [flake
+its children, the flaky retry included (`--junit-dir`), and so does the quick
+tier on the install-default Bun (`quick-bun-default`, artifact `quick-junit`).
+After each Free Tests run completes, `trunk-flaky-tests.yml` (a `workflow_run`
+workflow) uploads them, failures included, to the Trunk test collection
+`7yDVXXE3` ("gstack free suite") for same-repository pull requests, main pushes
+and dispatch runs (dispatch runs joined in GST-3303). The quick tier's reports
+go up as the `bun-default` variant, because the same files also run on the
+pinned Bun. Trunk flags a test as flaky when it fails and then passes on the
+same code, or keeps failing on main, and lists it under Flaky Tests at
+app.trunk.io/garry-tan.
+
+The uploader is detection only: quarantine is off in the uploader and in the
+collection, nothing skips a test, and nothing reads its result, so an upload
+failure can't turn a check red. Since GST-3303 it is no longer a free-tests.yml
+job, so a pull request's checks don't wait on it; a `workflow_run` workflow runs
+from the default branch's copy of its file, so a change to it takes effect only
+once it is on main. It is the only job that sees `TRUNK_ORG_API_TOKEN` (Trunk's
+v1 organization token, which the uploader needs). It checks out and runs
+nothing, downloads only the triggering run's XML artifacts with a GITHUB_TOKEN
+limited to `actions: read`, and skips fork pull requests, whose artifacts must
+never meet that token. A child killed at its wall timeout, or one that crashes,
+writes no report, so Trunk sees none of that child's results, its passing files
+included. Such a child also skips the flaky retry, so the flake ledger has no
+entry for it; the red shard result is the only record. The [flake
 ledger](#flake-ledger), its one-rerun rule and the daily flaky pass are
 unchanged and stay the source of record.
-`test/free-tests-workflow-wiring.test.ts` locks the job's shape.
+`test/free-tests-workflow-wiring.test.ts` locks both workflows' shape.
 
 ### Windows free lane
 

@@ -208,7 +208,7 @@ codex plugin add daymade-codex@daymade-skills
 claude plugin install daymade-claude-code@daymade-skills
 ```
 
-一次安装即可获得扩展 Claude Code 本体的全部 power-user 技能——跨代码、项目文档、Skill/SOP、会议、微信归档与对话历史的已有工作检索；跨 Claude Code/Codex 的快速本地对话发现；会话恢复；CLAUDE.md 调优；故障诊断；statusline 配置；导出修复；marketplace 开发与 suite 收敛；终端截图渲染；用量分析；以及多 Provider 模型切换：
+一次安装即可获得扩展 Claude Code 本体的全部 power-user 技能——跨代码、项目文档、Skill/SOP、会议、微信归档与对话历史的已有工作检索；跨 Claude Code/Codex 的快速本地对话发现；会话恢复；CLAUDE.md 调优；故障诊断；权限提示与 Agent Team teammate 分诊；statusline 配置；导出修复；marketplace 开发与 suite 收敛；终端截图渲染；用量分析；以及多 Provider 模型切换：
 
 ```text
 /daymade-claude-code:claude-code-ops-router
@@ -222,6 +222,7 @@ claude plugin install daymade-claude-code@daymade-skills
 /daymade-claude-code:statusline-generator
 /daymade-claude-code:fixing-claude-export-conversations
 /daymade-claude-code:marketplace-dev
+/daymade-claude-code:claude-code-permission-triage
 /daymade-claude-code:terminal-screenshot
 /daymade-claude-code:claude-usage-analyst
 /daymade-claude-code:claude-switch-models-setup
@@ -325,6 +326,8 @@ claude plugin install windows-remote-desktop-connection-doctor@daymade-skills
 
 # 产品审计与优化
 claude plugin install product-analysis@daymade-skills
+# product-analysis 的 ux/full 渲染审计所需的伴随插件
+claude plugin install frontend-visual-qa@daymade-skills
 
 # Scrapling CLI 抽取与故障排查
 claude plugin install scrapling-skill@daymade-skills
@@ -478,7 +481,15 @@ CC-Switch 支持以下中国 AI 服务提供商：
 
 > **安装**：`claude plugin install daymade-claude-code@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-claude-code:claude-code-ops-router`）
 
-按任务读取一个专用 Skill：插件和 Skill 故障、marketplace、状态栏、模型 Profile 与源码同步、1M 上下文提前压缩、用量和额度定时器、memory 迁移、导出 `.txt` 修复。原有专用斜杠命令仍可手动调用。
+按任务读取一个专用 Skill：插件和 Skill 故障、marketplace、权限提示与 Agent Team teammate 分诊、MCP 启动上下文、状态栏、模型 Profile 与源码同步、1M 上下文提前压缩、用量和额度定时器、memory 迁移、导出 `.txt` 修复。原有专用斜杠命令仍可手动调用。
+
+---
+
+### **claude-code-permission-triage** - Claude Code 权限提示分诊
+
+> **安装**：`claude plugin install daymade-claude-code@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-claude-code:claude-code-permission-triage`）
+
+诊断 subagent、后台 worker 与 Agent Team teammate 出现的异常、缺失、延迟、卡住或错投权限提示。区分卡片类型、投递状态、worker 类型和有效模式时间线，匹配已知上游 issue，并生成脱敏反馈。不修改权限规则、不编写或修改 hook、不处理 MCP OAuth，也不负责读取历史会话。
 
 ---
 
@@ -1706,14 +1717,18 @@ claude plugin install windows-remote-desktop-connection-doctor@daymade-skills
 **主要功能：**
 - 自动识别项目类型和 `codex` 可用性
 - 按任务选择[审计范围](product-analysis/SKILL.md#scope-modes)
+- `ux` 与 `full` 范围在综合前必须安装独立的 `frontend-visual-qa` 伴随插件并取得真实渲染证据流
+- 将源码估计与渲染实测的首屏控件数、启动到首次价值的步数分开记录
+- 源码授权、交互/动作授权与目标变更授权三权分立
 - Claude 与可选 Codex 代理并行探索
 - 按[综合判断方法](product-analysis/references/synthesis_methodology.md)核对证据和选择优先级
 - 输出可落地的优化方案（行动项 + 依据）
 
 **示例用法：**
 ```bash
-# 安装技能
+# 安装技能及 ux/full 渲染审计所需的伴随插件
 claude plugin install product-analysis@daymade-skills
+claude plugin install frontend-visual-qa@daymade-skills
 
 # 然后请求审计
 "用 full 模式做一轮产品上线前审计"
@@ -1728,7 +1743,7 @@ claude plugin install product-analysis@daymade-skills
 
 📚 **文档**：参见 [product-analysis/SKILL.md](./product-analysis/SKILL.md) 与 [product-analysis/references/analysis_dimensions.md](./product-analysis/references/analysis_dimensions.md) 了解审计维度与工作流。
 
-**要求**：可选 `codex` CLI（用于多模型并行模式）。未安装时自动降级为纯 Claude 分析。
+**要求**：可选 `codex` CLI（用于多模型并行模式）。未安装时自动降级为纯 Claude 分析。`ux` 与 `full` 还需要 `frontend-visual-qa@daymade-skills`；缺少该伴随插件时，渲染门禁明确标记为 blocked，不得用源码检查替代。
 
 ---
 
@@ -2836,6 +2851,8 @@ claude plugin install frontend-visual-qa@daymade-skills
 - A–D 证据阶梯，禁止用 headless、renderer 或 handler 结果冒充真实 GUI 验证
 - 先确认 state/viewport（含已登录但无角色状态与精确投影/演示画布），再结合已打开的截图与 DOM 几何取证
 - 加固后的 Playwright 机械扫描：HTTP/final URL、有效移动端视口、溢出、裁切、自定义控件焦点候选、图片和 section 证据
+- 基于 sitemap 的全站路由结构普查，可重复发现结构性错误，并明确不与视觉验收混为一谈
+- 强制覆盖可选视觉资产塌缩、跨入口返回上下文与本地化 404 旅程
 - 核心视觉、复杂旅程/页面类型、data-viz 三类按需 reference，覆盖单位/来源/时间/新鲜度、密集碰撞、runtime 文案真实性和真实文件选择器边界
 - 自包含公开 fixture 的行为 eval 与触发 eval
 
@@ -3727,6 +3744,24 @@ Daymade Skill Evolver 组装已有 Skills，为指定现有 Skill 完成一轮�
 网页获取和视频专项 Skill 为可选能力，无随包运行时依赖。
 
 📚 **文档**：[floorplan-finder](./floorplan-finder/SKILL.md)。
+
+---
+
+### **ai-quota-calibrator** - 黑盒 AI 订阅配额实证反推
+
+> **安装**：`claude plugin install ai-quota-calibrator@daymade-skills`
+
+将本地 `tokscale` 真实消耗与平台实时配额比例（Antigravity Gemini/Claude 池、Codex 及其他百分比订阅）按窗口起点精确对齐，反推 5 小时池与周池的等效 API 美元规模、周÷5h 倍率与当前火力下的剩余续航。
+
+**适用场景**：查询黑盒订阅 5 小时/周额度大概相当于多少 API 美元、排查池子为什么触发限流（含 `< 1%` 预扣软锁死、Top 烧钱与长上下文滚雪球会话归因、重置倒计时与同订阅可切换替代池），并用方向感知稳态采样与 Cache Write 敏感度区间校准真实消耗。
+
+```text
+用 ai-quota-calibrator 结合 tokscale 校准我当前的 Antigravity Gemini 和 Claude 配额池。
+```
+
+**要求**：`tokscale` CLI（`antigravity-cli` / `codex` 等本地客户端）、Antigravity 另需 `agy` CLI，以及 Python 3.9+ 标准库（零第三方 pip 依赖）。
+
+📚 **文档**：[ai-quota-calibrator](./ai-quota-calibrator/SKILL.md)。
 
 ---
 

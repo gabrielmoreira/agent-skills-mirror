@@ -555,7 +555,7 @@ This copies instructions; it does not install the runtime or register MCP. Keep 
 }
 ```
 
-The **eighteen public MCP names (including one asset compatibility alias)** cover template discovery and details, Skill discovery and reading, project creation and reading, editing, preview, media import and BYOK generation, reusable asset versions, project management and ZIP sharing, export, version restoration and cancellation. Shared workflow and engine guides are available through MCP resources. [Tool contract](docs/mcp-phase1-tools.md)
+The **twenty-two public MCP names (including one asset compatibility alias and four Design Studio HTML tools)** cover template discovery and details, Skill discovery and reading, project creation and reading, editing, preview, media import and BYOK generation, reusable asset versions, project management and ZIP sharing, export, version restoration, cancellation, and Design Studio HTML projects, annotations and Open Design round-trip. Shared workflow and engine guides are available through MCP resources. [Tool contract](docs/mcp-phase1-tools.md)
 
 Find a template with `openmotion_list_templates`, inspect it with `openmotion_get_template`, then create an editable copy with `openmotion_create_project`. [Template catalog](docs/template-catalog.md)
 
@@ -772,7 +772,7 @@ OpenMotion is licensed under [Apache-2.0](LICENSE). Third-party code, templates,
 
 | Source | Connection |
 | --- | --- |
-| [OpenDesign](https://github.com/nexu-io/open-design) | Develops OpenMotion and provides its UI foundations, resource structure and brand direction. [Design system](docs/design-system.md) and [Motion showcase](https://open-design.ai/motion/) |
+| [OpenDesign](https://github.com/nexu-io/open-design) | Develops OpenMotion and provides its UI foundations, resource structure, brand direction and Apache-2.0 HTML design templates, design systems, Skills, craft guides and scenario task profiles; [design system](docs/design-system.md), [design library notices](library/design/NOTICE.md) and [Motion showcase](https://open-design.ai/motion/) |
 | [Hyperframes](https://github.com/heygen-com/hyperframes) | HTML-to-video composition, Studio and rendering foundations, pinned to 0.9.7; creator references, external adaptation demonstrations and component source; [engine notes](docs/hyperframes.md), [template notices](template-library/NOTICE.md) and [catalog provenance](docs/template-catalog.md) |
 | [MotionGit](https://motiongit.com/) / adunext | Kinetic Tech source packaged as Presenter Tech; [license and attribution](library/templates/presenter-tech/NOTICE.md) |
 | [Hypit](https://github.com/hypit-ai/hypit) | Inspiration for agent-led viral-video cloning and editable variants; no runtime imported here |

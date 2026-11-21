@@ -10,13 +10,13 @@
 //        (stamps the row, checks it, and writes it only when it passes)
 //        node .agents/pstack/decisions-check.mjs append <log> --from <rows.tsv>
 //        (each line holds the five cells; writes every row only when all pass)
+//        In trunk delivery, when the ledger's repository has an origin, both append forms to the
+//        project's ledger wait up to 60 s for the ledger lock, bring the ledger to
+//        refs/pstack/ledger's order first, and push the new rows at once; they exit 1 when a row
+//        the ref got first refuses a new row, and keep the rows locally until the next sync when
+//        origin cannot be reached or the ref moves on every try.
 //        Both append forms open the batch with a lead row naming the session's model
 //        and effort, read by lead.mjs, when they differ from the log's last lead row.
-//        Both append forms print the stage a written batch moves the log into, so
-//        the lead renames the session as the Session title rule asks, and in Claude
-//        Code, outside trunk delivery, print what page-stop.mjs stage prints for
-//        the plan beside the log. They also warn, without refusing, when a batch
-//        writes the first review or ship row of a babysit plan that has no Page: line.
 //        Both append forms, unlike the <log> and --all checks, refuse a partial, open, gap,
 //        blocked or inconclusive row without proof: <existing file under <plans>/artifacts/>
 //        or proof: none, and an accepted row unless its proof: names files an earlier row
@@ -56,10 +56,20 @@
 //        under <plans>/artifacts/> in its evidence, and refuse a build row whose decision
 //        starts with "built:" and holds reach: <text> while such a row has no later panel or
 //        build row whose evidence names the same proof: file and whose result starts with
-//        applied, dismissed, fixed or verified. They refuse a build row to a log in a git
-//        checkout whose change builds a dated plan's step past the step budget, as
-//        status.mjs's stepLines counts it, unless a changed decision log holds an owner
-//        row starting "big step:" with no later "landed as" row.
+//        applied, dismissed, fixed or verified. That refusal reads the build row's step
+//        from the word after "built: step" and each recorded row's steps from the word
+//        after each step: label, any letter case for both, a label not right after a
+//        letter, digit or _. A step id is 1 to 9 digits and then at most one ASCII letter,
+//        either case, once trailing .,:)]}"'`* is cut, ordered by number then letter. It
+//        counts a row when one of its steps is the build row's step or earlier, or has the
+//        same number with no letter on one side; when it names no step:; or when the build
+//        row has no "built: step", or either word is not a step id, or another word that
+//        starts with a digit, past any symbols, follows it before the next ";" and, on the
+//        build row, before reach:, or on a recorded row before the next label. Words split
+//        at spaces and commas. They refuse a build row to a log in a git checkout whose
+//        change builds a dated plan's step past the step budget, as status.mjs's stepLines
+//        counts it, unless a changed decision log holds an owner row starting "big step:"
+//        with no later "landed as" row.
 //        node .agents/pstack/decisions-check.mjs rounds <log> [--patch <file>]
 //        (exits 1 when the log is at the cap of panel rounds since its last restart, the
 //        maxRounds in .agents/pstack.json or 1, plus one round after a round that applied
@@ -118,10 +128,9 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { appendFileSync, existsSync, readdirSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
 import { basename, dirname, isAbsolute, join, normalize, relative, resolve } from 'node:path';
 import { findLead, leadLabel, maxEffort, runtimeFolder } from './lead.mjs';
-import { cli as pageStop } from './page-stop.mjs';
-import { contextOf, pageUrlOf, parsePlan } from './plan-page.mjs';
-import { board, boardState, briefOf, CHIP_STATES, cleanupOf, chipRowProblems, baseRedProblems, gitMerges, groupsOf, hasToken, ledgerPath, namesOwner, newChipRowProblems, newId, offeredAt, readShip, readTasks, recordRow, renderBoard, renderGroups, SESSION, staleReport, startedOverlaps, withoutPlannedWrites } from './tasks.mjs';
-import { acceptedWord, BIG_STEP, bracketSeats, committedLines, decisionLogs, defaultsWords, isAcceptingWord, isHandOffReview, liftsStep, NOT_PASSED, overBudget, plansOf, proofLabels, proofStates, PROVEN, runPaths, seatRoster, SEATS, severityOf, STAGE_PHASES, stageOfRow, STATUSES, statusOf, stepBudget, stepLines, stepRecords, tidy } from './status.mjs';
+import { parsePlan } from './plan-page.mjs';
+import { board, boardState, briefOf, CHIP_STATES, cleanupOf, chipRowProblems, baseRedProblems, gitMerges, groupsOf, hasToken, LEDGER_REF, ledgerPath, lockLedger, namesOwner, newChipRowProblems, newId, offeredAt, readShip, readTasks, recordRow, REFUSED, renderBoard, renderGroups, SESSION, staleReport, startedOverlaps, syncLedger, withoutPlannedWrites } from './tasks.mjs';
+import { acceptedWord, BIG_STEP, bracketSeats, committedLines, decisionLogs, defaultsWords, isAcceptingWord, isHandOffReview, liftsStep, NOT_PASSED, overBudget, plansOf, proofLabels, proofStates, PROVEN, runPaths, seatRoster, SEATS, severityOf, STATUSES, statusOf, stepBudget, stepLines, stepRecords, tidy } from './status.mjs';
 
 const HEADER = 'ts\tphase\tdecision\twhy\tevidence\tresult';
 const TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/u;
@@ -344,7 +353,7 @@ function recordedProblems(severity, [, , , evidence, result], where) {
   const labels = proofLabels(evidence, plansDir(), onDisk).filter((label) => label.path);
   const found = labels.filter((label) => !label.exists).map((label) => `${where}: proof: ${label.path} names no file`);
   if (labels.length === 0) found.push(`${where}: a recorded critical finding names the seat's saved case as "proof: <file under ${plansDir()}/artifacts/>" in its evidence`);
-  if (!/(?:^|[\s;,(])step:\s*\S/u.test(result)) found.push(`${where}: a recorded critical finding names the plan step that fixes it as "step: <n>" in its result, a step that lands no later than the plan's reach step`);
+  if (!/(?<![\p{L}\p{N}_])[sS][tT][eE][pP]:\s*\S/u.test(result)) found.push(`${where}: a recorded critical finding names the plan step that fixes it as "step: <n>" in its result, a step that lands no later than the plan's reach step`);
   return found;
 }
 
@@ -354,15 +363,37 @@ const isRecorded = ([, decision = '', , , result = '']) => /^critical\b/u.test(d
 const settlesRecorded = ([phase, , , , result = '']) => ['panel', 'build'].includes(phase) && /^(applied|dismissed|fixed|verified)\b/u.test(result);
 const caseKeys = (evidence) => proofLabels(evidence, plansDir(), onDisk).filter((label) => label.path).map((label) => label.key);
 
+const STEP_ID = /^(\d{1,9})([a-zA-Z]?)$/u;
+const STEP_LABEL = /(?<![\p{L}\p{N}_])[sS][tT][eE][pP]:/gu;
+const BUILT_STEP = /^built:\s*[sS][tT][eE][pP]\s+/u;
+function readStep(clause) {
+  const [token = '', ...words] = clause.split(';')[0].trim().split(/[\s,]+/u);
+  const [, number, letter] = token.replace(/[.,:)\]}"'`*]+$/u, '').match(STEP_ID) ?? [];
+  if (number === undefined || words.some((word) => /^\W*\d/u.test(word))) return null;
+  return [Number(number), letter.toLowerCase()];
+}
+function labelSteps(result) {
+  const starts = [...result.matchAll(STEP_LABEL)].map(({ index }) => index);
+  return starts.map((start, next) => readStep(result.slice(start + 'step:'.length, starts[next + 1])));
+}
+const comesAfter = ([number, letter], [builtNumber, builtLetter]) => number > builtNumber || (number === builtNumber && letter !== '' && builtLetter !== '' && letter > builtLetter);
+const holdsStep = (steps, built) => !built || steps.length === 0 || steps.some((step) => !step || !comesAfter(step, built));
+
 function trackRecorded(recorded, cells) {
-  if (isRecorded(cells)) for (const key of caseKeys(cells[3])) recorded.set(key, cells[1]);
-  else if (settlesRecorded(cells)) for (const key of caseKeys(cells[3])) recorded.delete(key);
+  if (isRecorded(cells)) {
+    const entry = { finding: cells[1], steps: labelSteps(cells[4]) };
+    for (const key of caseKeys(cells[3])) recorded.set(key, [...(recorded.get(key) ?? []), entry]);
+  } else if (settlesRecorded(cells)) for (const key of caseKeys(cells[3])) recorded.delete(key);
 }
 
 function reachProblems(recorded, [phase, decision = ''], where) {
-  if (phase !== 'build' || !/^built:/u.test(decision) || !REACH.test(decision) || recorded.size === 0) return [];
-  const count = recorded.size === 1 ? 'a recorded critical finding is' : `${recorded.size} recorded critical findings are`;
-  return [`${where}: this built: row names its step's reach:, and ${count} not settled: ${[...recorded.values()].join('; ')}. Before users can reach that code, fix each in the step its row's step: names, and log a panel or build row whose evidence names the same proof: file with a result that starts applied, dismissed, fixed or verified`];
+  if (phase !== 'build' || !/^built:/u.test(decision) || !REACH.test(decision)) return [];
+  const built = BUILT_STEP.test(decision) ? readStep(decision.replace(BUILT_STEP, '').split(/(?<![\p{L}\p{N}_])reach:/u)[0]) : null;
+  const held = [...new Set([...recorded.values()].flat())].filter(({ steps }) => holdsStep(steps, built)).map(({ finding }) => finding);
+  if (held.length === 0) return [];
+  const count = held.length === 1 ? 'a recorded critical finding is' : `${held.length} recorded critical findings are`;
+  const unread = built ? '' : ' This row does not name one readable step as "built: step <n>" with no other word that starts with a digit, past any symbols, before its first ";" or reach:, so every recorded finding counts.';
+  return [`${where}: this built: row names its step's reach:, and ${count} not settled: ${held.join('; ')}.${unread} Before users can reach that code, fix each in the step its row's step: names, and log a panel or build row whose evidence names the same proof: file with a result that starts applied, dismissed, fixed or verified`];
 }
 
 function rowProblems(line, where, roster, chips) {
@@ -698,51 +729,54 @@ function append(path, batch, run, miss = null) {
     rows.push(row);
   }
   if (found.length === 0) found.push(...buildBudgetProblems(path, existing, rows, (at) => (count > 1 ? `${path} (new row ${at + 1 - attribution.length})` : `${path} (new row)`)));
-  if (found.length > 0) return found;
+  if (found.length > 0) return { found, rows: [] };
   const added = rows.map((row) => `${row}\n`).join('');
   if (text !== null) {
     appendFileSync(path, `${text === '' || text.endsWith('\n') ? '' : '\n'}${added}`);
   } else writeFileSync(path, `${HEADER}\n${added}`);
-  return [];
+  return { found: [], rows };
 }
 
-function stageMoves(path) {
-  const phases = existsSync(path)
-    ? readFileSync(path, 'utf8').split('\n').slice(1).filter((line) => line.trim()).map((line) => line.split('\t')[1])
-    : [];
-  const stages = phases.map((_, index) => stageOfRow(phases, index)).filter(Boolean);
-  return stages.filter((stage, index) => stage !== stages[index - 1]);
+function sharedLedgerGit(log) {
+  if (!trunk() || resolve(log) !== resolve(ledgerFile())) return null;
+  const dir = projectConfig().companion?.dir;
+  const via = dir ? ['--git-dir', join(mainCheckout(), dir)] : [];
+  if (dir && !existsSync(via[1])) return null;
+  return spawnSync('git', [...via, 'remote', 'get-url', 'origin'], { stdio: 'ignore' }).status === 0 ? via : null;
 }
 
-function stagePage(log) {
-  const plan = log.replace(/\.decisions\.tsv$/u, '.md');
-  if (trunk() || process.env.CLAUDECODE !== '1' || plan === log || !existsSync(plan)) return;
+const reportRefused = (refused) => {
+  for (const { problem } of refused) console.error(`Refused ${problem}, because a row on ${LEDGER_REF} came first; the row moved to ${REFUSED}.`);
+};
+
+function appendShared(log, batch, run, miss, via) {
+  let held = null;
+  const lock = lockLedger(execFileSync('git', ['rev-parse', '--path-format=absolute', '--git-common-dir'], { encoding: 'utf8' }).trim(), {
+    waitMs: 60_000,
+    onWait: (path) => {
+      held = path;
+      console.error(`Waiting for the ledger lock ${path}, which another run holds.`);
+    },
+  });
+  if (!lock) return { found: [`another run held the ledger lock ${held} for 60 s; run append again`], rows: [] };
   try {
-    const { error, lines = [] } = pageStop(['stage', plan], process.env);
-    if (error) console.error(`No page publish: ${error}`);
-    if (lines.length) console.info(lines.join('\n'));
-  } catch (error) {
-    console.error(`No page publish: ${error.message}`);
-  }
-}
-
-const pageDue = (phase) => [...STAGE_PHASES.Review, ...STAGE_PHASES.Ship, 'quality'].includes(phase) || /^(review|deliver)/iu.test(phase ?? '');
-const pageDueRows = (path) =>
-  existsSync(path) ? readFileSync(path, 'utf8').split('\n').slice(1).filter((line) => pageDue(line.split('\t')[1])).length : 0;
-
-function warnUnpublishedBabysit(log) {
-  const plan = log.replace(/\.decisions\.tsv$/u, '.md');
-  if (plan === log || !existsSync(plan)) return;
-  try {
-    const { plan: parsed, root, playbooks, subjectPath } = contextOf(resolve(plan));
-    const name = parsed.meta.playbook;
-    const babysit = name === 'babysit' || playbooks.some((entry) => entry.name === name && entry.extends.includes('babysit'));
-    const target = subjectPath ?? resolve(plan);
-    if (babysit && !pageUrlOf(root, target).url) {
-      console.error(`Warning: ${relative(process.cwd(), target)} has no Page: line, and the babysit playbook publishes the plan page before its first review round. Publish it now, before the next public action, as the plan-page skill says.`);
+    const pulled = syncLedger(log, via, lock, { push: false });
+    reportRefused(pulled.refused);
+    const written = append(log, batch, run, miss);
+    const keptLocally = (why) => console.error(`${log} keeps the new rows locally until the next sync, because ${why}.`);
+    if (written.found.length > 0) return written;
+    if (!pulled.reachable) {
+      keptLocally('origin cannot be reached');
+      return written;
     }
-  } catch (error) {
-    console.error(`No page check: ${error.message}`);
+    const pushed = syncLedger(log, via, lock, { checked: pulled.tip });
+    const lost = pushed.refused.filter(({ line }) => written.rows.includes(line));
+    reportRefused(pushed.refused.filter((entry) => !lost.includes(entry)));
+    if (lost.length > 0) return { found: lost.map(({ problem }) => `${problem}; the row moved to ${REFUSED}`), rows: [], heading: `Refused, because a row on ${LEDGER_REF} came first` };
+    if (pushed.pending > 0) keptLocally(pushed.reachable ? `${LEDGER_REF} moved on each try` : 'origin cannot be reached');
+    return written;
+  } finally {
+    lock.release();
   }
 }
 
@@ -980,22 +1014,17 @@ function dispatch() {
             .filter((line) => line.trim())
             .map((line) => line.split('\t'))
         : [args.slice(2)];
-    const before = stageMoves(args[1] ?? '').length;
-    const dueBefore = pageDueRows(args[1] ?? '');
     const lead = findLead();
     const run = lead.run ?? null;
     if (!run) console.error(`Runtime identity is unknown because ${lead.miss}, so ${args[1]} records an unknown lead boundary.`);
-    const found = batch.length === 0 ? [`${args[3]} holds no rows`] : append(args[1] ?? '', batch, run, lead.miss);
+    const via = sharedLedgerGit(args[1] ?? '');
+    const { found, heading } = batch.length === 0 ? { found: [`${args[3]} holds no rows`] } : via ? appendShared(args[1], batch, run, lead.miss, via) : append(args[1] ?? '', batch, run, lead.miss);
     if (found.length > 0) {
-      console.error(`${batch.length > 1 ? 'No row written' : 'Row not written'}:\n${found.join('\n')}`);
+      console.error(`${heading ?? (batch.length > 1 ? 'No row written' : 'Row not written')}:\n${found.join('\n')}`);
       return 1;
     }
     console.info(batch.length > 1 ? `Appended ${batch.length} rows to ${args[1]}.` : `Appended a row to ${args[1]}.`);
     if (run) console.info(`Lead: ${leadLabel(run)}.`);
-    const entered = stageMoves(args[1]).slice(before);
-    if (entered.length) console.info(`Stage: ${entered.join(', then ')}.${existsSync(new URL('rules/title.md', import.meta.url)) ? ' Rename the session now, as .agents/pstack/rules/title.md says.' : ''}`);
-    stagePage(args[1]);
-    if (dueBefore === 0 && pageDueRows(args[1]) > 0) warnUnpublishedBabysit(args[1]);
     return 0;
   }
   const paths = args[0] === '--all' ? decisionLogs(plansDir()) : args;

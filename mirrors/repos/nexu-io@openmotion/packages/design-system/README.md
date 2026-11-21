@@ -12,7 +12,7 @@ It is a private source package in the standalone root application. The visual wo
 | `tokens.css`, `studio/tokens.css` | Generated browser variables and Tailwind theme declarations; never edit directly. |
 | `ui.css` | Scoped styles for ordinary HTML pages: tokens, fonts, base, controls and materials. |
 | `tailwind.css` | Studio's token/utility adapter; import after Tailwind, with source discovery owned by the consumer. |
-| [`components/`](components/README.md) | Shared React controls, live examples and Agent integration. |
+| [`open-design-ui`](../open-design-ui/README.md) | Shared React controls, live examples and Agent integration. |
 | `studio.css` | Editor control states, materials, feedback and adapter recipes. |
 | `loading.css` | Startup shell and loading-boundary appearance. |
 | `inline-feedback.ts`, `studio/feedback.css` | Floating, localized action feedback for isolated non-React host documents; shares the package tokens and avoids layout changes. |
@@ -59,6 +59,8 @@ Studio imports `tailwind.css` from its stylesheet and `studio.css` from its appl
 Use relative source imports from the application; the package exports document its public API without requiring a workspace link. Use `designSystemAsset()`, `brand` and `iconSprite` from `index.js` for dynamic asset references. React icons consume `IconGlyph` to render the bundled sprite vectors inline, without an additional runtime fetch; wrap glyphs in a 24×24 SVG using currentColor. Brand-avatar backings use the paired asset-logo tokens to keep transparent artwork legible in either theme. Static HTML may use the stable `/design-system/` URLs. The HTTP layer exposes only the explicit asset list and retains `/web/design-system/` as a URL alias. Runtime distribution includes these files and licenses without bundling development source.
 
 ## Change a visual decision
+
+Navigation and toggle selection use neutral surfaces and readable neutral ink in both themes. Editing selection outlines use the purple `selected` role. Timeline audio uses the independent `clip-audio` and `clip-audio-ink` purple roles; reserve gray waveforms for muted audio. Brand accents must not substitute for these interaction or media roles.
 
 1. Find the existing semantic role in `tokens.json` or the existing recipe in package CSS. Reuse it. Add a shared role here when necessary.
 2. Change the maintained source and run `npm run design:tokens`. Both browser and Studio styles are generated from it. The same command refreshes stable README logo, favicon and font-license mirrors.

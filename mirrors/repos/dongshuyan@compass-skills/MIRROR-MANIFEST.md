@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `dongshuyan/compass-skills` — 26 default patterns, 0 followed patterns, 116 file(s) materialized.
+Mirror of `dongshuyan/compass-skills` — 26 default patterns, 0 followed patterns, 125 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dongshuyan/compass-skills` — 26 default patterns, 0 followed patter
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 116 |
+| Files         | 125 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -107,74 +107,83 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 46 | ✓ | [`skills/assess-interview-candidate/tests/test_interviewer_report.py`](skills/assess-interview-candidate/tests/test_interviewer_report.py) |
 | 47 | ✓ | [`skills/assess-interview-candidate/tests/test_public_package.py`](skills/assess-interview-candidate/tests/test_public_package.py) |
 | 48 | ✓ | [`skills/clear-communication/agents/openai.yaml`](skills/clear-communication/agents/openai.yaml) |
-| 49 | ✓ | [`skills/clear-communication/references/examples.md`](skills/clear-communication/references/examples.md) |
-| 50 | ✓ | [`skills/clear-communication/references/licenses/gpt-with-taste.txt`](skills/clear-communication/references/licenses/gpt-with-taste.txt) |
-| 51 | ✓ | [`skills/clear-communication/references/licenses/plain-english.txt`](skills/clear-communication/references/licenses/plain-english.txt) |
-| 52 | ✓ | [`skills/clear-communication/references/sources.md`](skills/clear-communication/references/sources.md) |
-| 53 | ✓ | [`skills/clear-communication/SKILL.md`](skills/clear-communication/SKILL.md) |
-| 54 | ✓ | [`skills/pause-and-resume/SKILL.md`](skills/pause-and-resume/SKILL.md) |
-| 55 | ✓ | [`skills/run-history-skill-builder/agents/openai.yaml`](skills/run-history-skill-builder/agents/openai.yaml) |
-| 56 | ✓ | [`skills/run-history-skill-builder/evals/evals.json`](skills/run-history-skill-builder/evals/evals.json) |
-| 57 | ✓ | [`skills/run-history-skill-builder/references/examples.md`](skills/run-history-skill-builder/references/examples.md) |
-| 58 | ✓ | [`skills/run-history-skill-builder/references/history-mining.md`](skills/run-history-skill-builder/references/history-mining.md) |
-| 59 | ✓ | [`skills/run-history-skill-builder/references/open-source-pattern-mining.md`](skills/run-history-skill-builder/references/open-source-pattern-mining.md) |
-| 60 | ✓ | [`skills/run-history-skill-builder/references/self-repair-and-evals.md`](skills/run-history-skill-builder/references/self-repair-and-evals.md) |
-| 61 | ✓ | [`skills/run-history-skill-builder/references/skill-design-protocol.md`](skills/run-history-skill-builder/references/skill-design-protocol.md) |
-| 62 | ✓ | [`skills/run-history-skill-builder/scripts/test_validate_skill_package.py`](skills/run-history-skill-builder/scripts/test_validate_skill_package.py) |
-| 63 | ✓ | [`skills/run-history-skill-builder/scripts/validate_skill_package.py`](skills/run-history-skill-builder/scripts/validate_skill_package.py) |
-| 64 | ✓ | [`skills/run-history-skill-builder/SKILL.md`](skills/run-history-skill-builder/SKILL.md) |
-| 65 | ✓ | [`skills/run-history-skill-upgrader/agents/openai.yaml`](skills/run-history-skill-upgrader/agents/openai.yaml) |
-| 66 | ✓ | [`skills/run-history-skill-upgrader/evals/evals.json`](skills/run-history-skill-upgrader/evals/evals.json) |
-| 67 | ✓ | [`skills/run-history-skill-upgrader/references/evidence-and-scope.md`](skills/run-history-skill-upgrader/references/evidence-and-scope.md) |
-| 68 | ✓ | [`skills/run-history-skill-upgrader/references/examples.md`](skills/run-history-skill-upgrader/references/examples.md) |
-| 69 | ✓ | [`skills/run-history-skill-upgrader/references/upgrade-decision-protocol.md`](skills/run-history-skill-upgrader/references/upgrade-decision-protocol.md) |
-| 70 | ✓ | [`skills/run-history-skill-upgrader/references/validation-and-regression.md`](skills/run-history-skill-upgrader/references/validation-and-regression.md) |
-| 71 | ✓ | [`skills/run-history-skill-upgrader/scripts/test_validate_upgrade_artifacts.py`](skills/run-history-skill-upgrader/scripts/test_validate_upgrade_artifacts.py) |
-| 72 | ✓ | [`skills/run-history-skill-upgrader/scripts/validate_upgrade_artifacts.py`](skills/run-history-skill-upgrader/scripts/validate_upgrade_artifacts.py) |
-| 73 | ✓ | [`skills/run-history-skill-upgrader/SKILL.md`](skills/run-history-skill-upgrader/SKILL.md) |
-| 74 | ✓ | [`skills/session-handoff-prompt/agents/openai.yaml`](skills/session-handoff-prompt/agents/openai.yaml) |
-| 75 | ✓ | [`skills/session-handoff-prompt/evals/trigger-and-quality-cases.json`](skills/session-handoff-prompt/evals/trigger-and-quality-cases.json) |
-| 76 | ✓ | [`skills/session-handoff-prompt/references/compression-modes.md`](skills/session-handoff-prompt/references/compression-modes.md) |
-| 77 | ✓ | [`skills/session-handoff-prompt/references/examples.md`](skills/session-handoff-prompt/references/examples.md) |
-| 78 | ✓ | [`skills/session-handoff-prompt/references/output-contract.md`](skills/session-handoff-prompt/references/output-contract.md) |
-| 79 | ✓ | [`skills/session-handoff-prompt/references/source-selection.md`](skills/session-handoff-prompt/references/source-selection.md) |
-| 80 | ✓ | [`skills/session-handoff-prompt/references/task-forest-integration.md`](skills/session-handoff-prompt/references/task-forest-integration.md) |
-| 81 | ✓ | [`skills/session-handoff-prompt/scripts/local_paths.py`](skills/session-handoff-prompt/scripts/local_paths.py) |
-| 82 | ✓ | [`skills/session-handoff-prompt/scripts/project_session_events.py`](skills/session-handoff-prompt/scripts/project_session_events.py) |
-| 83 | ✓ | [`skills/session-handoff-prompt/scripts/read_task_forest_exports.py`](skills/session-handoff-prompt/scripts/read_task_forest_exports.py) |
-| 84 | ✓ | [`skills/session-handoff-prompt/scripts/redact_handoff.py`](skills/session-handoff-prompt/scripts/redact_handoff.py) |
-| 85 | ✓ | [`skills/session-handoff-prompt/scripts/smoke_test_handoff.py`](skills/session-handoff-prompt/scripts/smoke_test_handoff.py) |
-| 86 | ✓ | [`skills/session-handoff-prompt/scripts/validate_handoff_prompt.py`](skills/session-handoff-prompt/scripts/validate_handoff_prompt.py) |
-| 87 | ✓ | [`skills/session-handoff-prompt/SKILL.md`](skills/session-handoff-prompt/SKILL.md) |
-| 88 | ✓ | [`skills/task-clarifier/agents/openai.yaml`](skills/task-clarifier/agents/openai.yaml) |
-| 89 | ✓ | [`skills/task-clarifier/evals/test_behavior_guards.py`](skills/task-clarifier/evals/test_behavior_guards.py) |
-| 90 | ✓ | [`skills/task-clarifier/evals/test_trigger_contract.py`](skills/task-clarifier/evals/test_trigger_contract.py) |
-| 91 | ✓ | [`skills/task-clarifier/SKILL.md`](skills/task-clarifier/SKILL.md) |
-| 92 | ✓ | [`skills/task-forest/agents/openai.yaml`](skills/task-forest/agents/openai.yaml) |
-| 93 | ✓ | [`skills/task-forest/assets/task-forest-overview.html`](skills/task-forest/assets/task-forest-overview.html) |
-| 94 | ✓ | [`skills/task-forest/references/concurrency.md`](skills/task-forest/references/concurrency.md) |
-| 95 | ✓ | [`skills/task-forest/references/goal-alignment.md`](skills/task-forest/references/goal-alignment.md) |
-| 96 | ✓ | [`skills/task-forest/references/html-visualization-contract.md`](skills/task-forest/references/html-visualization-contract.md) |
-| 97 | ✓ | [`skills/task-forest/references/integration-contract.md`](skills/task-forest/references/integration-contract.md) |
-| 98 | ✓ | [`skills/task-forest/references/node-types.md`](skills/task-forest/references/node-types.md) |
-| 99 | ✓ | [`skills/task-forest/references/schema.md`](skills/task-forest/references/schema.md) |
-| 100 | ✓ | [`skills/task-forest/references/session-close-workflow.md`](skills/task-forest/references/session-close-workflow.md) |
-| 101 | ✓ | [`skills/task-forest/scripts/task_forest_html.py`](skills/task-forest/scripts/task_forest_html.py) |
-| 102 | ✓ | [`skills/task-forest/scripts/task_forest_ordering.py`](skills/task-forest/scripts/task_forest_ordering.py) |
-| 103 | ✓ | [`skills/task-forest/scripts/task_forest.py`](skills/task-forest/scripts/task_forest.py) |
-| 104 | ✓ | [`skills/task-forest/scripts/validate_task_forest_export.py`](skills/task-forest/scripts/validate_task_forest_export.py) |
-| 105 | ✓ | [`skills/task-forest/SKILL.md`](skills/task-forest/SKILL.md) |
-| 106 | ✓ | [`skills/user-profile-keeper/agents/openai.yaml`](skills/user-profile-keeper/agents/openai.yaml) |
-| 107 | ✓ | [`skills/user-profile-keeper/references/examples.md`](skills/user-profile-keeper/references/examples.md) |
-| 108 | ✓ | [`skills/user-profile-keeper/references/privacy-boundary.md`](skills/user-profile-keeper/references/privacy-boundary.md) |
-| 109 | ✓ | [`skills/user-profile-keeper/references/profile-schema.md`](skills/user-profile-keeper/references/profile-schema.md) |
-| 110 | ✓ | [`skills/user-profile-keeper/references/questionnaire.md`](skills/user-profile-keeper/references/questionnaire.md) |
-| 111 | ✓ | [`skills/user-profile-keeper/references/task-clarifier-integration.md`](skills/user-profile-keeper/references/task-clarifier-integration.md) |
-| 112 | ✓ | [`skills/user-profile-keeper/references/update-policy.md`](skills/user-profile-keeper/references/update-policy.md) |
-| 113 | ✓ | [`skills/user-profile-keeper/scripts/onboarding_webui.py`](skills/user-profile-keeper/scripts/onboarding_webui.py) |
-| 114 | ✓ | [`skills/user-profile-keeper/scripts/profile_store.py`](skills/user-profile-keeper/scripts/profile_store.py) |
-| 115 | ✓ | [`skills/user-profile-keeper/scripts/smoke_test_onboarding.py`](skills/user-profile-keeper/scripts/smoke_test_onboarding.py) |
-| 116 | ✓ | [`skills/user-profile-keeper/SKILL.md`](skills/user-profile-keeper/SKILL.md) |
+| 49 | ✓ | [`skills/clear-communication/evals/trigger-and-quality-cases.json`](skills/clear-communication/evals/trigger-and-quality-cases.json) |
+| 50 | ✓ | [`skills/clear-communication/references/examples.md`](skills/clear-communication/references/examples.md) |
+| 51 | ✓ | [`skills/clear-communication/references/licenses/gpt-with-taste.txt`](skills/clear-communication/references/licenses/gpt-with-taste.txt) |
+| 52 | ✓ | [`skills/clear-communication/references/licenses/plain-english.txt`](skills/clear-communication/references/licenses/plain-english.txt) |
+| 53 | ✓ | [`skills/clear-communication/references/logic-patterns.md`](skills/clear-communication/references/logic-patterns.md) |
+| 54 | ✓ | [`skills/clear-communication/references/sources.md`](skills/clear-communication/references/sources.md) |
+| 55 | ✓ | [`skills/clear-communication/SKILL.md`](skills/clear-communication/SKILL.md) |
+| 56 | ✓ | [`skills/pause-and-resume/SKILL.md`](skills/pause-and-resume/SKILL.md) |
+| 57 | ✓ | [`skills/run-history-skill-builder/agents/openai.yaml`](skills/run-history-skill-builder/agents/openai.yaml) |
+| 58 | ✓ | [`skills/run-history-skill-builder/evals/evals.json`](skills/run-history-skill-builder/evals/evals.json) |
+| 59 | ✓ | [`skills/run-history-skill-builder/references/examples.md`](skills/run-history-skill-builder/references/examples.md) |
+| 60 | ✓ | [`skills/run-history-skill-builder/references/history-mining.md`](skills/run-history-skill-builder/references/history-mining.md) |
+| 61 | ✓ | [`skills/run-history-skill-builder/references/open-source-pattern-mining.md`](skills/run-history-skill-builder/references/open-source-pattern-mining.md) |
+| 62 | ✓ | [`skills/run-history-skill-builder/references/self-repair-and-evals.md`](skills/run-history-skill-builder/references/self-repair-and-evals.md) |
+| 63 | ✓ | [`skills/run-history-skill-builder/references/skill-design-protocol.md`](skills/run-history-skill-builder/references/skill-design-protocol.md) |
+| 64 | ✓ | [`skills/run-history-skill-builder/scripts/test_validate_skill_package.py`](skills/run-history-skill-builder/scripts/test_validate_skill_package.py) |
+| 65 | ✓ | [`skills/run-history-skill-builder/scripts/validate_skill_package.py`](skills/run-history-skill-builder/scripts/validate_skill_package.py) |
+| 66 | ✓ | [`skills/run-history-skill-builder/SKILL.md`](skills/run-history-skill-builder/SKILL.md) |
+| 67 | ✓ | [`skills/run-history-skill-upgrader/agents/openai.yaml`](skills/run-history-skill-upgrader/agents/openai.yaml) |
+| 68 | ✓ | [`skills/run-history-skill-upgrader/evals/evals.json`](skills/run-history-skill-upgrader/evals/evals.json) |
+| 69 | ✓ | [`skills/run-history-skill-upgrader/references/evidence-and-scope.md`](skills/run-history-skill-upgrader/references/evidence-and-scope.md) |
+| 70 | ✓ | [`skills/run-history-skill-upgrader/references/examples.md`](skills/run-history-skill-upgrader/references/examples.md) |
+| 71 | ✓ | [`skills/run-history-skill-upgrader/references/upgrade-decision-protocol.md`](skills/run-history-skill-upgrader/references/upgrade-decision-protocol.md) |
+| 72 | ✓ | [`skills/run-history-skill-upgrader/references/validation-and-regression.md`](skills/run-history-skill-upgrader/references/validation-and-regression.md) |
+| 73 | ✓ | [`skills/run-history-skill-upgrader/scripts/test_validate_upgrade_artifacts.py`](skills/run-history-skill-upgrader/scripts/test_validate_upgrade_artifacts.py) |
+| 74 | ✓ | [`skills/run-history-skill-upgrader/scripts/validate_upgrade_artifacts.py`](skills/run-history-skill-upgrader/scripts/validate_upgrade_artifacts.py) |
+| 75 | ✓ | [`skills/run-history-skill-upgrader/SKILL.md`](skills/run-history-skill-upgrader/SKILL.md) |
+| 76 | ✓ | [`skills/session-handoff-prompt/agents/openai.yaml`](skills/session-handoff-prompt/agents/openai.yaml) |
+| 77 | ✓ | [`skills/session-handoff-prompt/evals/trigger-and-quality-cases.json`](skills/session-handoff-prompt/evals/trigger-and-quality-cases.json) |
+| 78 | ✓ | [`skills/session-handoff-prompt/references/compression-modes.md`](skills/session-handoff-prompt/references/compression-modes.md) |
+| 79 | ✓ | [`skills/session-handoff-prompt/references/examples.md`](skills/session-handoff-prompt/references/examples.md) |
+| 80 | ✓ | [`skills/session-handoff-prompt/references/output-contract.md`](skills/session-handoff-prompt/references/output-contract.md) |
+| 81 | ✓ | [`skills/session-handoff-prompt/references/source-selection.md`](skills/session-handoff-prompt/references/source-selection.md) |
+| 82 | ✓ | [`skills/session-handoff-prompt/references/task-forest-integration.md`](skills/session-handoff-prompt/references/task-forest-integration.md) |
+| 83 | ✓ | [`skills/session-handoff-prompt/scripts/local_paths.py`](skills/session-handoff-prompt/scripts/local_paths.py) |
+| 84 | ✓ | [`skills/session-handoff-prompt/scripts/project_session_events.py`](skills/session-handoff-prompt/scripts/project_session_events.py) |
+| 85 | ✓ | [`skills/session-handoff-prompt/scripts/read_task_forest_exports.py`](skills/session-handoff-prompt/scripts/read_task_forest_exports.py) |
+| 86 | ✓ | [`skills/session-handoff-prompt/scripts/redact_handoff.py`](skills/session-handoff-prompt/scripts/redact_handoff.py) |
+| 87 | ✓ | [`skills/session-handoff-prompt/scripts/smoke_test_handoff.py`](skills/session-handoff-prompt/scripts/smoke_test_handoff.py) |
+| 88 | ✓ | [`skills/session-handoff-prompt/scripts/validate_handoff_prompt.py`](skills/session-handoff-prompt/scripts/validate_handoff_prompt.py) |
+| 89 | ✓ | [`skills/session-handoff-prompt/SKILL.md`](skills/session-handoff-prompt/SKILL.md) |
+| 90 | ✓ | [`skills/task-clarifier/agents/openai.yaml`](skills/task-clarifier/agents/openai.yaml) |
+| 91 | ✓ | [`skills/task-clarifier/evals/test_behavior_guards.py`](skills/task-clarifier/evals/test_behavior_guards.py) |
+| 92 | ✓ | [`skills/task-clarifier/evals/test_trigger_contract.py`](skills/task-clarifier/evals/test_trigger_contract.py) |
+| 93 | ✓ | [`skills/task-clarifier/SKILL.md`](skills/task-clarifier/SKILL.md) |
+| 94 | ✓ | [`skills/task-forest/agents/openai.yaml`](skills/task-forest/agents/openai.yaml) |
+| 95 | ✓ | [`skills/task-forest/assets/task-forest-overview.html`](skills/task-forest/assets/task-forest-overview.html) |
+| 96 | ✓ | [`skills/task-forest/references/concurrency.md`](skills/task-forest/references/concurrency.md) |
+| 97 | ✓ | [`skills/task-forest/references/goal-alignment.md`](skills/task-forest/references/goal-alignment.md) |
+| 98 | ✓ | [`skills/task-forest/references/html-visualization-contract.md`](skills/task-forest/references/html-visualization-contract.md) |
+| 99 | ✓ | [`skills/task-forest/references/integration-contract.md`](skills/task-forest/references/integration-contract.md) |
+| 100 | ✓ | [`skills/task-forest/references/node-types.md`](skills/task-forest/references/node-types.md) |
+| 101 | ✓ | [`skills/task-forest/references/schema.md`](skills/task-forest/references/schema.md) |
+| 102 | ✓ | [`skills/task-forest/references/session-close-workflow.md`](skills/task-forest/references/session-close-workflow.md) |
+| 103 | ✓ | [`skills/task-forest/scripts/task_forest_html.py`](skills/task-forest/scripts/task_forest_html.py) |
+| 104 | ✓ | [`skills/task-forest/scripts/task_forest_ordering.py`](skills/task-forest/scripts/task_forest_ordering.py) |
+| 105 | ✓ | [`skills/task-forest/scripts/task_forest.py`](skills/task-forest/scripts/task_forest.py) |
+| 106 | ✓ | [`skills/task-forest/scripts/validate_task_forest_export.py`](skills/task-forest/scripts/validate_task_forest_export.py) |
+| 107 | ✓ | [`skills/task-forest/SKILL.md`](skills/task-forest/SKILL.md) |
+| 108 | ✓ | [`skills/task-planner/agents/openai.yaml`](skills/task-planner/agents/openai.yaml) |
+| 109 | ✓ | [`skills/task-planner/assets/report.html`](skills/task-planner/assets/report.html) |
+| 110 | ✓ | [`skills/task-planner/references/plan-format.md`](skills/task-planner/references/plan-format.md) |
+| 111 | ✓ | [`skills/task-planner/scripts/events.py`](skills/task-planner/scripts/events.py) |
+| 112 | ✓ | [`skills/task-planner/scripts/model.py`](skills/task-planner/scripts/model.py) |
+| 113 | ✓ | [`skills/task-planner/scripts/plan.py`](skills/task-planner/scripts/plan.py) |
+| 114 | ✓ | [`skills/task-planner/SKILL.md`](skills/task-planner/SKILL.md) |
+| 115 | ✓ | [`skills/user-profile-keeper/agents/openai.yaml`](skills/user-profile-keeper/agents/openai.yaml) |
+| 116 | ✓ | [`skills/user-profile-keeper/references/examples.md`](skills/user-profile-keeper/references/examples.md) |
+| 117 | ✓ | [`skills/user-profile-keeper/references/privacy-boundary.md`](skills/user-profile-keeper/references/privacy-boundary.md) |
+| 118 | ✓ | [`skills/user-profile-keeper/references/profile-schema.md`](skills/user-profile-keeper/references/profile-schema.md) |
+| 119 | ✓ | [`skills/user-profile-keeper/references/questionnaire.md`](skills/user-profile-keeper/references/questionnaire.md) |
+| 120 | ✓ | [`skills/user-profile-keeper/references/task-clarifier-integration.md`](skills/user-profile-keeper/references/task-clarifier-integration.md) |
+| 121 | ✓ | [`skills/user-profile-keeper/references/update-policy.md`](skills/user-profile-keeper/references/update-policy.md) |
+| 122 | ✓ | [`skills/user-profile-keeper/scripts/onboarding_webui.py`](skills/user-profile-keeper/scripts/onboarding_webui.py) |
+| 123 | ✓ | [`skills/user-profile-keeper/scripts/profile_store.py`](skills/user-profile-keeper/scripts/profile_store.py) |
+| 124 | ✓ | [`skills/user-profile-keeper/scripts/smoke_test_onboarding.py`](skills/user-profile-keeper/scripts/smoke_test_onboarding.py) |
+| 125 | ✓ | [`skills/user-profile-keeper/SKILL.md`](skills/user-profile-keeper/SKILL.md) |
 
 ---
 

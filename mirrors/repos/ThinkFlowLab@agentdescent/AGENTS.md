@@ -43,7 +43,9 @@ When a class of mistake repeats, date a lesson in LESSONS.md (`Seen N×`); after
 
 The tier comes from the diff, never from the PR text:
 `python3 .github/scripts/risk_gate.py --pr <n> --repo ThinkFlowLab/agentdescent`, and the
-controller sets the `risk:T*` label within ~30 minutes. Rules:
+controller sets the `risk:T*` label on `opened` / `ready_for_review` /
+`reopened` for a same-repo PR, or on the next four-a-day cron tick for a
+fork PR. Rules:
 [`.github/agent/risk-rules.json`](.github/agent/risk-rules.json) (docs T0; tests,
 examples and `changelog.d/` T1; other package code and unknown paths T2; the
 core loop, model adapters, installers, release files, `.github/**` and these
@@ -103,11 +105,14 @@ question in a comment. Agents develop **only** `agent-ready` issues.
 
 ## Controller
 
-[`.github/workflows/controller.yml`](.github/workflows/controller.yml) runs every
-30 minutes with the built-in `GITHUB_TOKEN` only (no GitHub App, no secrets) and
-changes labels and nothing else: it sets `risk:T*` and `agent-pr` on open PRs,
-removes `agent-ready`/`agent-working` when a non-maintainer set or edited an
-issue after it was approved, and expires a claim after 6 h with no linked push.
+[`.github/workflows/controller.yml`](.github/workflows/controller.yml) runs on
+the `pull_request` events `opened`, `ready_for_review` and `reopened` (a
+fork-head run is skipped: that token cannot write) and on a four-a-day cron
+backstop, with the built-in `GITHUB_TOKEN` only (no GitHub App, no secrets) and
+changes labels and nothing else: it sets `risk:T*` and `agent-pr` on open
+non-draft PRs, removes `agent-ready`/`agent-working` when a non-maintainer set
+or edited an issue after it was approved, and expires a claim after 6 h with no
+linked push.
 It never adds `agent-ready`, never merges, comments or closes.
 
 | Repository variable | Effect |

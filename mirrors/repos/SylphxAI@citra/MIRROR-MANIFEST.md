@@ -63,7 +63,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`docs/public/llms.txt`](docs/public/llms.txt) |
+| 2 | ✓ | [`apps/web/public/llms.txt`](apps/web/public/llms.txt) |
 | 3 | ✓ | [`skills/anymd/SKILL.md`](skills/anymd/SKILL.md) |
 | 4 | → | [`brand/README.md`](brand/README.md) |
 | 5 | → | [`docs/guide/hosted.md`](docs/guide/hosted.md) |

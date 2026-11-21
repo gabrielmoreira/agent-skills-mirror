@@ -277,7 +277,7 @@ For missing page files or attachments, follow
 
 For HTML report creation or updates, enter
 [report-with-html's Define success workflow](report-with-html/SKILL.md#workflow)
-for reader/use, evidence precision, delivery location and investigation acceptance.
+for reader/use, live-cockpit vs static-report boundary, evidence precision, delivery location and investigation acceptance.
 Its [technical comparison reading order](report-with-html/references/visualization-patterns.md)
 owns concrete plans, cost boundaries and next-verification choices; do not turn a research
 shortlist into purchase or deployment approval.
@@ -331,6 +331,8 @@ For hook model-context delivery claims or ordinary-interface notification visibi
 for current-version/partial-structure SQLite upgrades, use that file's #59.
 Before accepting persisted evidence that releases a hook block, read
 [release-evidence failure handling](daymade-claude-code/claude-code-hooks/references/hook_pitfalls.md#68-invalid-release-evidence-can-escape-into-an-outer-fail-open-handler).
+For Git inspections whose stdout must not hide a nonzero exit, or dispatcher-owned
+environment state, read [hook_pitfalls.md #69/#70](daymade-claude-code/claude-code-hooks/references/hook_pitfalls.md).
 
 Python entry points registered as synchronous Claude Code/Codex lifecycle hooks or
 background services (LaunchAgents included) must call a fixed direct interpreter
@@ -501,6 +503,8 @@ Process exit alone does not establish the measured result.
 
 A `tests/` directory under a Skill does **not** automatically run in CI.
 [The registry](scripts/ci/test-suites.txt) owns suite admission and membership;
+[the selector](scripts/ci/select_registered_suites.py) owns diff-based suite selection
+and on-demand tool flags;
 [the dispatcher](scripts/ci/run_registered_tests.sh) owns their execution commands.
 [The workflow](.github/workflows/ci.yml) owns job environments, dependency installation,
 timeouts and additional test steps. For required-check readback, bootstrap mismatches, installation stalls,
@@ -971,6 +975,8 @@ before preparing the task checkout, including sparse and `--no-checkout` worktre
 
 For repository recovery or convergence under concurrent work, enter
 [git-safety-net's Outcome contract](git-safety-net/SKILL.md#outcome-contract--keep-the-safety-net-subordinate-to-the-users-job).
+For branch or ref retirement, follow
+[Preservation before retirement](git-safety-net/references/merge_verification.md#preservation-before-retirement).
 For consolidating completed-task evidence, enter
 [task evidence closeout](daymade-macos/macos-cleaner/references/task-evidence-closeout.md).
 For stash export or independent recovery, follow the

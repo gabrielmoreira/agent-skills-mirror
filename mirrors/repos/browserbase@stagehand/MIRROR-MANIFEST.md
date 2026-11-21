@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `browserbase/stagehand` — 26 default patterns, 1 followed patterns, 6 file(s) materialized.
+Mirror of `browserbase/stagehand` — 26 default patterns, 2 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `browserbase/stagehand` — 26 default patterns, 1 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 6 |
+| Followed pats | 2 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `browserbase/stagehand` — 26 default patterns, 1 followed patterns, 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `packages/cli/README.md`
+- `.changeset/README.md`
 
 ## File Index
 
@@ -64,7 +65,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`packages/integrations/cursor/AGENTS.md`](packages/integrations/cursor/AGENTS.md) |
 | 4 | ✓ | [`packages/integrations/fx/AGENTS.md`](packages/integrations/fx/AGENTS.md) |
 | 5 | ✓ | [`packages/integrations/fx/skills/stagehand-facade/SKILL.md`](packages/integrations/fx/skills/stagehand-facade/SKILL.md) |
-| 6 | → | [`packages/cli/README.md`](packages/cli/README.md) |
+| 6 | → | [`.changeset/README.md`](.changeset/README.md) |
+| 7 | → | [`packages/cli/README.md`](packages/cli/README.md) |
 
 ---
 

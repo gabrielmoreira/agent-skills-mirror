@@ -5,7 +5,7 @@ description: Audit Open Design UI usage and component contributions before revie
 
 # Check Open Design UI compliance
 
-This Skill is read-only unless a failing check is being fixed. Read [AGENTS.md](../../../AGENTS.md), the [component guide](../../../packages/design-system/components/README.md), `registry.json` and the affected source files.
+This Skill is read-only unless a failing check is being fixed. Read [AGENTS.md](../../../AGENTS.md), the [component guide](../../../packages/open-design-ui/README.md), `registry.json` and the affected source files.
 
 1. Run `npm run design:check`. It checks token freshness, theme parity, contrast, import boundaries, native-control baselines and registry adoption.
 2. For component changes also run `npm run components:build`, `npm run typecheck:studio` and the focused tests. Use `npm run check` for the repository gate when the change touches shared rules or configuration.

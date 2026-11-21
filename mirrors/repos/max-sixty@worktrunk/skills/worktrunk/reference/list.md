@@ -294,7 +294,7 @@ Item fields:
 | Field | Type | Description |
 |-------|------|-------------|
 | `sha` | string | Full commit SHA (40 chars) |
-| `short_sha` | string | Short commit SHA, abbreviated per `core.abbrev` (auto-extends for ambiguous prefixes) |
+| `short_sha` | string/null | Short commit SHA, abbreviated per `core.abbrev` (auto-extends for ambiguous prefixes); null when the commit can't be read |
 | `subject` | string/null | Commit subject (first line); null when not loaded, as for a prunable worktree |
 | `committed_at` | string/null | Committer time, RFC 3339 UTC; null when not loaded |
 
@@ -401,6 +401,7 @@ Presentation only — every value here renders facts that appear elsewhere in th
 | `url` | string | Repository web URL |
 | `provider` | string | `"github"`, `"gitlab"`, `"gitea"`, `"azure-devops"`, or `"unknown"` |
 | `host` | string | Repository web host |
+| `api_host` | string | API host from `forge.hostname`, only on `repo.forge` when set |
 | `owner` | string | Owner, organization, or namespace path |
 | `name` | string | Repository name |
 | `project` | string | Azure DevOps project name; absent for other providers |

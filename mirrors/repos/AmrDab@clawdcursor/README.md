@@ -142,7 +142,7 @@ In tool terms:
 - **Acting by name:** pressing "Send" because it is called Send, not because it sits at a spot on the screen.
 - **OCR:** text recognition, reading the words in a picture of the screen. It runs on your computer.
 - **Playwright and CDP:** Playwright is a library that controls Chrome and Edge from the inside, over the Chrome DevTools Protocol (CDP), the browser's own debugging connection. Apps built on a browser engine (Electron or WebView2) can be reached the same way; `system detect_webview` finds them.
-- **Compact tools:** the six tools your AI sees with `--compact`. Without it there are 89 smaller tools, one per action. See [The tools](#the-tools).
+- **Compact tools:** the six tools your AI sees with `--compact`. Without it there are 90 smaller tools, one per action. See [The tools](#the-tools).
 - **The pill and the three screen states:** while your AI is working, a pill on screen says what it is doing ("Typing in Edge"). An amber outline around the agent's window means background work, while you keep using the computer. An amber glow on the whole screen means it is using the mouse and keyboard. A blue glow on the whole screen means it needs you for a step. Clicks go through the pill, and it stays out of your AI's screenshots.
 
 ---
@@ -164,8 +164,8 @@ What is enforced, whatever your AI sends:
 
 - **A Stop button.** Press Stop on the pill (or double-click it), or run `clawdcursor stop`. Every Clawd Cursor process stops, including a call or batch already running, and stays stopped across restarts until you resume.
 - **Pause and Resume on the pill** (Windows, macOS). Pause holds every act of the agent, background ones included, until you press Resume. Resume continues without a step in the chat.
-- **Three screen states.** An amber outline around the agent's window: it is working in the background, and you keep using the computer. An amber glow on the whole screen: it is using the mouse and keyboard. A blue glow on the whole screen, and no outline: it needs you for a step.
-- **It waits while you use the computer** (Windows, macOS). It never types or moves the mouse while your hands are on it. It waits until you have been idle for 1 s. If you take over mid-action, nothing more is sent; after 5 s it carries on if you are idle, otherwise it waits for Resume. Background acts, by name or by window message, do not wait. Linux cannot read idle time, so nothing waits there.
+- **Three screen states.** An amber outline around the agent's window: it is working in the background, and you keep using the computer. An amber glow on the whole screen: it is using the mouse and keyboard. A blue glow on the whole screen, and no outline: it needs you for a step. The pill says which of the first two it is: "running in background" or "requires foreground".
+- **It waits while you use the computer** (Windows, macOS). It never types or moves the mouse while your hands are on it. It waits until you have been idle for 1 s. If you take over mid-action, nothing more is sent, and it carries on by itself once you are idle again: no Resume click needed. Background acts, by name or by window message, do not wait. Linux cannot read idle time, so nothing waits there.
 - **The pause card.** For a sign-in or a 2FA code your AI hands that one step to you with `system pause_for_user`: a card on screen says what is needed and can offer choices or a text box, and your AI continues when you click Resume, or as soon as its `done_when` condition shows on screen. While the card is up, no other tool call runs. A choice or a typed reply on the card comes only from you: your AI cannot click its own card or the pill. On the granular surface an agent can also end a pause with `resume_task`; that is reported as unverified, never as your answer.
 - **No typing into AI assistant windows.** Input is refused when the window in front is an AI assistant your AI did not focus or open on purpose, or is no longer the window it was working in.
 - **Password values are never read.** Password field values are never returned by tree, find or value reads on Windows, macOS and Linux. A screenshot or OCR can still show whatever is visible on screen.
@@ -189,6 +189,14 @@ Privacy:
 - **Pauses.** A pause times out after 15 minutes (`CLAWD_PAUSE_TIMEOUT_MIN`). `CLAWD_NO_PAUSE=1` turns pausing off for CI and unattended runs.
 
 [SECURITY.md](SECURITY.md) has the threat model, the limits of each guarantee, and how to report a vulnerability privately.
+
+---
+
+## App guides
+
+An app guide lists one app's keyboard shortcuts for your OS, a few workflows and tips. Your AI reads it with `system shortcuts_list` (`context` = the app or site, `query` = only matching shortcuts), and `open_app`, `open_file`, `open_url`, `browser navigate` and `window focus` show the app's essential keys for your OS, once per app per session, when there is a guide.
+
+- **Where they come from:** the guides in [AmrDab/clawdcursor-guides](https://github.com/AmrDab/clawdcursor-guides), the verified ones, shipped in the npm package as one pack. Every guide is checked on load; one that fails is skipped.
 
 ---
 
@@ -367,6 +375,13 @@ Restart the host afterwards so it starts the new server. `clawdcursor versions` 
 
 ## What's new
 
+**2.3.0** &mdash; **You keep your computer.** ([full changelog](CHANGELOG.md))
+- While the agent works in the background you can use your computer: a step that needs the mouse or keyboard is not sent while you use them, and the agent goes on by name meanwhile.
+- The pill says "running in background" or "requires foreground", and the outline marks only the window the agent works in now.
+- App guides are back: 32 guides ship in the package, and the agent gets an app's essential keys in one line when it opens.
+- Pictures, PDFs, text and media the agent downloads land in your Downloads folder under their own names.
+- Security: settings are no longer read from files in the working directory (GHSA-cx4w-xx82-f6f6).
+
 **2.2.0** &mdash; **Works beside you.** ([full changelog](CHANGELOG.md))
 - On Windows and macOS it never types or moves the mouse while you are using the computer: it waits until you stop.
 - Three screen states: an amber outline around the agent's window in background work, an amber glow on the whole screen when it uses the mouse and keyboard, a blue glow when it needs you for a step.
@@ -385,7 +400,7 @@ Restart the host afterwards so it starts the new server. `clawdcursor versions` 
 
 Earlier releases are in the [changelog](CHANGELOG.md).
 
-**2.2.** Clawd Cursor now works beside you: see [What's new](#whats-new) and [What protects you](#what-protects-you). The standard benchmark across app types, OSes and models is the release gate, and the numbers are in [Proof](#proof).
+**2.3.** Clawd Cursor works beside you, and you keep your computer: see [What's new](#whats-new) and [What protects you](#what-protects-you). The standard benchmark across app types, OSes and models is the release gate, and the numbers are in [Proof](#proof).
 
 ---
 
@@ -394,7 +409,7 @@ Earlier releases are in the [changelog](CHANGELOG.md).
 Two surfaces run the same code behind the same guards.
 
 - **Compact** (`--compact`, recommended): six tools, each with an `action` parameter. About 7,000 tokens of `tools/list`.
-- **Granular** (the default without `--compact`): 89 tools, one per action. About 19,000 tokens. Use it when a runtime needs every primitive as its own tool, or when you want your host to prompt per kind of action.
+- **Granular** (the default without `--compact`): 90 tools, one per action. About 19,000 tokens. Use it when a runtime needs every primitive as its own tool, or when you want your host to prompt per kind of action.
 
 (Token figures are the `tools/list` JSON of 2.0.0, characters ÷ 3.5.)
 

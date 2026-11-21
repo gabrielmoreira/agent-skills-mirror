@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `makecindy/cindy` — 26 default patterns, 27 followed patterns, 280 file(s) materialized.
+Mirror of `makecindy/cindy` — 26 default patterns, 27 followed patterns, 281 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `makecindy/cindy` — 26 default patterns, 27 followed patterns, 280 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 27 |
-| Files         | 280 |
+| Files         | 281 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -315,56 +315,57 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 228 | ✓ | [`packages/agent-net-core/sim/results/2026-11-17-window-interop/README.md`](packages/agent-net-core/sim/results/2026-11-17-window-interop/README.md) |
 | 229 | ✓ | [`packages/agent-net-core/sim/results/2026-11-19-policer-tail/README.md`](packages/agent-net-core/sim/results/2026-11-19-policer-tail/README.md) |
 | 230 | ✓ | [`packages/agent-net-core/sim/results/2026-11-19-priority-buffer/README.md`](packages/agent-net-core/sim/results/2026-11-19-priority-buffer/README.md) |
-| 231 | ✓ | [`packages/agent-net-core/sim/results/README.md`](packages/agent-net-core/sim/results/README.md) |
-| 232 | ✓ | [`packages/browser-control-runtime/README.md`](packages/browser-control-runtime/README.md) |
-| 233 | ✓ | [`packages/design-tokens/README.md`](packages/design-tokens/README.md) |
-| 234 | ✓ | [`packages/device-link/README.md`](packages/device-link/README.md) |
-| 235 | ✓ | [`packages/heartbeat-client/README.md`](packages/heartbeat-client/README.md) |
-| 236 | ✓ | [`packages/lizi-im/README.md`](packages/lizi-im/README.md) |
-| 237 | ✓ | [`packages/lizi-im/src/bluebubbles/README.md`](packages/lizi-im/src/bluebubbles/README.md) |
-| 238 | ✓ | [`packages/lizi-mcps/src/computer/README.md`](packages/lizi-mcps/src/computer/README.md) |
-| 239 | ✓ | [`packages/maker-core/AGENTS.md`](packages/maker-core/AGENTS.md) |
-| 240 | ✓ | [`packages/maker-shared/app-icons/README.md`](packages/maker-shared/app-icons/README.md) |
-| 241 | ✓ | [`packages/model-compat/README.md`](packages/model-compat/README.md) |
-| 242 | ✓ | [`packages/model-providers/AGENTS.md`](packages/model-providers/AGENTS.md) |
-| 243 | ✓ | [`packages/opencli-vendor/README.md`](packages/opencli-vendor/README.md) |
-| 244 | ✓ | [`packages/project-context/README.md`](packages/project-context/README.md) |
-| 245 | ✓ | [`packages/remote-credentials-native/README.md`](packages/remote-credentials-native/README.md) |
-| 246 | ✓ | [`packages/wechat-ilink/README.md`](packages/wechat-ilink/README.md) |
-| 247 | ✓ | [`prototypes/agent-net-spike/README.md`](prototypes/agent-net-spike/README.md) |
-| 248 | ✓ | [`prototypes/agent-net-spike/results/2026-11-05-edgehub-core/README.md`](prototypes/agent-net-spike/results/2026-11-05-edgehub-core/README.md) |
-| 249 | ✓ | [`prototypes/agent-net-spike/results/2026-11-05-traversal/README.md`](prototypes/agent-net-spike/results/2026-11-05-traversal/README.md) |
-| 250 | ✓ | [`prototypes/agent-net-spike/results/2026-11-07-desktop-runtime/README.md`](prototypes/agent-net-spike/results/2026-11-07-desktop-runtime/README.md) |
-| 251 | ✓ | [`prototypes/agent-net-spike/results/2026-11-07-v2-server/README.md`](prototypes/agent-net-spike/results/2026-11-07-v2-server/README.md) |
-| 252 | ✓ | [`scripts/examples/plugin-model-picker/README.md`](scripts/examples/plugin-model-picker/README.md) |
-| 253 | ✓ | [`tools/model-catalog/README.md`](tools/model-catalog/README.md) |
-| 254 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 255 | → | [`apps/mobile/docs/simulator-debugging.md`](apps/mobile/docs/simulator-debugging.md) |
-| 256 | → | [`CODE_OF_CONDUCT.en.md`](CODE_OF_CONDUCT.en.md) |
-| 257 | → | [`CONTRIBUTING.en.md`](CONTRIBUTING.en.md) |
-| 258 | → | [`DESIGN.md`](DESIGN.md) |
-| 259 | → | [`docs/auth-realm-routing.md`](docs/auth-realm-routing.md) |
-| 260 | → | [`docs/design-rules/cindy-design-system.md`](docs/design-rules/cindy-design-system.md) |
-| 261 | → | [`docs/design-rules/DESIGN.md`](docs/design-rules/DESIGN.md) |
-| 262 | → | [`docs/design-rules/README.md`](docs/design-rules/README.md) |
-| 263 | → | [`docs/dev-rules/architecture-invariants.md`](docs/dev-rules/architecture-invariants.md) |
-| 264 | → | [`docs/dev-rules/desktop-development.md`](docs/dev-rules/desktop-development.md) |
-| 265 | → | [`docs/dev-rules/development-workflow.md`](docs/dev-rules/development-workflow.md) |
-| 266 | → | [`docs/dev-rules/environment-setup.md`](docs/dev-rules/environment-setup.md) |
-| 267 | → | [`docs/dev-rules/log-upload-and-redaction.md`](docs/dev-rules/log-upload-and-redaction.md) |
-| 268 | → | [`docs/dev-rules/maker-core-and-agent-behavior.md`](docs/dev-rules/maker-core-and-agent-behavior.md) |
-| 269 | → | [`docs/dev-rules/mobile-development.md`](docs/dev-rules/mobile-development.md) |
-| 270 | → | [`docs/dev-rules/README.md`](docs/dev-rules/README.md) |
-| 271 | → | [`docs/dev-rules/rule-index.md`](docs/dev-rules/rule-index.md) |
-| 272 | → | [`docs/dev-rules/server-channel-review.md`](docs/dev-rules/server-channel-review.md) |
-| 273 | → | [`docs/linux.md`](docs/linux.md) |
-| 274 | → | [`docs/product-rules/core-product-principles.md`](docs/product-rules/core-product-principles.md) |
-| 275 | → | [`docs/product-rules/README.md`](docs/product-rules/README.md) |
-| 276 | → | [`docs/README.md`](docs/README.md) |
-| 277 | → | [`README.md`](README.md) |
-| 278 | → | [`REVIEW.md`](REVIEW.md) |
-| 279 | → | [`SECURITY.en.md`](SECURITY.en.md) |
-| 280 | → | [`SUPPORT.en.md`](SUPPORT.en.md) |
+| 231 | ✓ | [`packages/agent-net-core/sim/results/2026-11-21-idle-dead/README.md`](packages/agent-net-core/sim/results/2026-11-21-idle-dead/README.md) |
+| 232 | ✓ | [`packages/agent-net-core/sim/results/README.md`](packages/agent-net-core/sim/results/README.md) |
+| 233 | ✓ | [`packages/browser-control-runtime/README.md`](packages/browser-control-runtime/README.md) |
+| 234 | ✓ | [`packages/design-tokens/README.md`](packages/design-tokens/README.md) |
+| 235 | ✓ | [`packages/device-link/README.md`](packages/device-link/README.md) |
+| 236 | ✓ | [`packages/heartbeat-client/README.md`](packages/heartbeat-client/README.md) |
+| 237 | ✓ | [`packages/lizi-im/README.md`](packages/lizi-im/README.md) |
+| 238 | ✓ | [`packages/lizi-im/src/bluebubbles/README.md`](packages/lizi-im/src/bluebubbles/README.md) |
+| 239 | ✓ | [`packages/lizi-mcps/src/computer/README.md`](packages/lizi-mcps/src/computer/README.md) |
+| 240 | ✓ | [`packages/maker-core/AGENTS.md`](packages/maker-core/AGENTS.md) |
+| 241 | ✓ | [`packages/maker-shared/app-icons/README.md`](packages/maker-shared/app-icons/README.md) |
+| 242 | ✓ | [`packages/model-compat/README.md`](packages/model-compat/README.md) |
+| 243 | ✓ | [`packages/model-providers/AGENTS.md`](packages/model-providers/AGENTS.md) |
+| 244 | ✓ | [`packages/opencli-vendor/README.md`](packages/opencli-vendor/README.md) |
+| 245 | ✓ | [`packages/project-context/README.md`](packages/project-context/README.md) |
+| 246 | ✓ | [`packages/remote-credentials-native/README.md`](packages/remote-credentials-native/README.md) |
+| 247 | ✓ | [`packages/wechat-ilink/README.md`](packages/wechat-ilink/README.md) |
+| 248 | ✓ | [`prototypes/agent-net-spike/README.md`](prototypes/agent-net-spike/README.md) |
+| 249 | ✓ | [`prototypes/agent-net-spike/results/2026-11-05-edgehub-core/README.md`](prototypes/agent-net-spike/results/2026-11-05-edgehub-core/README.md) |
+| 250 | ✓ | [`prototypes/agent-net-spike/results/2026-11-05-traversal/README.md`](prototypes/agent-net-spike/results/2026-11-05-traversal/README.md) |
+| 251 | ✓ | [`prototypes/agent-net-spike/results/2026-11-07-desktop-runtime/README.md`](prototypes/agent-net-spike/results/2026-11-07-desktop-runtime/README.md) |
+| 252 | ✓ | [`prototypes/agent-net-spike/results/2026-11-07-v2-server/README.md`](prototypes/agent-net-spike/results/2026-11-07-v2-server/README.md) |
+| 253 | ✓ | [`scripts/examples/plugin-model-picker/README.md`](scripts/examples/plugin-model-picker/README.md) |
+| 254 | ✓ | [`tools/model-catalog/README.md`](tools/model-catalog/README.md) |
+| 255 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 256 | → | [`apps/mobile/docs/simulator-debugging.md`](apps/mobile/docs/simulator-debugging.md) |
+| 257 | → | [`CODE_OF_CONDUCT.en.md`](CODE_OF_CONDUCT.en.md) |
+| 258 | → | [`CONTRIBUTING.en.md`](CONTRIBUTING.en.md) |
+| 259 | → | [`DESIGN.md`](DESIGN.md) |
+| 260 | → | [`docs/auth-realm-routing.md`](docs/auth-realm-routing.md) |
+| 261 | → | [`docs/design-rules/cindy-design-system.md`](docs/design-rules/cindy-design-system.md) |
+| 262 | → | [`docs/design-rules/DESIGN.md`](docs/design-rules/DESIGN.md) |
+| 263 | → | [`docs/design-rules/README.md`](docs/design-rules/README.md) |
+| 264 | → | [`docs/dev-rules/architecture-invariants.md`](docs/dev-rules/architecture-invariants.md) |
+| 265 | → | [`docs/dev-rules/desktop-development.md`](docs/dev-rules/desktop-development.md) |
+| 266 | → | [`docs/dev-rules/development-workflow.md`](docs/dev-rules/development-workflow.md) |
+| 267 | → | [`docs/dev-rules/environment-setup.md`](docs/dev-rules/environment-setup.md) |
+| 268 | → | [`docs/dev-rules/log-upload-and-redaction.md`](docs/dev-rules/log-upload-and-redaction.md) |
+| 269 | → | [`docs/dev-rules/maker-core-and-agent-behavior.md`](docs/dev-rules/maker-core-and-agent-behavior.md) |
+| 270 | → | [`docs/dev-rules/mobile-development.md`](docs/dev-rules/mobile-development.md) |
+| 271 | → | [`docs/dev-rules/README.md`](docs/dev-rules/README.md) |
+| 272 | → | [`docs/dev-rules/rule-index.md`](docs/dev-rules/rule-index.md) |
+| 273 | → | [`docs/dev-rules/server-channel-review.md`](docs/dev-rules/server-channel-review.md) |
+| 274 | → | [`docs/linux.md`](docs/linux.md) |
+| 275 | → | [`docs/product-rules/core-product-principles.md`](docs/product-rules/core-product-principles.md) |
+| 276 | → | [`docs/product-rules/README.md`](docs/product-rules/README.md) |
+| 277 | → | [`docs/README.md`](docs/README.md) |
+| 278 | → | [`README.md`](README.md) |
+| 279 | → | [`REVIEW.md`](REVIEW.md) |
+| 280 | → | [`SECURITY.en.md`](SECURITY.en.md) |
+| 281 | → | [`SUPPORT.en.md`](SUPPORT.en.md) |
 
 ---
 

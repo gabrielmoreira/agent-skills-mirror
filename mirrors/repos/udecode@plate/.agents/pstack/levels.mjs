@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Lists each stretch of a decision log that ran below this session's level or
 // the configured seats: a lead stretch on a lower effort, another model or a
-// Codex lead, and a panel, architect or arena round with a seat missing or on
+// Codex lead, and a panel or arena round with a seat missing or on
 // a lower effort. The configured seats come from the runtime's models sheet;
 // a `<seat> @<effort>` that a project rule outside the pstack block names
 // replaces that seat's effort, the highest one when it names several. The
@@ -13,9 +13,7 @@
 //        --seats replaces the configured seats of every round)
 
 import { existsSync, readFileSync } from 'node:fs';
-import { homedir } from 'node:os';
-import { join } from 'node:path';
-import { capEffort, EFFORTS, findLead, maxEffort } from './lead.mjs';
+import { capEffort, EFFORTS, findLead, maxEffort, modelsSheet } from './lead.mjs';
 
 const rank = (effort) => EFFORTS.indexOf(effort);
 const MODEL = /^(?:(?:codex|agy):[\w.-]+|claude-[\w.-]+|gpt-[\w.-]+|gemini-[\w.-]+|opus|sonnet|haiku|fable)$/u;
@@ -26,7 +24,6 @@ const REFUSING = new Set(['codex', 'gemini']);
 const seatKey = (model) => model.replace(/^(?:codex|agy):/u, '').replace(/^claude-([a-z]+)-.*$/u, '$1');
 const ROUNDS = {
   panel: { opens: /^seats\b/u, role: 'interrogate reviewers' },
-  architect: { opens: /^runners\b/u, role: 'architect runners' },
   arena: { opens: /^runners\b/u, role: 'arena runners' },
 };
 const BLOCK = /<!-- pstack:begin[\s\S]*?<!-- pstack:end -->/gu;
@@ -74,7 +71,14 @@ function targets(sheet, agents, defaultEffort, override, max) {
   return (role) => {
     if (override) return seatList(override).map((seat) => capped({ ...seat, effort: seat.effort ?? max ?? defaultEffort }));
     const line = sheet?.match(new RegExp(`^${role}:\\s*(.+)$`, 'mu'))?.[1];
-    return line ? seatList(line).map((seat) => capped(raised({ ...seat, effort: seat.effort ?? max ?? defaultEffort }))) : null;
+    const settle = (seat) => capped(raised({ ...seat, effort: seat.effort ?? max ?? defaultEffort }));
+    // An entry may name a fallback after `or`, which answers for the seat when its first model cannot run.
+    return line
+      ? line.split(',').flatMap((entry) => {
+          const [seat, ...alts] = entry.split(/\s+or\s+/u).map(seatOf).filter(Boolean).map(settle);
+          return seat ? [{ ...seat, alts }] : [];
+        })
+      : null;
   };
 }
 
@@ -89,11 +93,12 @@ function leadGap(label, lead) {
 
 function roundGap(seats, wanted) {
   const gaps = wanted.flatMap((target) => {
-    if (seats.some((candidate) => candidate.name === target.name && candidate.status === 'skipped')) return [];
-    const seat = seats.find((candidate) => candidate.name === target.name && candidate.status === 'answered');
+    const options = [target, ...(target.alts ?? [])];
+    if (seats.some((candidate) => options.some((option) => option.name === candidate.name) && candidate.status === 'skipped')) return [];
+    const [option, seat] = options.map((each) => [each, seats.find((candidate) => candidate.name === each.name && candidate.status === 'answered')]).find(([, found]) => found) ?? [];
     if (!seat) return [`${target.name} missing`];
     if (rank(seat.effort) === -1) return [`${seat.name} has no effort`];
-    return rank(seat.effort) < rank(target.effort) ? [`${seat.name} @${seat.effort} is below @${target.effort}`] : [];
+    return rank(seat.effort) < rank(option.effort) ? [`${seat.name} @${seat.effort} is below @${option.effort}`] : [];
   });
   return gaps.length ? gaps.join('; ') : null;
 }
@@ -156,9 +161,7 @@ function main(argv) {
     return [error.message, 1];
   }
   const run = { ...found, effort: capEffort(found.effort, max) };
-  const home = process.env.HOME ?? homedir();
-  const sheetPath =
-    family(run.model) === 'claude' ? join(home, '.claude/pstack-models.md') : join(process.env.CODEX_HOME ?? join(home, '.codex'), 'pstack-models.md');
+  const sheetPath = modelsSheet(family(run.model) === 'claude' ? 'claude' : 'codex');
   const sheet = existsSync(sheetPath) ? readFileSync(sheetPath, 'utf8') : null;
   const sheetEffort = sheet?.match(/^default effort:\s*(\w+)/mu)?.[1];
   const defaultEffort = !sheetEffort || sheetEffort === 'session' ? run.effort : sheetEffort;

@@ -1,6 +1,6 @@
 ---
 name: openmotion-video-to-template
-description: 使用 OpenMotion 将参考视频（纯动效或包含商品、真人、声音的混合视频）重建为可反复换内容的可编辑模板，交付源码、素材、预览、编辑说明与文件夹或 ZIP。仅在用户要求可复用模板时使用；按参考制作本次成片走 openmotion-recreate，使用已有模板出片或替换内容走 openmotion-template-to-video，原创走 openmotion-director。
+description: Rebuild a reference video (pure motion graphics or mixed media with products, people, or audio) into a reusable editable OpenMotion template with source files, assets, preview, editing guide, and folder or ZIP delivery. Use only when a reusable template is requested; use openmotion-recreate for a single film recreation, openmotion-template-to-video for adapting an existing template, and openmotion-director for original videos.
 ---
 
 # OpenMotion Video to Template

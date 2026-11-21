@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rebelytics/one-skill-to-rule-them-all` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `rebelytics/one-skill-to-rule-them-all` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rebelytics/one-skill-to-rule-them-all` — 26 default patterns, 0 fol
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 22 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,27 +60,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`skills/task-observer/LICENSE`](skills/task-observer/LICENSE) |
-| 2 | ✓ | [`skills/task-observer/references/ceilings.txt`](skills/task-observer/references/ceilings.txt) |
-| 3 | ✓ | [`skills/task-observer/references/environments.md`](skills/task-observer/references/environments.md) |
-| 4 | ✓ | [`skills/task-observer/references/migration.md`](skills/task-observer/references/migration.md) |
-| 5 | ✓ | [`skills/task-observer/references/observation-families.md`](skills/task-observer/references/observation-families.md) |
-| 6 | ✓ | [`skills/task-observer/references/observation-log.md`](skills/task-observer/references/observation-log.md) |
-| 7 | ✓ | [`skills/task-observer/references/observation-scan.md`](skills/task-observer/references/observation-scan.md) |
-| 8 | ✓ | [`skills/task-observer/references/signals.md`](skills/task-observer/references/signals.md) |
-| 9 | ✓ | [`skills/task-observer/references/skill-authoring.md`](skills/task-observer/references/skill-authoring.md) |
-| 10 | ✓ | [`skills/task-observer/references/starter-principles.md`](skills/task-observer/references/starter-principles.md) |
-| 11 | ✓ | [`skills/task-observer/references/weekly-review.md`](skills/task-observer/references/weekly-review.md) |
-| 12 | ✓ | [`skills/task-observer/scripts/bin-check.sh`](skills/task-observer/scripts/bin-check.sh) |
-| 13 | ✓ | [`skills/task-observer/scripts/diff-staged.sh`](skills/task-observer/scripts/diff-staged.sh) |
-| 14 | ✓ | [`skills/task-observer/scripts/extend-observation.sh`](skills/task-observer/scripts/extend-observation.sh) |
-| 15 | ✓ | [`skills/task-observer/scripts/migrate-log.py`](skills/task-observer/scripts/migrate-log.py) |
-| 16 | ✓ | [`skills/task-observer/scripts/new-observation.sh`](skills/task-observer/scripts/new-observation.sh) |
-| 17 | ✓ | [`skills/task-observer/scripts/session-start-scan.sh`](skills/task-observer/scripts/session-start-scan.sh) |
-| 18 | ✓ | [`skills/task-observer/scripts/set-fields.sh`](skills/task-observer/scripts/set-fields.sh) |
-| 19 | ✓ | [`skills/task-observer/scripts/skill-load.sh`](skills/task-observer/scripts/skill-load.sh) |
-| 20 | ✓ | [`skills/task-observer/scripts/stage-patch.sh`](skills/task-observer/scripts/stage-patch.sh) |
-| 21 | ✓ | [`skills/task-observer/scripts/validate-skill-bundle.py`](skills/task-observer/scripts/validate-skill-bundle.py) |
-| 22 | ✓ | [`skills/task-observer/SKILL.md`](skills/task-observer/SKILL.md) |
+| 2 | ✓ | [`skills/task-observer/references/acting-on-observations.md`](skills/task-observer/references/acting-on-observations.md) |
+| 3 | ✓ | [`skills/task-observer/references/ceilings.txt`](skills/task-observer/references/ceilings.txt) |
+| 4 | ✓ | [`skills/task-observer/references/environments.md`](skills/task-observer/references/environments.md) |
+| 5 | ✓ | [`skills/task-observer/references/migration.md`](skills/task-observer/references/migration.md) |
+| 6 | ✓ | [`skills/task-observer/references/observation-families.md`](skills/task-observer/references/observation-families.md) |
+| 7 | ✓ | [`skills/task-observer/references/observation-log.md`](skills/task-observer/references/observation-log.md) |
+| 8 | ✓ | [`skills/task-observer/references/observation-scan.md`](skills/task-observer/references/observation-scan.md) |
+| 9 | ✓ | [`skills/task-observer/references/review-slice.md`](skills/task-observer/references/review-slice.md) |
+| 10 | ✓ | [`skills/task-observer/references/signals.md`](skills/task-observer/references/signals.md) |
+| 11 | ✓ | [`skills/task-observer/references/skill-authoring.md`](skills/task-observer/references/skill-authoring.md) |
+| 12 | ✓ | [`skills/task-observer/references/starter-principles.md`](skills/task-observer/references/starter-principles.md) |
+| 13 | ✓ | [`skills/task-observer/references/weekly-review.md`](skills/task-observer/references/weekly-review.md) |
+| 14 | ✓ | [`skills/task-observer/scripts/bin-check.sh`](skills/task-observer/scripts/bin-check.sh) |
+| 15 | ✓ | [`skills/task-observer/scripts/diff-staged.sh`](skills/task-observer/scripts/diff-staged.sh) |
+| 16 | ✓ | [`skills/task-observer/scripts/extend-observation.sh`](skills/task-observer/scripts/extend-observation.sh) |
+| 17 | ✓ | [`skills/task-observer/scripts/migrate-log.py`](skills/task-observer/scripts/migrate-log.py) |
+| 18 | ✓ | [`skills/task-observer/scripts/new-observation.sh`](skills/task-observer/scripts/new-observation.sh) |
+| 19 | ✓ | [`skills/task-observer/scripts/session-start-scan.sh`](skills/task-observer/scripts/session-start-scan.sh) |
+| 20 | ✓ | [`skills/task-observer/scripts/set-fields.sh`](skills/task-observer/scripts/set-fields.sh) |
+| 21 | ✓ | [`skills/task-observer/scripts/skill-load.sh`](skills/task-observer/scripts/skill-load.sh) |
+| 22 | ✓ | [`skills/task-observer/scripts/stage-patch.sh`](skills/task-observer/scripts/stage-patch.sh) |
+| 23 | ✓ | [`skills/task-observer/scripts/validate-skill-bundle.py`](skills/task-observer/scripts/validate-skill-bundle.py) |
+| 24 | ✓ | [`skills/task-observer/SKILL.md`](skills/task-observer/SKILL.md) |
 
 ---
 

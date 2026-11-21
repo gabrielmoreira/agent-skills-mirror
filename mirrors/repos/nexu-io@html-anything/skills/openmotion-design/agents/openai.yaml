@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenMotion Design"
+  short_description: "Create and iterate HTML prototypes, slide decks, documents, live artifacts and WebGL scenes in Design Studio via MCP"
+  default_prompt: "Use OpenMotion $openmotion-design with openmotion_design_catalog, openmotion_design_project, openmotion_design_edit and openmotion_design_comments to create or revise an HTML design project."

@@ -1,0 +1,10 @@
+# 第三方材料与署名说明
+
+仓库根目录的 [MIT License](../../LICENSE) 仅适用于本项目作者拥有版权或有权许可的项目材料，不改变第三方内容的权利与许可。下列材料继续适用各自条款：
+
+- 术语查询可在运行时访问 [Wikidata](https://www.wikidata.org/)。Wikidata 结构化数据以 [CC0 1.0](https://www.wikidata.org/wiki/Wikidata:Licensing) 发布；接口可用性与使用政策以 Wikidata 当前说明为准。
+- `requirements.txt` 引用的第三方 Python 依赖保留各自上游许可和版权声明；若某个发行包另附预装库副本，该副本也沿用上游许可。
+- `../../assets/showcase/` 中的截图和仓库中的示例讲义可能包含第三方教材或界面内容，应按其权利状态处理。
+- 其他第三方素材和依赖均由各自的许可约束。
+
+项目作者：DornGames / Koloyaaa（Léo WEE）。项目地址：https://github.com/Koloyaaa/academic-translation-skills

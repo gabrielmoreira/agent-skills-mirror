@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vercel-labs/agent-skills` — 26 default patterns, 0 followed patterns, 308 file(s) materialized.
+Mirror of `vercel-labs/agent-skills` — 26 default patterns, 0 followed patterns, 309 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel-labs/agent-skills` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 308 |
+| Files         | 309 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -365,8 +365,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 304 | ✓ | [`skills/vercel-optimize/scripts/verify-finding.mjs`](skills/vercel-optimize/scripts/verify-finding.mjs) |
 | 305 | ✓ | [`skills/vercel-optimize/SKILL.md`](skills/vercel-optimize/SKILL.md) |
 | 306 | ✓ | [`skills/web-design-guidelines.zip`](skills/web-design-guidelines.zip) |
-| 307 | ✓ | [`skills/web-design-guidelines/SKILL.md`](skills/web-design-guidelines/SKILL.md) |
-| 308 | ✓ | [`skills/writing-guidelines/SKILL.md`](skills/writing-guidelines/SKILL.md) |
+| 307 | ✓ | [`skills/web-design-guidelines/references/command.md`](skills/web-design-guidelines/references/command.md) |
+| 308 | ✓ | [`skills/web-design-guidelines/SKILL.md`](skills/web-design-guidelines/SKILL.md) |
+| 309 | ✓ | [`skills/writing-guidelines/SKILL.md`](skills/writing-guidelines/SKILL.md) |
 
 ---
 

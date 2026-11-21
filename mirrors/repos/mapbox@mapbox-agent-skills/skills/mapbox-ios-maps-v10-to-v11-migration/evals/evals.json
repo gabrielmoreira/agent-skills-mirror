@@ -1,0 +1,47 @@
+{
+  "skill_name": "mapbox-ios-maps-v10-to-v11-migration",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm migrating our iOS app from Mapbox Maps SDK v10 to v11. Our store map uses a UITapGestureRecognizer on the MapView, then calls mapView.mapboxMap.queryRenderedFeatures(with: point, options: RenderedQueryOptions(layerIds: [\"stores\"], filter: nil)) and opens the first feature. The v11 migration guide shows gestures.onLayerTap for this. Should I just switch to onLayerTap?",
+      "expectations": [
+        "Says onLayerTap (and onMapTap) are deprecated in current v11 releases (from 11.13), so porting to them leaves the app on a deprecated API",
+        "Recommends Featureset Interactions: mapboxMap.addInteraction(TapInteraction(.layer(\"stores\")) { feature, context in ... return true })",
+        "Explains that returning true stops the tap propagating to features below",
+        "Uses [weak self] in the interaction closure, or warns about retain cycles",
+        "Mentions onLayerTap only as a fallback if the app pins an 11.x older than 11.13"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Our iOS app creates the map with `let mapView = MapView(frame: view.bounds)` and never sets a style. We just bumped MapboxMaps to 11.x and fixed the compile errors. Anything else we should check before shipping?",
+      "expectations": [
+        "Points out that v11 changed the default style from Mapbox Streets to Mapbox Standard, so the map will look different",
+        "Presents it as a decision for the developer, not a silent change, and recommends keeping v10's look by default",
+        "Shows setting the style explicitly at creation via MapInitOptions(styleURI:), pinned to the literal Streets URI the v10 SDK used (not just the .streets constant, which may resolve to a newer version in v11)",
+        "Does not recommend moving to Standard as part of the migration (only as a separate opt-in)",
+        "Mentions other runtime behavior changes such as puckBearingEnabled now defaulting to false"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Migrating iOS Maps SDK v10 to v11. I replaced `mapView.mapboxMap.onNext(event: .styleLoaded) { _ in self.addLayers() }` with `_ = mapView.mapboxMap.onStyleLoaded.observeNext { _ in self.addLayers() }` and now my layers never show up. No errors. What's wrong?",
+      "expectations": [
+        "Explains that observe/observeNext return an AnyCancelable that cancels the subscription when it is released, so discarding it with `_ =` cancels the observer at once",
+        "Shows storing the token, e.g. `.store(in: &cancelables)` with a `Set<AnyCancelable>` property",
+        "Recommends [weak self] in the handler",
+        "Does not claim the plain Cancelable from ease/fly/addInteraction behaves the same way, or doesn't mention it"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "We're moving our iOS navigation-style app to Maps SDK v11. In v10 we set mapView.location.options.distanceFilter = 50 and the puck rotated with the device heading. After the upgrade the puck no longer rotates and the distanceFilter line doesn't compile. Fix it without changing what users see.",
+      "expectations": [
+        "Explains LocationManager options now only control the puck; provider settings like distanceFilter move to AppleLocationProvider.Options passed to LocationDataModel.createDefault and assigned to mapView.location.dataModel (not the deprecated location.override)",
+        "Explains puckBearingEnabled now defaults to false in v11 and sets mapView.location.options.puckBearingEnabled = true to keep v10 behavior",
+        "Records or presents the bearing change as a behavior decision rather than silently changing it",
+        "Mentions that heading now comes from a separate HeadingProvider if the app uses a custom location provider"
+      ]
+    }
+  ]
+}

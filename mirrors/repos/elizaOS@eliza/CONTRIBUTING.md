@@ -1,291 +1,353 @@
 # Contributing
 
-> [!IMPORTANT]
-> **Read this before you open an issue or pull request. These rules are required.**
-> Work must support the approved minimum viable product (MVP) and product
-> requirements document (PRD). Maintainers will close unnecessary work. Contributors
-> who submit unnecessary work will be subject to penalties set by maintainers.
+Every contributor, person or agent, reads [AGENTS.md](AGENTS.md) in full before any work, and the skill or file its ["Where the rest is"](AGENTS.md#where-the-rest-is) names for the work at hand.
+Starting a project from the template is [the toolchain setup guide](vibestack/README.md#set-up-a-new-project).
+Everything is built on [the stack](AGENTS.md#the-stack): Node 26, pnpm, VibeLang on Effect for the shell, React for every interface.
 
-## Human-only issue creation
+## Pull requests
 
-> [!IMPORTANT]
-> **Agents are banned from writing or creating contributor issues.** Outside
-> contributors must personally write the title and body and submit the issue
-> by hand on the GitHub website.
+`vibestack` is the primary branch and the base for every pull request.
 
-Do not use an agent to draft or submit the issue. Do not create issues through
-an API, command-line tool, browser automation, or another agent. A human review
-or approval of an agent-written issue does not satisfy this rule. If an agent
-finds a problem, it must report the finding privately to the human in the
-current work session. The human must decide whether to write and submit an
-issue. This rule applies to every issue template, including bugs, MVP gaps,
-agent work items, and tracking issues. It does not ban agent work on an
-existing issue or an authorized pull request.
+- Verify through the application's normal entry points that the top-level
+  stories, rules, and Quint models are fully implemented and integrated.
+  Keep every change in exact agreement with them. Cite the relevant stories
+  and rules and show end-to-end evidence of conformance in the PR. [Top-level spec](spec/index.md)
+- Run the full `pnpm verify` suite for every PR. Before merging, confirm
+  that all checks passed for the latest revision, including Quint model
+  checks, Dafny proofs, Bombadil exploration, and all other repository
+  tests and CI checks. Report the verification results in the PR.
+- For code changes, give reproduction steps and show the actual results
+  before and after the change under comparable conditions. For UI changes,
+  attach screenshots of the same flow and state before and after.
+- Keep the diff tidy and focused. Remove unnecessary files and dead,
+  redundant, or superseded code and legacy paths. Prose comments in code
+  are banned. Keep only required machine-readable directives in comment
+  syntax.
+- Satisfy all Vibestack requirements and TypeScript conventions before
+  merging. [Vibestack spec reference](SPEC.md) · [Required stack](AGENTS.md#the-stack) · [TypeScript conventions](AGENTS.md#typescript-best-practices)
 
-## Issue scope
+## The monorepo
 
-Report a real bug or a missing requirement in the approved MVP. Link the relevant
-PRD section and MVP plan item. Show the problem, its effect on users, and the
-expected result. Follow this guide and the owning package's README.
+| Path | Holds |
+|---|---|
+| `packages/` | Eliza's packages, each the owner of its `spec/<name>/`, and the toolchain's private `@repo/ui` (components) and `@repo/design-system` (tokens) |
+| `vibestack/` | the tools: the `spec` command, Studio, and what any project uses but does not own (`vibestack/testing`, `vibestack/design`, `vibestack/stories`) |
+| `vibestack/examples/` | standalone projects, each with its own install; never part of the workspace |
 
-Do not submit work for minor points with no useful effect. Do not add unnecessary
-tests, defensive code, validation, or truncation. Do not expand the MVP through
-an issue or pull request. For a new feature, first discuss it with human
-maintainers. Maintainers must approve it and add it to the PRD and MVP plan
-before an implementation issue or pull request is opened. If the requirement is
-unclear or you cannot find the approved plan, ask maintainers before you start.
+The specs of every package are in the one tree at the root ([SPEC.md, "One spec tree"](SPEC.md#one-spec-tree));
+[Architecture](#architecture) maps what is generated from what, which test is for what, and the
+budgets and CI.
 
-## Pull request requirements
+A package states what it offers in `exports`; import a package by name, never by a path into its `src/`. Domain code
+does not import React, and a UI package holds no business rules. A shared type lives with the contract that owns it.
 
-- **Model application state in Quint.** Every feature must include or update a
-  source-linked model of its state and transitions. Cover authorization,
-  concurrency, cancellation, retries, failure and recovery. State the safety
-  invariants, progress obligations, fairness assumptions and finite bounds.
-  Run `bun run test:quint` and checks that compare the model with the real
-  implementation locally before you merge a PR. Hosted CI also runs all four
-  partitions for pull requests and merge-queue candidates into `main`, and for
-  pushes or manual validation on `main`. Other branches skip hosted Quint.
-  Production effects require the successful exact-source main Full manifest
-  and the existing staging tree certificate. Keep the model current when
-  behavior changes. List uncovered
-  behavior explicitly. See [the state-correctness requirement](PRD.md#state-correctness)
-  and [the model workflow](packages/scripts/quint/README.md).
-- **Prove a useful improvement.** Show a failure before the fix and a successful
-  result after it, a gain in accuracy or another relevant score, or a demonstrated
-  improvement to an approved capability. State the test conditions and results.
-- **Make the code simpler.** Remove unnecessary code. Combine duplicate types and
-  functions and clean up as you go. Use existing work. Add a script only when it
-  does something no existing script does. Add a type or code only when the
-  approved task needs it. Explain why existing code cannot meet that need.
-  Alpha imports the files in `packages/scripts/alphaphone-imports.manifest.json`
-  by path: do not move, delete or drop a listed export until Alpha no longer
-  uses it, then update the manifest.
-- **Change the existing code.** Do not patch over legacy behavior or add a new
-  version beside the old one. Do not add a flag to introduce a change: change
-  the underlying code to be the new thing. Add a conditional path only for a
-  strong reason, and state that reason in the change. Environment variables and
-  flags are only for values that are really configurable: secrets, machine
-  paths, and settings a person changes between runs.
-- **Explain the choice.** Show what you researched, the alternatives you examined,
-  and why the selected implementation is the best fit. Keep the explanation
-  proportional to the change.
-- **Test the real behavior.** Run the relevant end-to-end flow and provide the
-  commands, setup, results, and evidence for the reviewed commit. Use existing
-  tests first. Add a test only when it tests a new feature or new functionality.
-  Avoid new unit tests, tests that only check mocks, and tests that
-  repeat the implementation. A test count or a passing mock is not proof that
-  the product works. Run the required package checks and repository checks.
-  For documentation-only changes, check the text and links; do not add artificial
-  runtime tests. State any failed or blocked checks.
-- **For every UI change, upload an MP4 walkthrough to the PR.** Explain the change
-  in the video and show the complete user flow working. Include video evidence
-  of the changed behavior, desktop and mobile before-and-after screenshots,
-  the app visual audit, and detailed steps for a reviewer to test the change.
-  Screenshots alone do not meet the video requirement.
-- **Write every issue and PR in ASD-STE100 Simplified Technical English.** Use
-  short, direct sentences and consistent terms. Explain necessary technical
-  terms. A non-technical reader must be able to understand the problem, change,
-  and test steps.
+| Command | Does |
+|---|---|
+| `pnpm dev` | Studio, and every package's `dev` script beside it |
+| `pnpm quick` | the fast local check: types, tests, ESLint and Stylelint, in every package |
+| `pnpm verify` | what CI runs: build, types, tests, browser tests, every `check`, lint, `pnpm analyze` and `pnpm selftest`, which also installs and checks each example |
+| `pnpm all <task>…` | one or more kinds of task in every package: `pnpm all build typecheck test` |
+| `pnpm test:browser` | the browser tests |
+| `pnpm test:models` | every workspace `check`: the root's, which is its owners' too, and Studio's |
+| `pnpm lint` | ESLint and Stylelint (`pnpm lint:js`, `pnpm lint:css` for one) |
+| `pnpm analyze` | Knip (unused files, exports, dependencies), Madge (import cycles) and jscpd (duplicated code) |
+| `pnpm check`, `pnpm gen`, `pnpm build`, `pnpm typecheck`, `pnpm test` | this package's own, here as in every package: at the root, the root project and the tools |
 
-Contribute through issues, project boards, discussions, and pull requests against
-`develop`. The repository is agent-operated as well as human-maintained, so the
-useful record is the one a reviewer can inspect later: scoped work, current
-board state, linked code, and evidence that the real behavior happened.
+Turborepo (`turbo.json`) orders these and skips a task whose inputs it has seen
+([Caching](#caching)), so every command above runs only
+what a change reaches. `check` is never skipped whole: `spec` keeps its own finer cache in `.spec-cache/`, and runs the
+application again each time.
 
-Current setup and validation commands are in [README.md](README.md) and
-[AGENTS.md](AGENTS.md). Read the owning package's README before editing.
-The root `AGENTS.md` is the only repository agent guide. Do not add nested
-`AGENTS.md` files.
+A package joins by having a script named `gen`, `build`, `typecheck`, `test`, `test:browser` or `check`. Its other
+tasks wait for its `gen` and the root's, and its `check` for all of them, since `check` rewrites `gen/`. A package that
+can never own a root spec waits for no root `gen`, so a spec edit leaves its tasks cached: Studio, which has a `spec/`
+of its own, and `@repo/design-system` and `@repo/ui`, which have no `spec/<name>/`; `@repo/ui`'s tests still wait for
+its stories, whose `@model` tags read the root's `gen/`. Studio's tests wait for its page build and are keyed by its
+files and the `vibestack/fixtures/` they read, besides the tools every task is keyed by. The root's
+`check` rewrites its owners' `gen/` too, so it waits for their tasks: name each owner's in `//#check` of `turbo.json`,
+as `@elizaos/core`'s are. `pnpm lint:js` on its own needs what `gen` and `typecheck` write (`gen/`, `.vibe/declarations`);
+`pnpm lint` runs them first.
 
-## Pull Requests
+## Changing the tools
 
-Every change ships through a PR against `develop`; do not push feature or fix
-work straight to `develop`. Link the issue or Project card the PR resolves.
-Keep PRs scoped to one coherent change. If a sweeping mechanical edit touches
-many packages, explain why it is mechanical and keep package-specific behavior
-changes out of the same PR.
+| File | Role |
+|---|---|
+| `vibestack/spec.ts`, `vibestack/pipeline.ts` | the `spec` command, and the pipeline it runs |
+| `vibestack/parse.ts`, `vibestack/review.ts` | literate specs and the review ledger |
+| `vibestack/cache.ts`, `vibestack/run.ts` | stage caches and bounded tool execution |
+| `vibestack/units.ts`, `vibestack/simulate.ts` | generation, proof units, simulation and replay |
+| `vibestack/util.ts` | source discovery, the `tests` stage and the rules it holds tests to, and citations |
+| `vibestack/gen/vibe.ts` | `gen/<name>.effect.vibe`, read off the generated TypeScript |
+| `vibestack/gen/react.ts` | `gen/<name>.react.ts` (`useMachine`), in a package that depends on React |
+| `vibestack/scan.ts` | how a spec's lines are read; imports nothing, so Studio's page uses it too |
+| `vibestack/studio/` | Studio, a workspace package with its own spec, checked by `pnpm --filter vibestack-studio check`: change `spec/`, then its shell in `src/`. Under `pnpm dev`, its `dev` script waits for what its build does, Studio's `gen` and the packages it builds on, then rebuilds the page it serves on each save of the page's sources, and builds afresh when the Vite config, `vibestack/design` or the tokens change: reload the browser, no restart |
+| `vibestack/prove.ts` | proves one unit: checks and splices the proof file, runs LemmaScript and `dafny audit`, verifies again with every assertion isolated each definition that fails, and alone every postcondition a failing one could hide |
+| `vibestack/proof/lib.dfy` | the library proof files call |
+| `vibestack/std/` | specs that ship with the tools, which any spec may import, each with its proof file |
+| `vibestack/conform.ts` | the `traces` stage: drivers, each in a Node of its own, `driver:` programs and recorded traces; saved counterexamples; the driver stub |
+| `vibestack/explore.ts` | the `explore` stage: serves a package's page with its app script, runs Bombadil on it, and replays and removes a saved run |
+| `vibestack/conformance.ts` | the comparing: journeys, malformed-input probes, walks, shrinking and replay; copied into `gen/` for a driver's types |
+| `vibestack/testing/` | what packages import: `project()` (the Vitest configuration), the property-test generator, `effectDriver` |
+| `vibestack/stories/`, `vibestack/design/` | generated stories and their tests; design tokens and their lint rules |
+| `vibestack/gen.ts` | the translator: reads what a module imports and defines |
+| `vibestack/gen/types.ts` | everything decided by a type |
+| `vibestack/gen/print.ts` | expressions |
+| `vibestack/gen/classify.ts` | which definition is a transition, a guard or a rule |
+| `vibestack/gen/secrecy.ts` | where a secret may go |
+| `vibestack/gen/typescript.ts`, `vibestack/gen/harness.ts` | `gen/<name>.ts`, and the Quint module `gen/<name>.run.qnt` that simulation runs |
+| `vibestack/selftest.ts`, `vibestack/fixtures/` | the selftest and the specs it uses besides the order example |
 
-The branch must be rebased on `origin/develop` before review. Resolve every
-conflict, run the relevant package checks, and run `bun run verify` when the
-change is ready for full validation.
+Node runs all of it directly; `pnpm build` compiles it for the packaged `spec` command.
 
-### CI availability
+`check(root)` returns `{ ok, results, next }`, and `spec check --json` prints each result as one line of JSON as soon as
+it is reported, then that object as its last line. Each result has `ok`, `stage` (a stage, or `skipped`), `summary`,
+`detail` and, when it concerns them, `where` and `rules` (each rule as `{ file, key }`); `next` is the line the command
+line ends with. `pnpm selftest` builds scratch projects from this project's spec or from `vibestack/fixtures/`, breaks
+one thing at a time and asserts which stage catches each. It runs as five cached tasks, each keyed by what its tests
+read: `selftest:docs` the documents against every file they can name, `selftest:examples` each standalone example
+against its own files and the tools, and `selftest:tools:a`, `selftest:tools:b` and `selftest:tools:rest` everything
+else, which no example but the order one reaches. The first two each run one shard of the kinds of mistake, the
+`describe` named `in shard a` or `in shard b` in `vibestack/selftest.ts`; the third skips what the other four name, so
+a new test runs there unless it is written into a shard. Keep the longest tests spread over the three.
+The two suites of the tools, the command line and each kind of mistake, run side by side under one parent, each at most four tests at a time. The order project the
+edits copy and a few long checks of fixtures are shared projects: each starts with the tool runs (`action-*` entries)
+earlier selftests kept in `.cache/selftest/.spec-cache` and leaves its own there; entries unused for a week are pruned.
+A test that observes a tool really running uses a scratch project of its own, which starts empty.
+`pnpm selftest` runs all five through Turborepo, side by side, as `pnpm verify` does. Each of the three
+`selftest:tools` processes bounds its own tests and tools to the machine and checks the order project once for itself,
+so three at once ask about three times what one does: on a machine too small for that,
+`pnpm selftest --concurrency=1` runs one at a time, to the same cached results, as a release does. What a change to the
+tools owes it, and the sync skill, is in [AGENTS.md, "Definition of done"](AGENTS.md#definition-of-done).
 
-Run the applicable checks and record their results against the exact PR head.
-When hosted CI is unavailable or fails outside the changed surface, maintainers
-may proceed using the relevant local validation and documented failure evidence.
-Record which checks did not pass or could not run, the merge revision, and any
-remaining validation. Do not describe an unavailable check as passing.
+## Releasing
 
-Explicit repository-owner instructions authorize the requested merge workflow;
-do not require a second authorization, a separate bypass actor, or an independent
-authorizer solely because hosted CI is unavailable. This includes repairs in
-GitHub temporary private security forks, where hosted checks do not run. Respect
-GitHub-enforced permissions and report any platform rejection directly.
+Set `version` in the root `package.json`, merge to `vibestack`, and push the tag `vibestack-v<version>` from it.
+`.github/workflows/release.yml` builds, packs with `pnpm pack`, runs `pnpm selftest --concurrency=1`, which the shared cache answers for a commit CI has verified, and attaches the tarball to a GitHub release of that tag.
+A project installs it as [the Vibestack guide, "Using it from another package"](vibestack/README.md#using-it-from-another-package) says.
+## Architecture
 
-## Evidence
+The spec owns the rules and state; generated code is its runtime contract.
+Pure logic Quint cannot express lives in `src/**/*.ts` with proved `//@`
+contracts. VibeLang owns effects and I/O; React reads the generated `Machine`
+service through hooks. Persisted data enters through `decodeState` or a
+schema, never by trusting stored JSON. Controls follow `enabled`, and the
+shell applies events through `Machine` or the generated Effect adapter.
 
-Include an `## Evidence` section in every PR. Start each field on its own line
-with the exact name below. A Markdown bullet before the name is optional.
-Use `Change types:` with `docs` alone for documentation-only changes. For
-other work, list all applicable types from `non-ui`, `ui`, `performance`,
-and `hardware`, separated by commas.
+### Sources and generated files
 
-- `Test results:` Give the tested commit, environment, exact commands and
-  outcomes. Link the run or attach the relevant output. Identify failed,
-  skipped or blocked checks. For docs-only work, report the links and
-  instructions you checked.
-- `Proof of change:` Identify the affected supported workflow, why it matters
-  and how to reproduce it. For fixes, show the failure on the base and success
-  with the PR using the same inputs. For other changes, demonstrate the
-  approved outcome and link the supporting evidence.
-- `Runtime logs:` For runtime, CLI, cloud, plugin, API, and other non-UI
-  changes, attach redacted logs from the real caller and affected service.
-  Include a request or run ID and the observed failure and recovery. Include
-  the provider and exact model ID when inference affects the result.
-- `UI video:` Upload the MP4 walkthrough of the changed flow. Include the app
-  visual audit, desktop and mobile screenshots, and reviewer test steps as
-  described above.
-- `Benchmarks:` For a performance claim, attach comparable base and PR runs
-  from the affected suite or a reproducible workload. Record hardware, input,
-  provider and model if applicable, iteration count, metric and units, and
-  the spread across runs. Include failures and quality changes.
-- `On-device testing:` For native, device, or hardware integration changes,
-  run the affected flow on each changed supported hardware target. Record
-  model, OS/build, app build, peripherals as applicable, steps, results and
-  device logs. Report simulator runs separately.
+Every root spec module is generated into the root's `gen/`. Modules owned by
+`apps/<name>` or `packages/<name>`, and the modules they import, are also
+written into that owner's `gen/`; packages import their own generated files.
+See [SPEC.md, "One spec tree"](SPEC.md#one-spec-tree).
 
-Give exact commands and observed results inline or link to attachments,
-job runs, or repository permalinks that reviewers can open. Each applicable
-field requires substantive evidence. Blank fields, placeholders, and `N/A`
-do not count. Redact credentials and private data from every attachment.
-Update the evidence when changes to the PR head affect the result. Include
-the signature supplied by the Slop.cash workflow on its submissions.
+| Source | Output | Written by; kept in Git |
+|---|---|---|
+| `spec/**/*.md` | TypeScript core, Quint harness and Dafny under `gen/` | `spec gen`, `spec check`; no |
+| Generated TypeScript | `gen/<name>.effect.vibe`; `gen/<name>.react.ts` (`useMachine`) in a package that depends on React; driver types in `gen/<name>.conformance.ts` over `gen/_conformance.ts` | `spec gen`; no |
+| A shell importing `apply`, with no driver | `test/drivers/<name>.ts`, a stub to fill in | `spec check`; yes, once filled in |
+| `src/**/*.schema.{ts,vibe}`, `src/**/*.contract.{ts,vibe}` | `.cache/generated/tests/` | `vibestack/testing/generate.ts`, before each package test run on `project()`; no |
+| Component props and `*.meta.tsx` | Stories, catalog and interaction/accessibility tests in `generated/stories/` | `vibestack/stories`; no |
+| `packages/design-system/tokens.json` | Theme CSS in `packages/design-system/generated/` | `vibestack/design`; no |
+| `vibestack/` | Packaged `spec` command in `dist/` | `pnpm build`; no, included in the package |
+| A person's review | `spec/lock.json` | `pnpm accept`; yes |
+| A journey or walk that disagrees with the application | `test/counterexamples/<name>/` | `traces`; yes, replayed before later walks |
+| An exploration that broke a property | Bombadil's run of the page in `test/__traces__/bombadil/` | `explore` (`vibestack/explore.ts`); no, replayed first and removed once it breaks nothing |
 
-We close PRs that lack evidence of a useful change, including added complexity
-for a highly unlikely path without evidence that it occurs in supported use
-or threatens an existing requirement. For Slop.cash contributions, this also
-costs the contributor points under the applicable points policy.
+The adapter and driver types read the generated model; `traces` uses events
+found by the simulator; property tests read schemas and contracts. Generated
+outputs are never edited by hand. A driver reaches the real application and
+imports `gen/` only as types, so it does not compare the model with itself.
 
-## Contribution Provenance
+### Caching
 
-Provider, model, and agent-tooling disclosure is optional. Contributors must
-not be blocked, prompted, or asked to reveal runtime metadata in order to open
-an issue, comment, review, or pull request. When a contributor voluntarily
-includes machine provenance, use the following interoperable footer:
+Core generation produces deterministic code. It, and the story and property-test
+generators, write files only when their bytes change and remove outputs whose
+sources have gone: a check that changes no spec leaves `gen/` and the owners'
+`gen/` untouched, so nothing that watches them rebuilds. A check loads each
+generated module from its own `.spec-cache/run-<time>/`, removed when it ends. `.spec-cache/`
+remembers each run of Quint (which parses and typechecks a harness once for all its simulations, each run by Quint's
+evaluator on the result: `vibestack/simulator.ts`), and of LemmaScript and Dafny on a proof, under the program as installed, its arguments and
+the files it reads, without their prose, comments and layout (`vibestack/action.ts`),
+and each simulation and proof result under a fingerprint of a spec and its
+imports, the versions of the programs beneath (Quint and Node for a
+simulation; Node, LemmaScript, Dafny and Z3 for a proof, whose key holds the
+whole unit) and the code of only the tools that stage runs: `simulate.ts`,
+`units.ts` and what they import, or `prove.ts` and what it imports, each read
+as its tokens and line breaks, so that rewording a comment in a tool runs
+nothing again. A
+simulation cites each rule at the line it is on now, so prose that only moves
+the rules simulates nothing again. The programs and their versions are read
+for each key, so a process that outlives a reinstall, as `watch` does, runs and
+remembers under the programs installed now. Each tool runs in a process group
+of its own, and a check that is interrupted, or that exits, ends each group
+still running and the group of each process a tool started outside its own, as
+a browser is: no verifier, simulation or browser outlives it. A tool stopped
+for its time or its output is ended the same way. A run
+of a tool is remembered when it reached its answer, a refusal of its input
+included, never when it was stopped, timed out or failed for want of a file or
+program: an unchanged unit whose proof failed runs neither again, and an edit
+to a proof file only checks and verifies the Dafny it changes. A unit offered
+what the units it imports proved is proved once when their results are
+remembered, and meanwhile, to be proved again if they fail, only while one of
+them is still being proved. A test run
+may run any tool, as Studio's do, so it is keyed by all of them, and with a
+typecheck, a driver's run and an exploration by VibeLang's version and bytes.
+An exploration is keyed by the code that explores and what its page reads
+(`pageInputs` in `vibestack/explore.ts`), which holds every tool when the
+page runs one, as Studio's does.
+It also remembers a package's passing test run under a hash of what its tests
+read; a driver's passing run under the same hash and the events the simulator
+found; and a passing typecheck under the package's files without its Markdown,
+Quint and Dafny, its `tsconfig.json` chain and included files, and each file outside
+`node_modules` that the compiler listed as read. `watch` checks again when any
+file of the root or an owner changes, is added or is removed, outside `gen/`
+and the directories no stage reads (`node_modules`, build output, saved
+explorations, hidden directories), since a missed change would leave a stale
+pass on screen; it does not check again for a file the last check wrote
+itself, such as a driver to fill in or a saved counterexample, while the file
+still holds what it wrote. `spec.ts` turns on Node's compile cache before it
+loads the pipeline, and hands its directory to every process a check starts,
+so each `spec` process, Studio's checks, Turborepo's tasks and the tests and
+drivers they run included, compiles only the code that changed.
 
-```text
-AI provider/model: <provider> / <exact-model-id>
-Client / agent tooling: <client>
-Contribution skill revision: SlopDotCash/slopdotcash@<full-commit-sha>:skills/contribute-to-eliza
-Attribution status: self-reported
-— [<lane-tag>]
-<!-- eliza-computer-attribution:v1 {"provider":"<provider-slug>","model":"<exact-model-id>","client":"<client>","skill_revision":"SlopDotCash/slopdotcash@<full-commit-sha>:skills/contribute-to-eliza"} -->
-```
+Turborepo caches `gen`, `build`, `typecheck`, tests, selftest and lint according
+to `turbo.json`. The task entry point fingerprints Node, VibeLang, Dafny, Z3
+and their runtime files before Turbo hashes its inputs. What it reads of an
+installed file, and Dafny's version, is remembered across processes in
+`$XDG_CACHE_HOME/vibestack` (`~/.cache/vibestack` by default) while the file's
+device, inode, size and modification and change times stay the same, so an
+unchanged toolchain is not read again, nor Z3 asked its version. A check
+reads those times of Dafny's installation once, and reads them again after each
+run of Dafny, so a result is not remembered when the verifier was installed
+again during the run. Generated stories,
+browser build artifacts, compiler declarations and successful test receipts
+are restored with their owning task. `check` is never skipped whole: its
+`driver:` programs run the real application in `traces` every time. Standalone examples install and check
+separately, outside the workspace cache.
 
-Voluntary attribution is self-reported provenance, not a verified attestation
-or a request for chain-of-thought. If supplied, it must be concrete,
-internally consistent, and free of hidden reasoning, private prompts, session
-IDs, credentials, access tokens, and other secrets. Repository validators
-accept contributions with no attribution and validate only an attribution
-block that an author chooses to provide.
+A complete passing Vitest run records its input fingerprint. `check` reuses
+that result only while its source, generated core, transitive workspace
+inputs, lockfile and fixed profile match. The fingerprint covers the package's
+files, with the packages nested under its `test/` as fixtures but not other
+nested packages, and of each `workspace:` dependency what a dependent can
+load: not its `spec/`, Markdown outside `fixtures/`, tests, drivers, traces,
+counterexamples or nested packages, nor its `gen/` unless its code or manifest reaches into it; a
+file a test reads from elsewhere comes through a declared dependency, as the
+root's `@repo/design-system` does. A typecheck is keyed by the scripts and
+JSON alone, and then by the content of every file the compile read. Neither
+covers the simulations' traces in `gen/traces/`, which no test reads and a
+check rewrites, nor the prose `spec init` and the tools keep at a package's
+top (`README.md`, `AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING.md`, `SPEC.md`). Turbo's
+`//#test` inputs cover the same files but the root's Markdown, so a restored
+receipt matches unless another root document changed, and then `check` runs the
+root's tests itself. Generated code names each rule by its heading, not its line, so
+prose that only moves a rule changes none of these keys. Filtered, exclusive, interrupted
+and failed runs record no complete result. Acceptance and nightly checks
+bypass these receipts and the inner verification cache.
 
-## Slop bounty contributions
+The spec cache retains recent branch and profile results for 30 days within
+256 MiB, evicting the oldest unused results first. A check's own entries are
+preserved. Proof identity covers the verifier and solver contents, so moving
+an identical installation does not invalidate it and replacing an executable
+with the same version does; tests, drivers and explorations are keyed by the
+verifier too, since they may run proofs, as Studio's do. A process that
+outlives a reinstall, as `spec watch` does, reads Quint, LemmaScript and Dafny
+again once their installed files change. In CI, a Turborepo cache entry is
+kept for seven days after its last hit, which the run summary names.
 
-[Slop](https://slop.cash) pays a monthly pool of up to 1,000 USDC for accepted
-elizaOS work. GitHub is the authority. Maintainers accept or reject each
-outcome. Slop scores only accepted merges, and pays in USDC after maintainer
-review. Payment is not guaranteed or held in escrow. All other rules in this
-guide also apply.
+### Seeds and budgets
 
-1. **Star and fork first.** This step is required for project tracking and is
-   approved by counsel. Use your own GitHub account. Do the work in your fork.
+`vibestack/testing/profile.ts` is the one source of the fixed profiles:
 
-   ```bash
-   gh repo fork elizaOS/eliza --clone
-   gh api -X PUT user/starred/elizaOS/eliza
-   ```
+| Invocation | Values per property and maximum driver walks | Seed | Seconds exploring each page |
+|---|---:|---:|---:|
+| normal local checks and every pull request or push | 1,000 | 1 | 60 |
+| `pnpm all check -- --nightly` | 20,000 | 2 | 300 |
 
-   You can also use the GitHub website, a browser agent, or computer use.
-2. **Stay in approved scope.** The PRD and MVP plan are binding. [PRD.md](PRD.md)
-   records the application state-correctness requirement. It does not define
-   the full product scope or MVP plan. Before you start, a
-   maintainer must confirm in the linked issue that the work is in approved
-   scope. Do not invent scope.
-3. **Accepted work:** bugs that you reproduce first, end-to-end or live tests
-   that prove real behavior, security fixes, input validation at a real
-   boundary, and measured quality gains (hill climbing) with before-and-after
-   scores from the same benchmark.
-4. **Not accepted** (closed, and may be penalized): UI, visual, style, or copy
-   changes, unless the change fixes a broken user flow and includes
-   before-and-after video; features without an approved PRD and MVP plan
-   update; preference refactors; busywork tests; mock-only proof;
-   placeholder or TODO code; unverified claims; duplicate PRs; and secrets in
-   commits.
-5. **Use real LLM calls.** Evidence must come from a real model provider.
-   Mocked or deterministic model output is not proof. Record the provider and
-   exact model ID.
+A driver's `options.walks` can impose a smaller maximum for an expensive
+journey. Quint mixes the selected profile's seed into its model-derived
+seeds. The nightly command always performs fresh verification; it does not
+reuse an earlier nightly pass. `FUZZ_RUNS` and `FUZZ_SEED` do not configure
+these checks. A failing property prints its fixed-profile replay command;
+a driver's shrunk counterexample is saved and replayed on every later run
+([SPEC.md, "Conformance"](SPEC.md#conformance)).
 
-### Environment
+Exploring a page is bounded by time, Chrome's start included, not by a
+count, and Bombadil takes no seed: two runs try different actions. What a
+failing exploration found is saved and replayed instead
+([SPEC.md, "Exploring the page"](SPEC.md#exploring-the-page)).
 
-Copy `.env.example` to `.env` (or `.env.test`). Never commit these files. The
-live lane is `bun run test:live`, and `bun run test:e2e:live` runs only the
-end-to-end tests. Set only the variables that the tests you run need.
+### Which test, for what
 
-| Variable | Purpose | Required | Get it from |
-| --- | --- | --- | --- |
-| `CEREBRAS_API_KEY` | Model key for the live lane. `packages/scripts/test-env.ts` stops without it. | Yes, for the live lane | <https://inference.cerebras.ai> |
-| `ELIZA_LIVE_TEST=1` | Turns on `*.live` tests. | Yes, for live tests | Set by hand |
-| `ELIZA_RUN_LIVE_TESTS=1` | Turns on core and orchestrator live tests. | For those tests | Set by hand |
-| `OPENAI_API_KEY` | OpenAI provider, or an alternative key for some live tests. | Optional | <https://platform.openai.com> |
-| `ANTHROPIC_API_KEY` | Anthropic provider and Anthropic-only live tests. | For those tests | <https://console.anthropic.com> |
-| `GROQ_API_KEY`, `OPENROUTER_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY`, `XAI_API_KEY` | Other model providers. | Optional | Each provider's console |
-| `POSTGRES_URL` | PostgreSQL `*.real` tests. | For those tests | A local or scratch database |
+[AGENTS.md, "Tests"](AGENTS.md#tests) defines what earns a test and the rules
+`check` enforces. The examples under `vibestack/examples/` demonstrate each kind.
 
-Connector tests need the credentials listed for them in `.env.example` and
-`packages/scripts/post-merge-secrets.txt`. Each package README lists the
-variables for that package. Each guarded live test and its variables are in
-`packages/scripts/lib/real-live-suites.ts`.
+| Kind | Checks | Source or example |
+|---|---|---|
+| Formal | Rules and laws for every state and input | `spec/`; `.proof.dfy` where Dafny needs help, such as `spec/core/actionPlanning.proof.dfy` and `vibestack/fixtures/highest.proof.dfy` |
+| Model-based | Real shell against the spec: journeys, malformed input, walks and saved counterexamples | `test/drivers/app.ts` and the recorded `test/traces/app.jsonl`, run by `traces` |
+| Journey/integration | A story through real services, including what a driver cannot see | `@effect/vitest` in `test/app.test.vibe`: reload from storage |
+| Component/browser | Story interactions and accessibility; browser-only behavior such as focus and storage | Component metadata `play`; `test/app.browser.test.tsx` in Chromium |
+| Exploratory/browser | The served page under random clicks, typing, scrolling and reloads: no uncaught error, console error or failed request, and the properties each rule gives the page, in every state reached | `test/bombadil.ts`, or nothing for Bombadil's defaults; `vibestack/examples/fullstack/test/bombadil.ts`, run by `explore` |
+| Property | What a schema or declared contract promises for generated values | Generated from `src/link.contract.ts` and other `*.schema.*` or `*.contract.*` files |
 
-### Agent-client test matrix
+A generated test asserts its schema or contract, never a recorded result of
+its implementation. A schema without a derivable generator is reported; a
+module yielding no tests fails its package's test run with the reason.
+Effect's `Arbitrary` produces valid values: a driver's `receive` checks
+malformed events, and journeys cover other invalid inputs that matter.
+Disabled/loading stories test refusal of clicks and keys. Tests do not
+compare screenshots.
 
-Eliza runs through agents. Test the real flow in more than one agent client.
-Install each client that you test, and use computer use to drive it through
-the real flow. This step is very important. Clients include Claude Code,
-OpenAI Codex or ChatGPT, Hermes Agent (Nous Research), OpenClaw, Muse, Grok
-bot, elizaOS agents, and Cursor. For each run, record the client name,
-client version, provider, and exact model ID. This record is necessary for
-Slop scoring. It does not change the optional
-[Contribution Provenance](#contribution-provenance) rule for other PRs.
+### What a green check means
 
-### PR evidence checklist
+| Result | Establishes | Does not establish |
+|---|---|---|
+| Proved | Dafny proved the obligation for every state and input | Code outside the spec and `//@` files |
+| Simulated only | No sampled trace broke an obligation accepted with `pnpm accept unproved` | A proof |
+| Model checked within bounds | No violation in the traces and depth checked | Behavior beyond those bounds |
+| Runtime tested | The journeys, properties, conformance walks and explorations that ran passed | Untested inputs |
+| Not verified | Effects, timing or third parties outside test coverage | An assurance about those behaviors |
 
-- [ ] The repository is starred and forked, and the PR comes from the fork.
-- [ ] A linked issue that reproduces the problem, or a maintainer-confirmed
-      requirement.
-- [ ] The root cause and the fix.
-- [ ] Real end-to-end evidence: commands, output, LLM provider, and exact
-      model ID.
-- [ ] Agent clients tested, with version, provider, and model for each run.
-- [ ] Logs, and video when a user flow is involved. Before-and-after video
-      for a broken-flow UI fix.
-- [ ] Test steps and expected results.
-- [ ] Risks and tradeoffs.
-- [ ] Plain language that a non-technical reader can understand.
+Asynchronous Effect programs are tested, not proved. Each `proof` line says
+how many obligations are proved and how many are simulated only.
 
-## Security Reporting
+ESLint enforces package exports and the stack boundaries. Knip finds unused
+files, exports and dependencies, reading `.vibe` and `.vibex` through VibeLang's
+compiler. Madge checks cycles in `.ts` and `.tsx` imports. jscpd fails on any
+duplicated block of code outside the examples and test fixtures. Their
+configured scopes are in `knip.config.js`, `.madgerc`, `.jscpd.json` and
+`eslint.config.js`.
 
-The canonical security policy — reporting channels, disclosure window, and
-remediation SLAs — is [`SECURITY.md`](SECURITY.md). In short: report
-vulnerabilities privately through [GitHub Security Advisories](https://github.com/elizaOS/eliza/security/advisories/new)
-or `security@elizalabs.ai`; do not open a public GitHub issue for a live
-vulnerability, credential leak, exploit path, or embargoed dependency issue.
-Include affected versions or commits, reproduction steps, impact, and any safe
-proof of exploitability. Contributors who encounter a secret or suspected
-vulnerability must stop exposing details publicly and route the finding through
-those private channels.
+### CI
 
-## License
+| When | Runs |
+|---|---|
+| Pull request or push to `vibestack` | The tasks of `pnpm verify`, with `--continue`, over four jobs side by side: `verify` runs build, types, tests, browser tests, all checks, ESLint, Stylelint, Knip, Madge, jscpd and the selftest of the documents and the examples; `selftest-a`, `selftest-b` and `selftest-rest` each run one `selftest:tools` task |
+| Nightly | Every check fresh under the fixed nightly profile; saved counterexamples become a pull request into `vibestack`. Beside it, the three `selftest:tools` tasks without the selftest's shared tool runs |
+| A `vibestack-v*` tag (`release.yml`) | Build, `pnpm pack`, `pnpm selftest --concurrency=1` read from the shared cache, and the tarball attached to a GitHub release |
 
-By contributing, you agree that your contribution is licensed under the
-repository's MIT license.
+Each row's budget is in [Seeds and budgets](#seeds-and-budgets). A failing
+run keeps `test/counterexamples/` and `test/__traces__/`, where a broken
+exploration is, as an artifact.
+
+Each run installs Dafny from its pinned release, checked against its SHA-256,
+and restores pnpm's store, Quint's evaluator, and what the job adds to: a `selftest-*` job the selftest's shared
+tool runs, any other the spec cache of the root, each workspace package and each example. The key is of the job and
+the commit: what a job of the same name last saved, or else another job's that holds the same.
+Turborepo shares task results through the private Cloudflare/R2 cache.
+The task entry point disables Turbo telemetry. Each `selftest:tools` task waits for the root and
+Studio test tasks so those integration journeys do not compete with it.
+Pull requests read shared results; only branch pushes receive the publishing
+credential, protected by the `turbo-cache-publish` environment's branch
+policy. A pull request keeps its own Turborepo results in the GitHub cache
+instead, which only that pull request reads, so its next push reuses them. Newer commits replace an older run of the same pull request.
+Every pushed commit can finish. Completed tasks are shared through the cache.
+Local `pnpm` task commands read the operator's cache credential from
+`~/.config/vibestack/turbo-cache.json`, outside the repository. Credentials
+are never part of a task fingerprint.
+
+The standalone examples are the tools' own subjects: `pnpm selftest` installs
+each from its own lock file and runs its `check`, its page explored where it
+has one. An application built on the tools never checks them: its `check`
+reaches only its own packages, and the packed toolchain carries no example.

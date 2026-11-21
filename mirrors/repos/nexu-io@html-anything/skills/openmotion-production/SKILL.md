@@ -1,6 +1,6 @@
 ---
 name: openmotion-production
-description: 执行 OpenMotion 已有工程在既定创作决定下的局部修改、素材或音轨替换、预览、技术排错、导出与交付。重新设计叙事、动作或声画关系使用 openmotion-director；已有模板出片走 openmotion-template-to-video，参考作品复刻走 openmotion-recreate，视频转可复用模板走 openmotion-video-to-template。仓库开发与文档维护不触发影片制作。
+description: Execute local edits, asset or audio replacements, previews, technical troubleshooting, exports, and delivery on an existing OpenMotion project under established creative decisions. Use openmotion-director for narrative, motion, or audiovisual redesign; openmotion-template-to-video for existing templates; openmotion-recreate for recreating a reference video; and openmotion-video-to-template for reusable templates. Repository development and documentation maintenance do not trigger video production.
 ---
 
 # OpenMotion Production

@@ -1,8 +1,8 @@
 // Installed by the sync-pstack skill.
 
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
-import { existsSync, readdirSync, readFileSync, realpathSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, renameSync, rmSync, statSync, utimesSync, writeFileSync } from 'node:fs';
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { capEffort } from './lead.mjs';
 import { parsePlan } from './plan-page.mjs';
@@ -328,7 +328,8 @@ export function recordRow(tasks, cells, ts = null) {
     tasks.set(row.id, created);
     return;
   }
-  if (!task) return;
+  // A row the write check refuses for its decision or the task's state changes nothing, so the state is a function of row order alone.
+  if (!task || task.decision !== row.decision || !FROM[row.move].includes(taskState(task))) return;
   if (row.move === 'started' || row.move === 'folded') {
     task.writes = joined(task.writes, given.writes ?? []);
     task.keys = task.writes.map(writeKey);
@@ -419,6 +420,115 @@ export function readTasks(lines) {
   markDeferred(tasks);
   liftPriorities(tasks);
   return tasks;
+}
+
+const LOCK_STALE_MS = 120_000;
+const pause = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+
+// Each run that syncs the ledger with LEDGER_REF holds this lock, a directory in the git common
+// dir that every worktree shares. A holder refreshes its time at each sync attempt, so a lock untouched for
+// LOCK_STALE_MS belongs to a run that died and is taken over. Returns null when another run holds
+// it past waitMs.
+export function lockLedger(commonDir, { waitMs = 0, onWait = () => {} } = {}) {
+  const path = join(commonDir, 'pstack-ledger.lock');
+  const until = Date.now() + waitMs;
+  let waiting = false;
+  for (;;) {
+    try {
+      mkdirSync(path);
+      break;
+    } catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+    }
+    const held = statSync(path, { throwIfNoEntry: false });
+    if (!held) continue;
+    if (Date.now() - held.mtimeMs >= LOCK_STALE_MS) break;
+    if (Date.now() >= until) return null;
+    if (!waiting) onWait(path);
+    waiting = true;
+    pause(50);
+  }
+  const lock = { path, touch: () => utimesSync(path, new Date(), new Date()), release: () => rmSync(path, { recursive: true, force: true }) };
+  lock.touch();
+  return lock;
+}
+
+export const REFUSED = 'suggested-tasks.refused.tsv';
+const completeRows = (text) => text.slice(0, text.lastIndexOf('\n') + 1).split('\n').filter(Boolean);
+
+function checkPending(theirs, pending) {
+  const state = readTasks(theirs);
+  const kept = [];
+  const refused = [];
+  for (const line of pending) {
+    const [ts, ...cells] = line.split('\t');
+    const row = cells[0] === 'chip' ? parseRow(cells) : null;
+    const problem = cells[0] === 'chip' ? chipRowProblems(cells, state, row ? `${row.id} ${row.move}` : cells[1])[0] : undefined;
+    if (problem) refused.push({ line, problem });
+    else {
+      kept.push(line);
+      recordRow(state, cells, ts);
+    }
+  }
+  return { kept, refused };
+}
+
+// Puts the ledger file in LEDGER_REF's order on origin: the ref's rows, then the rows only this
+// file holds that the ref's state allows, then a row another session is still writing. Each row
+// the ref's state forbids moves to REFUSED beside the ledger. With push, the kept rows go to the
+// ref as a commit on the fetched tip, never forced, so they land only on the head they were checked
+// against, and a refused push fetches and checks again. checked names a tip whose state the
+// caller already checked every pending row against, so that tip needs no second check.
+export function syncLedger(ledger, via, lock, { push = true, checked = null } = {}) {
+  const git = (args, options = {}) => spawnSync('git', [...via, ...args], { encoding: 'utf8', maxBuffer: 1 << 30, timeout: 30_000, ...options });
+  const refRows = (tip) => (tip ? git(['show', `${tip}:${LEDGER}`]).stdout.split('\n').filter(Boolean) : []);
+  const localTip = () => git(['rev-parse', '--verify', '--quiet', `${LEDGER_REF}^{commit}`]).stdout.trim();
+  const outcome = { reachable: true, tip: '', pulled: 0, pushed: 0, refused: [], pending: 0 };
+  for (let attempt = 0; attempt < (push ? 3 : 1); attempt += 1) {
+    lock.touch();
+    const file = existsSync(ledger) ? readFileSync(ledger, 'utf8') : '';
+    const local = completeRows(file);
+    const current = (attempt === 0 && checked && localTip() === checked) || git(['fetch', '--quiet', 'origin', `+${LEDGER_REF}:${LEDGER_REF}`]).status === 0;
+    // ls-remote exits 2 when origin answers without the ref, which the first push creates.
+    if (!current && git(['ls-remote', '--exit-code', 'origin', LEDGER_REF]).status !== 2) {
+      const known = new Set(refRows(localTip()));
+      outcome.reachable = false;
+      outcome.pending = new Set(local.filter((row) => !known.has(row))).size;
+      return outcome;
+    }
+    const tip = current ? localTip() : '';
+    outcome.tip = tip;
+    const theirs = refRows(tip);
+    const known = new Set(theirs);
+    const mine = new Set(local);
+    outcome.pulled += theirs.filter((row) => !mine.has(row)).length;
+    const pending = [...new Set(local.filter((row) => !known.has(row)))];
+    // A first push skips the check: append checked each row, and checking one costs a copy of the task map.
+    const { kept, refused } = tip && tip !== checked && pending.length > 0 ? checkPending(theirs, pending) : { kept: pending, refused: [] };
+    if (refused.length > 0) appendFileSync(join(dirname(ledger), REFUSED), refused.map(({ line, problem }) => `${line}\t${problem}\n`).join(''));
+    outcome.refused.push(...refused);
+    const content = [...theirs, ...kept].map((row) => `${row}\n`).join('');
+    const rewritten = `${content}${file.slice(file.lastIndexOf('\n') + 1)}`;
+    if (rewritten !== file) {
+      const temp = `${ledger}.${process.pid}.tmp`;
+      mkdirSync(dirname(ledger), { recursive: true });
+      writeFileSync(temp, rewritten);
+      renameSync(temp, ledger);
+    }
+    outcome.pending = kept.length;
+    if (!push || kept.length === 0) return outcome;
+    const blob = git(['hash-object', '-w', '--stdin'], { input: content }).stdout.trim();
+    const tree = git(['mktree'], { input: `100644 blob ${blob}\t${LEDGER}\n` }).stdout.trim();
+    const head = git(['commit-tree', tree, ...(tip ? ['-p', tip] : []), '-m', `${kept.length} suggested-task ledger row(s)`]).stdout.trim();
+    if (!head) return outcome;
+    lock.touch();
+    if (git(['push', '--quiet', 'origin', `${head}:${LEDGER_REF}`], { timeout: 60_000 }).status !== 0) continue;
+    git(['update-ref', LEDGER_REF, head]);
+    outcome.pushed = kept.length;
+    outcome.pending = 0;
+    return outcome;
+  }
+  return outcome;
 }
 
 const tokenProblems = (given, where) => {
@@ -526,14 +636,23 @@ export const ownerOf = (task) => (task.ship ? null : task.owner);
 const held = (task) => task?.status === 'offered' && task.card;
 const ownerTranscriptOf = (task) => (task.ship ? null : task.ownerTranscript);
 
+const LAND_STOP = /\bstop (?:\w+ )?before (?:running )?(?:land\.mjs|landing)\b/iu;
+
+const withoutLegacyLandStop = (finding) => {
+  const sentences = finding.split(/(?<=\.) (?=[A-Z])/u);
+  const kept = sentences.filter((sentence) => !LAND_STOP.test(sentence));
+  return kept.length === sentences.length ? finding : [...kept, 'Land once the proof passes, because a check only a person runs, such as a retest, comes after the land.'].join(' ');
+};
+
 export function newChipRowProblems(cells, before, where, git, here = null, shipList = () => NO_SHIP, caller = '.') {
-  const [, decision, , evidence] = cells;
+  const [, decision, why, evidence] = cells;
   const row = parseRow(cells);
   if (!row) return [];
   const { id, move } = row;
   if (LEGACY_ONLY.includes(move)) return [`${where}: a task keeps its id for good: log uncarded when its card leaves the queue, updated when its waits or paths change, and dismissed dup <task id> to merge it into another task`];
   const { given, repeated, blankWaits } = fields(evidence);
   const found = repeated.map((key) => `${where}: a chip row names ${key}: once`);
+  if (['offered', 'folded'].includes(move) && LAND_STOP.test(why)) found.push(`${where}: a finding never has its session stop before landing, because the Autopilot rule runs work to its close and only the owner's own "stop before ship" adds that stop; a check only a person runs, such as a teammate's retest, comes after the land, so drop that sentence`);
   if (blankWaits) found.push(`${where}: waits: takes pr:<number>, task:<id> or run:<plan path ending in .md>, comma-separated, or none; an empty waits: is none of them`);
   const takes = TAKES[move] ?? [];
   for (const key of Object.keys(given)) {
@@ -1478,8 +1597,8 @@ function brief(task, ledger, max, tasks, codex, state) {
     ...(tier ? [`Tier: ${tier.name}, ${tier.at === -1 ? 'first in its priority, because it owns a check that fails on the base branch or names a page where it still works' : `rank ${tier.at + 1} of chips.tiers within its priority`}.`] : []),
     ...(task.regression.length ? [`Regression: it still works on ${task.regression.join(', ')}`] : []),
     'Findings:',
-    ...task.findings.map((finding) => `- ${finding}`),
-    ...(task.covers.length ? ['Also covers:', ...task.covers.flatMap((entry) => [`- ${entry.id} ${entry.title}`, ...entry.findings.map((finding) => `  - ${finding}`)])] : []),
+    ...task.findings.map((finding) => `- ${withoutLegacyLandStop(finding)}`),
+    ...(task.covers.length ? ['Also covers:', ...task.covers.flatMap((entry) => [`- ${entry.id} ${entry.title}`, ...entry.findings.map((finding) => `  - ${withoutLegacyLandStop(finding)}`)])] : []),
     `Writes: ${task.writes.join(', ')}`,
     ...(task.owns.length ? [`Owns: ${task.owns.join(', ')}`] : []),
     `Waited on: ${task.waits.length ? task.waits.join(', ') : 'nothing'}`,
@@ -1500,7 +1619,7 @@ function brief(task, ledger, max, tasks, codex, state) {
       ? `Work in your own worktree, and land the task yourself from it with node .agents/pstack/land.mjs, as ${root}/.agents/pstack/rules/land.md says. Write your run directory under ${root}/${artifacts} by absolute path, so the later removal of your worktree deletes nothing your rows cite, and write its files with the shell, such as a quoted heredoc, because the Claude Code desktop app refuses a worktree session's Edit or Write tool call in the main checkout, even where guard.mjs allows it. Once land.mjs has pushed, log landed with commit: <the hash it pushed>, so the lead's report links it; when it opens a PR instead, log nothing more and name the PR in your last report, because a later sweep logs landed once origin/${branch()} holds the change. Last, stop each server you started. Merge each run directory that you or a tool, such as a page render, wrote under ${artifacts} in your worktree into the same path in ${root} without overwriting, with mkdir -p <that path> && cp -Rn <your run directory>/. <that path>/, because the cleanup scan that later removes your worktree deletes ignored files. Then run node ${root}/.agents/skills/cleanup/scripts/scan.mjs --landed <your worktree's absolute path>. When it exits 0, every change of yours is committed where a remote reaches it or in the checkout, and every file under ${artifacts} is in the checkout; other ignored files are build output or copies, so leave your worktree in place, and the cleanup scan removes it once nothing has written it or your transcript for a day. When it exits otherwise or the script is missing, lock your worktree with git -C ${root} worktree lock --reason "<what it printed>" <your worktree's absolute path>, so that scan keeps it, and tell the owner what it printed. In every report, name each commit by its subject in the text, and end the report with its links, local file links first and then each commit as 📦 [<subject>](https://diffshub.com/<owner>/<repo>/commit/<sha>), with the owner and repository read from ${root}'s origin remote; a commit in another repository puts its name first, as 📦 [<repo>: <subject>](...).`
       : `When you work in your own worktree and your project's rules bring your work to ${ref} as a patch rather than through your own branch, you may commit in your worktree as you go. When you finish, land it yourself: run git add -A in your worktree and save git diff --cached <base>, where <base> is what git merge-base HEAD ${ref} prints, which holds your commits, your uncommitted changes and new files, as ${patch}, run git -C ${root} apply --check --whitespace=error-all ${patch}, then git -C ${root} apply ${patch}, which changes only the checkout's working tree and leaves its index alone. When the check fails, commit your work, copy the checkout's copy of each refused file into your worktree and commit those copies unchanged, then redo your change on them, rerun your checks and commit again. Save the patch again as git diff <base> <copies commit> -- . ':(exclude)<refused file>', with one exclude for each refused file, followed by git diff <copies commit> HEAD, because a diff from <base> would also carry the checkout's own edits to those files, which the checkout already has. Then deliver the patch's paths from ${root} as your project's Delivery rule says, because an applied patch ships nothing: where that rule commits, commit only those paths there; where the owner owns commits, leave them in the working tree. Merge each run directory you wrote under ${artifacts} in your worktree into the same path in ${root} without overwriting, with mkdir -p <that path> && cp -Rn <your run directory>/. <that path>/, because append refuses a row whose evidence cites a path the checkout lacks, and the cleanup scan that later removes your worktree deletes ignored files your logged rows cite. Then log landed with patch: ${patch}, adding commit: <hash>, <hash> for each commit you made, so the lead's report links them. Last, stop each server you started. Then run node ${root}/.agents/skills/cleanup/scripts/scan.mjs --landed <your worktree's absolute path>. When it exits 0, every change and ignored file of yours is committed, recreated by an install or build, or in the checkout, so leave your worktree in place, and the cleanup scan removes it once nothing has written it or your transcript for a day. When it exits otherwise or the script is missing, lock your worktree with git -C ${root} worktree lock --reason "<what it printed>" <your worktree's absolute path>, so that scan keeps it, and tell the owner what it printed. When you work in the checkout itself, or your project's rules deliver through your own branch instead, land the change as your project's Delivery rule says. When that branch is in your own worktree, merge your run directories as above first. Then log landed, with commit: for each commit you made. When that branch is in your own worktree, then stop each server and run scan.mjs --landed, as above. In every report, name each commit by its subject in the text, and end the report with its links, local file links first and then each commit as 📦 [<subject>](https://diffshub.com/<owner>/<repo>/commit/<sha>), with the owner and repository read from ${root}'s origin remote; a commit in another repository puts its name first, as 📦 [<repo>: <subject>](...).`,
     '',
-    `Suggested task ${task.id} in ${ledger} of the project checkout ${root}. First detach this session from the session that offered your card or started it, such as with Claude Code desktop's detach_session with self, because while it stays linked each of your turn ends wakes that session; when the runtime refuses or lacks the detach, carry on. This prompt can be older than the task, so next run ${run} chips brief ${task.id} and work from what it prints. ${onTrunk ? 'Run every ledger command as written from your own worktree, where you make your edits and run your checks; the helper writes the live ledger in the main checkout.' : `Run every ledger command from ${root} that way, even when your session opened in its own worktree, because the live ledger is there; make your edits and run your checks in your own worktree.`} This prompt holds all of the chips law your task needs, so skip .agents/pstack/rules/chips.md and the chips skill unless you offer, card or drop another task. Each row you log on this task is ${run} append ${ledger} chip ${shellQuoted(task.decision)} "<why>" "<tokens>" <result>, with that decision unchanged and each field in "<tokens>" ended by ";" before the next, such as "writes: a.ts, b.ts; session: <id>". When the State: line that chips brief prints says neither Ready nor Started, tell the owner what it says and stop. Started means the lead already logged your start. Before you write any file, log a started row with the tokens writes: naming each path the Writes line above lacks and session: naming this session's id where the runtime's session tool gives one, then run ${run} chips brief ${task.id} again and work from what it prints, because the task can gain work until your started row. Before you write a path for your task that neither the brief nor a started row lists, log another started row with it${onTrunk ? '' : '; when append refuses it because another started task writes that path outside the checkout, leave the path alone and tell the owner'}. When the session tool shows this session above the brief's Effort:, say so to the owner in your first reply, because a session cannot lower its own effort. Once your task has landed or its PR is open, fix each piece of workflow friction you hit and have not fixed yet, such as a helper that hid a result or a file you could not reach, as the Improve the workflow mid-task rule says, each fix in a commit of its own: project tooling lands the way your task did, and a shared rule or helper goes through the sync-pstack skill's Lesson mode. Your last report names each piece of friction with the commit that settled it, or with what you could not fix and why, so the lead fixes the rest. Offer a suggested task only for a new P0 or P1 finding, never for friction. Your task's domain is the subject your task changes. A finding is in it when it is your task's own target, when its fix changes code, docs or a plan that subject owns, or when it exists only because of your own result. Any other finding is outside it, such as a bug in another subject's code that also shows without your change, even when your panel raised it, your work waits on it, your work touched the same shared code or its fix also changes a file your task added. Until a trace finds where its cause lies, a finding other than your task's target that also shows without your change counts as such a bug. Name the subject that owns it in your last report, and offer a task for it only when it ranks P0 or P1 or the panel or base-branch gate needs one. When your task is a verdict run, you may also offer a P2 or P3 task in its domain for an item your verdict judges, with via: verdict. Any other finding you offer must still rank P0 or P1. When your task is a babysit run, you may also offer a P2 or P3 finding in its domain other than friction, with via: babysit. A measurement the Time budget rule sends to a task goes with via: time, and the design question that two open critical panel findings require goes with via: panel. Each offer in your task's domain carries session: naming this session's id, which makes it yours, and you card it after your friction fixes and before you run scan.mjs --landed, as the chips skill's Close says. An offer outside your domain names session: none, so only a /chips all cards it. An offer in your domain that names ship: has no owner, because no session owns a ship-list task, but your Close still cards it like your other offers. Send the lead, the session that offered your card or started your session, no message, because its run does not wait on your task; your ledger rows, your session title and your last report carry the outcome to its next /chips. Once the task has landed or its PR is open, where your runtime can rename this session, title your session 👀 <name>, with no count, in the same message as your last other call, such as the scan.mjs --landed check, and after that call, as ${root}/.agents/pstack/rules/title.md says, so the owner's sidebar shows which sessions hold landed work to review and none still running. When a later message has you work again, title the session with your current stage before your first step. Whenever you stop on something only the owner can settle, title your session with the waiting state the title rule gives, so the owner's sidebar shows the stop. A question only the lead could answer does not stop you. Take its most reversible answer, as the Autopilot rule says, and name that pick in your report with the word that reverses it.`,
+    `Suggested task ${task.id} in ${ledger} of the project checkout ${root}. First detach this session from the session that offered your card or started it, such as with Claude Code desktop's detach_session with self, because while it stays linked each of your turn ends wakes that session; when the runtime refuses or lacks the detach, carry on. This prompt can be older than the task, so next run ${run} chips brief ${task.id} and work from what it prints. ${onTrunk ? 'Run every ledger command as written from your own worktree, where you make your edits and run your checks; the helper writes the live ledger in the main checkout.' : `Run every ledger command from ${root} that way, even when your session opened in its own worktree, because the live ledger is there; make your edits and run your checks in your own worktree.`} This prompt holds all of the chips law your task needs, so skip .agents/pstack/rules/chips.md and the chips skill unless you offer, card or drop another task. Each row you log on this task is ${run} append ${ledger} chip ${shellQuoted(task.decision)} "<why>" "<tokens>" <result>, with that decision unchanged and each field in "<tokens>" ended by ";" before the next, such as "writes: a.ts, b.ts; session: <id>". When the State: line that chips brief prints says neither Ready nor Started, tell the owner what it says and stop. Started means the lead already logged your start. Before you write any file, log a started row with the tokens writes: naming each path the Writes line above lacks and session: naming this session's id where the runtime's session tool gives one, then run ${run} chips brief ${task.id} again and work from what it prints, because the task can gain work until your started row. Before you write a path for your task that neither the brief nor a started row lists, log another started row with it${onTrunk ? '' : '; when append refuses it because another started task writes that path outside the checkout, leave the path alone and tell the owner'}. When the session tool shows this session above the brief's Effort:, say so to the owner in your first reply, because a session cannot lower its own effort. Once your task has landed or its PR is open, fix each piece of workflow friction you hit and have not fixed yet, such as a helper that hid a result or a file you could not reach, as the Improve the workflow mid-task rule says, each fix in a commit of its own: project tooling lands the way your task did, and a shared rule or helper goes through the sync-pstack skill's Lesson mode. Your last report names each piece of friction with the commit that settled it, or with what you could not fix and why, so the lead fixes the rest. Offer a suggested task only for a new P0 or P1 finding, never for friction. Your task's domain is the subject your task changes. A finding is in it when it is your task's own target, when its fix changes code, docs or a plan that subject owns, or when it exists only because of your own result. Any other finding is outside it, such as a bug in another subject's code that also shows without your change, even when your panel raised it, your work waits on it, your work touched the same shared code or its fix also changes a file your task added. Until a trace finds where its cause lies, a finding other than your task's target that also shows without your change counts as such a bug. Name the subject that owns it in your last report, and offer a task for it only when it ranks P0 or P1 or the panel or base-branch gate needs one. When your task is a verdict run, you may also offer a P2 or P3 task in its domain for an item your verdict judges, with via: verdict. Any other finding you offer must still rank P0 or P1. When your task is a babysit run, you may also offer a P2 or P3 finding in its domain other than friction, with via: babysit. A measurement the Time budget rule sends to a task goes with via: time, and the design question that two open critical panel findings require goes with via: panel. Each offer in your task's domain carries session: naming this session's id, which makes it yours, and you card it after your friction fixes and before you run scan.mjs --landed, as the chips skill's Close says. An offer outside your domain names session: none, so only a /chips all cards it. An offer in your domain that names ship: has no owner, because no session owns a ship-list task, but your Close still cards it like your other offers. Send the lead, the session that offered your card or started your session, no message, because its run does not wait on your task; your ledger rows, your session title and your last report carry the outcome to its next /chips. Once the task has landed or its PR is open, where your runtime can rename this session, title your session 👀 <name>, with no count, in the same message as your last other call, such as the scan.mjs --landed check, and after that call, as ${root}/.agents/pstack/rules/title.md says, so the owner's sidebar shows which sessions hold landed work to review and none still running. When a later message has you work again, title the session 🚧 <name> before your first step. Whenever you stop on something only the owner can settle, title your session with the waiting state the title rule gives, so the owner's sidebar shows the stop. A question only the lead could answer does not stop you. Take its most reversible answer, as the Autopilot rule says, and name that pick in your report with the word that reverses it.`,
   ].join('\n');
 }
 

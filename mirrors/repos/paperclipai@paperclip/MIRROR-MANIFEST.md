@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `paperclipai/paperclip` — 26 default patterns, 11 followed patterns, 358 file(s) materialized.
+Mirror of `paperclipai/paperclip` — 26 default patterns, 12 followed patterns, 359 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `paperclipai/paperclip` — 26 default patterns, 11 followed patterns,
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 11 |
-| Files         | 358 |
+| Followed pats | 12 |
+| Files         | 359 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `paperclipai/paperclip` — 26 default patterns, 11 followed patterns,
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `rules/README.md`
+- `doc/harness-availability.md`
 - `maps/feature-map/README.md`
 - `maps/agent-access-map/README.md`
 - `maps/README.md`
@@ -420,13 +421,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 349 | → | [`doc/connections/AI-CONNECTIONS.md`](doc/connections/AI-CONNECTIONS.md) |
 | 350 | → | [`doc/connections/MEMORY.md`](doc/connections/MEMORY.md) |
 | 351 | → | [`doc/execution-github-identity.md`](doc/execution-github-identity.md) |
-| 352 | → | [`doc/plugins/PLUGIN_SPEC.md`](doc/plugins/PLUGIN_SPEC.md) |
-| 353 | → | [`maps/agent-access-map/README.md`](maps/agent-access-map/README.md) |
-| 354 | → | [`maps/feature-map/README.md`](maps/feature-map/README.md) |
-| 355 | → | [`maps/README.md`](maps/README.md) |
-| 356 | → | [`maps/storybook-map/README.md`](maps/storybook-map/README.md) |
-| 357 | → | [`ROADMAP.md`](ROADMAP.md) |
-| 358 | → | [`rules/README.md`](rules/README.md) |
+| 352 | → | [`doc/harness-availability.md`](doc/harness-availability.md) |
+| 353 | → | [`doc/plugins/PLUGIN_SPEC.md`](doc/plugins/PLUGIN_SPEC.md) |
+| 354 | → | [`maps/agent-access-map/README.md`](maps/agent-access-map/README.md) |
+| 355 | → | [`maps/feature-map/README.md`](maps/feature-map/README.md) |
+| 356 | → | [`maps/README.md`](maps/README.md) |
+| 357 | → | [`maps/storybook-map/README.md`](maps/storybook-map/README.md) |
+| 358 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 359 | → | [`rules/README.md`](rules/README.md) |
 
 ---
 

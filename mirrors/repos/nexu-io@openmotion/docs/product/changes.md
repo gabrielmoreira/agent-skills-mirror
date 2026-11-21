@@ -1,5 +1,18 @@
 # 公开变更记录
 
+## 2026-11-20: Show verified media capabilities and streamline model editing in Provider Settings
+
+- Replace non-executable LLM capability toggles (`Reasoning`, `Tools`), input-modality toggles (`Vision`, `Audio`, `Video`) and token-limit inputs in Studio's `ModelEditor` with executable settings: directly visible `Model type` (for compatible/custom and newly added models), `Transcription response` (for `transcription` models), structured default parameter controls derived from `shared/generation-options.ts` schemas, and collapsed raw JSON defaults under More settings. Backend `connections.json` metadata override validation stays backward-compatible.
+- Hide the model edit menu on service-managed `account` (OpenDesign) and local `agent` (Codex) rows to keep managed catalogues read-only in Provider Settings (while preserving backward-compatible backend `modelOverrides` persistence).
+- Render verified, read-only media capability hints beneath media models from provider capability metadata and shared generation schemas (reference image editing limits, transparent background, first-frame image-to-video, native audio, duration ranges, resolution tiers and speech/music modes), gracefully omitting the line when new or minimal models publish no capability metadata; align all multimodal model rows to two lines (single friendly display name on managed `account`/`agent` rows with raw ID in tooltip and search, plus non-redundant inline monospace `modelId` on BYOK/API rows) and remove the redundant clear-filters bar below the model search input.
+- Group and badge official channels (`OpenDesign` account and `OpenDesign Cloud` API key) together at the top of the provider sidebar, sink `setupRequired` presets (such as ComfyUI) to the bottom without an empty Models section, replace generic "Built-in provider" subtitles with accurate role/protocol copy, streamline local Agent (`Codex`) into a compact status bar without duplicate sync or single-model search controls, and disclose non-media execution limits on Anthropic/Google connections.
+- Validation: `npm run check`, `npm run typecheck:studio`, `npm run design:check`, `npm run build:studio`, Studio unit tests (`modelMediaCapabilities.test.ts`, `ModelEditor.test.tsx`, `ModelSettings.test.tsx`, `Transcript.test.tsx`, `messages.test.ts`, `I18n.test.tsx`), backend `tests/provider-settings.test.ts`, and headless Chrome screenshot inspection across dark theme, light (`paper`) theme, Official/Codex/BYOK/setupRequired views, edit dialogs and narrow viewport.
+
+## 2026-11-20: Host Skill cover WebP posters on demand
+
+- Host Skill cover WebP posters alongside preview animations via `repository-media.json` (`Prepare and merge PR`), with existing posters resolved from a pinned public source snapshot (`008e46e8`) instead of being bundled into `studio/build/editor-assets/`.
+- Reduces the default compressed npm install package by ~3.64 MiB (from 21.20 MiB to 17.56 MiB). When offline or when a remote poster cannot load, Studio falls back to the Skill card's built-in motif illustration.
+
 ## 2026-11-19: Load Skill card animation on demand
 
 - Bundle static WebP posters for Skills. Load preview videos when viewport autoplay, hover, keyboard focus or opening the Skill triggers playback. Keep the poster available when the network is unavailable.

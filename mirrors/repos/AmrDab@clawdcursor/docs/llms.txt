@@ -6,7 +6,7 @@
 > screenshots last), and after every action it says whether it worked. It
 > runs with the user's own OS permissions. It is a tool layer: no model, no API key
 > and no agent loop of its own. Local-only (HTTP binds 127.0.0.1 with a bearer
-> token), Windows / macOS / Linux, any model with tool calling. Current version: 2.2.0.
+> token), Windows / macOS / Linux, any model with tool calling. Current version: 2.3.0.
 
 How it works: you (the agent) drive six tools and choose each step yourself. Read
 the screen blind first: the accessibility tree, then the window's text, then OCR,
@@ -113,13 +113,13 @@ clawdcursor never runs a model.
 ## Tool surface (compact — recommended, ~7,000 tokens of catalog vs ~19,000 granular)
 
 - accessibility — drive UI by element name; compile a fused el_NN UI map and act on {element_id, snapshot_id} (survives layout shifts)
-- system — page text (copy_all_text; find for one value in a long page), OCR, clipboard, shortcuts, webview detection, pause_for_user (hand the desktop to the user at a roadblock)
+- system — page text (copy_all_text; find for one value in a long page), OCR, clipboard, shortcuts and app guides, webview detection, pause_for_user (hand the desktop to the user at a roadblock)
 - window — list, focus, resize, close windows; open apps, files and URLs
 - browser — Chrome DevTools Protocol for browsers and Electron / WebView2 apps
 - computer — raw keyboard and mouse (type, keys, scroll, drag); click x,y and screenshot are the last resort
 - batch — run a guarded sequence of the above in one call
 
-89 granular tools (one schema per action) are available by omitting `--compact`
+90 granular tools (one schema per action) are available by omitting `--compact`
 (granular is the default surface) — enumerate them with `tools/list` on either
 transport, if your runtime needs every primitive as a top-level tool.
 
@@ -161,6 +161,10 @@ the pause card (use `choices` when there are options), not in your own chat.
 or `{status:"replied", reply:"..."}`. It is the user's answer to your question: follow it. No tool call of yours can pick a
 choice. Never ask for a password or secret on it.
 
+## App guides
+
+App guides (keyboard shortcuts, workflows and tips per app) ship in the package. When a result shows keys from a guide, press them instead of hunting with the mouse; the rest of that guide is system {"action":"shortcuts_list","context":"<app>"}.
+
 ## Error reports
 
 2.0.0 sends no telemetry. From 2.1, anonymous error reports are on by default, to
@@ -172,7 +176,7 @@ fails, times out or reads nothing (tool and action name, result code, outcome,
 duration, and whether the app was a browser, Electron or native); `slow_call`
 over 10 s (tool and action name, duration, slow helper steps by name); `exit`
 when the server exits during a call or was killed (reason class, the tool and
-action cut off, how long they ran); `crash` (error class and code, file:line in
+action cut off, how long they ran); `crash` (uncaught or rejected, error class and code, file:line in
 clawdcursor's own code). Never sent: error messages, screen or OCR text, typed
 text, clipboard, screenshots, window titles, URLs, element names, the names of the
 apps being driven, file paths outside clawdcursor, user names, emails or IP

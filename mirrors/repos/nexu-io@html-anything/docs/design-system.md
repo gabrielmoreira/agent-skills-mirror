@@ -2,11 +2,26 @@
 
 The maintained system lives in [`packages/design-system`](../packages/design-system/README.md). `tokens.json` generates both browser `tokens.css` and Studio `studio/tokens.css`; Studio semantic aliases, fonts, controls, materials, loading states, icon rendering and brand assets belong to this package. Application modules consume its entry points and retain their layout and interaction logic. The template browser now uses shared theme roles instead of a separate fixed palette.
 
+React Button, IconButton and Slider live in the sibling package [Open Design UI](../packages/open-design-ui/README.md). Studio and the catalogue resolve their public imports directly to its source.
+
 The server exposes the positive public-asset list at `/design-system/`, with `/design-system` as the read-only catalog and `/web/design-system/` as a compatibility URL alias. Stable README logos and font-license paths are generated mirrors. No npm workspace dependency or separate publication is introduced.
 
 Brand materials are maintained in [the package Brandkit](../packages/design-system/brand/BRANDKIT.md) and [art direction](../packages/design-system/brand/MOTION_DESIGN.md); Library entries forward to those sources. They remain explicit creative context and do not automatically style authored videos. All Agents follow the [shared styling rules](../AGENTS.md#shared-design-system--required-for-every-agent).
 
 Explore is the workspace homepage. Project links open the editor directly. The home/session/browser rules below describe retained source surfaces, not additional MVP navigation. Native project iframes and export content never import application theme styles.
+
+## Measure component adoption and detached styles
+
+Run `npm run design:metrics -- --base origin/main` after installing the locked dependencies. The command compares the current working tree with that Git revision using the same scanner. Omit `--base` for a snapshot. Read `dist/ui-metrics/report.md` for totals and examples or `report.json` for every occurrence, file, line, style family and classification. Use `--out <directory>` to choose the destination. Full PR checks attach both reports and show the summary.
+
+| Metric | Unit and denominator |
+| --- | --- |
+| Component library coverage | Production Studio JSX source sites that resolve to Button, IconButton or Slider, divided by those sites plus native buttons and literal input ranges. Re-exports and renamed imports resolve to their defining component. A wrapper counts at its implementation. Loops count once. |
+| Detached style rate | Detached occurrences divided by standard plus detached occurrences. Counts color, font size, spacing, radius and shadow decisions in Studio CSS, inline JSX style objects, statically extracted Tailwind classes, and authored stylesheets under `web/` and `mcp-ui/`. |
+
+Named utilities compiled by the project's Tailwind theme, registered token references, and resets such as zero or currentColor count as standard. Explicit colors or fixed lengths count as detached even when they match a token's current value. Runtime style expressions and unresolved local variables are listed as unknown and excluded from the style denominator. Position, timing, media, SVG artwork, generated output, tests, the component library, its catalogue and the inspector are outside the scan. Generated HTML or class names assembled only at runtime have no static coverage.
+
+Native buttons with explicit specialized roles (for example a switch) stay in the coverage denominator. A simple click-only button is a migration candidate. Other native controls need interaction review. The diff matches occurrences within each file by source context, family, value and status, and preserves repeated occurrences. Line shifts alone produce no delta. Review findings are informational. The existing native-control and token checks still apply.
 
 ## Visual foundation
 

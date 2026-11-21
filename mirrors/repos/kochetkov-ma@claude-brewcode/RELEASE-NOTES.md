@@ -2,6 +2,50 @@
 
 ---
 
+## v6.13.5 (2026-11-20)
+
+> Docs: [Publish with BrewPage](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+**What changed for you**
+
+- The publish runner keeps owner keys and management links in protected files and never prints them. If you decline workspace history, `--no-save --receipt-dir` writes the private receipt to a folder you choose.
+- A publish counts as done only when the server answer and the saved receipt agree, and site ZIP checks use the exact paths inside the archive.
+
+---
+
+## v6.13.4 (2026-11-20)
+
+> Docs: [Publish with BrewPage](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+**What changed for you**
+
+- The publish skill now says that its runner adds its private receipt file names to your workspace `.gitignore`, so those receipts stay out of Git.
+- Nothing else changes: publishing, updates and owner records work as before.
+
+---
+
+## v6.13.3 (2026-11-20)
+
+> Docs: [Publish with BrewPage](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+**What changed for you**
+
+- The OpenClaw skill keeps the commands of its bundled REST runner in their own short reference, next to the publishing guide, so each part is easier to read and review.
+- The skill entry and its guides link the new reference wherever they mention runner commands.
+
+---
+
+## v6.13.2 (2026-11-20)
+
+> Docs: [Publish with BrewPage](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+**What changed for you**
+
+- The OpenClaw skill now says up front that it keeps the private owner key of an anonymous page so you can edit or delete it later, which local files it writes, and that its runner talks only to brewpage.app.
+- The publish helper passes only the Git settings it needs when it protects your owner records in a Git workspace.
+
+---
+
 ## v6.13.1 (2026-11-19)
 
 > Docs: [Publish with BrewPage](https://doc-claude.brewcode.app/brewdoc/skills/publish/)

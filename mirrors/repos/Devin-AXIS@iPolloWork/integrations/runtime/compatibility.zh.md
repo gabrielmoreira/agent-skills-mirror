@@ -6,6 +6,10 @@ DSH 基准由[运行时固定记录](upstream.json)指定。本次盘点基于 `
 
 ## 升级前复核的功能
 
+Desktop `1.0.10` 沿用 `initProfile`/`readProfileManifest` 和原生 `dsh.profile.bundles`，补齐已初始化配置缺失的私有 Host；备份原清单后移除重复的公开产品 Bundle 和产品直接依赖。`desktop-runtime.json.sharedPackages` 限定安装包拥有的 Suite/Stage/Host 副本，即使版本相同也恢复为安装包提供。最终原生 Include overlay 仅启用产品入口；Suite 根据 install-anchor 包身份固定该发行版的账号、主题及服务地址，保留其他插件配置和凭据。升级时复测旧 web-only profile、旧及相同版本 Suite、停用条目、已安装 Mac 的真实云端登录、错误密码分类和保持登录后再次进入。欢迎页进入工作区前核验 `/ipollowork-suite/info`，区分凭据错误、会话拒绝、服务异常、超时和限流。详见[升级诊断](../../docs/diagnostics/2026-11-20-mac-login-and-upgrade.md)。
+
+官方模型代理只在响应头返回前连接失败，或网关报告同一调用仍在执行时，复用原请求 ID 恢复连接。恢复有次数上限、支持取消并绑定账号代次；原生 pi-ai 自动重试仍关闭。已开始输出的流和上游结果不明的调用不重放。账号服务另行在同一计费调用内重试明确返回 HTTP 429 的聊天请求。下次升级 DSH 时复验原生流、预备调用、取消、切换账号及只结算一次。Design 编辑器在拖拽与缩放前将 CSS 单位解析为布局像素，按父容器缩放换算指针位移，并在实际移动后才启用吸附；复验 PPT 百分比、样式表定位、内容盒尺寸、右下角锚定和固定画布缩放。
+
 Desktop `1.0.9` 在官方 profile 启动前，使用现有锁和签名应用的 `desktop-runtime.json` 清单，将 profile 中版本不匹配的 DSH/Cordis 核心依赖备份到独立目录。DSH 原生解析保留 profile 优先级，插件停用后留下的旧依赖仍可能覆盖安装包。升级时复测旧 `dsh-llm`/`dsh-typert-protocol`、重复启动、数据保留、相同版本和外部链接；不修改解析器或 Agent。详见[诊断与验证](../../docs/desktop-startup-and-download-fix-2026-11-20.md)。
 
 Suite `0.1.39` 携带 Design `1.0.0-beta.37`，使用原生 `ctx.skills.register`、`ctx.tools.register`、必需的 `systemPrompt.context`、工作区归属和沙箱策略处理模板生成。随包的 `ipollowork-design` Skill 和带 revision 的 `design_edit_text` 只替换文字，保留其余 HTML。模板清单作为有界来源数据处理；文档切换与工具写入共用插件生命周期队列。原编辑器在像素属性控件展示前解析 CSS 单位和主题变量，浮动元素操作直接打开“元素”页。企业 VI 模板保留默认几何并接入主题变量，固定原生幻灯片隐藏无效的全局几何控件；PDF 后台导出有计时兜底。升级时复测 Skill 发现/加载、必需模型上下文、过期版本/只读/跨工作区拒绝、HTML 卡片与链接、本地媒体、元素属性、主题持久化、38 页可编辑 PPTX/PDF、明暗主题和 390px。详见[验收记录](../../docs/design-template-fidelity-2026-11-19.md)。Agent 和 DSH 源码保持不变。
@@ -26,6 +30,7 @@ Suite `0.1.39` 携带 Design `1.0.0-beta.37`，使用原生 `ctx.skills.register
 | [组织会话副本](../../plugins/ipollowork-suite/src/host/session-copies.ts) | 对话标题区分享仅将 `sessionQuery.readSurface` 中的可见文字发给指定有效成员。接收端通过 `Session.create`、`SessionPersistence.create` 和 `Workspace.attachSession` 写入新会话，随后刷新原生会话列表，通过 `uiWorkspace.openSession` 打开。原工作区和工具记录不进入副本。 | 分享给两名同事中的一人，关闭分享者客户端，核对接收者可在软件内复制并续聊、再次打开复用现有副本，且新消息不改变原会话。 |
 | [IM 手动接入弹窗](../../plugins/ipollowork-suite/vendor/dsh-im/plugin-src/client/credential-binding.js) | 原生 `Modal` 挂载在页面顶层；表单、指引和操作区样式跟随弹窗内容。 | 在明暗主题和窄屏分别打开令牌、ID 加密钥、Slack、Matrix 和邮件表单，检查焦点与退出。 |
 | [组织资源审核和下发](../../plugins/ipollowork-suite/src/client/organization-publications.tsx) | 模板、插件、Skill 和 MCP 共用带版本的提交流程。PostgreSQL 迁移 `018` 把 MCP 纳入审核。已下发的 MCP 与审核记录使用相同的 ID 和授权范围，DSH Host 通过原有代理加载当前成员获授权的工具。 | 以普通成员提交，以管理员审核并指定接收者，分别检查已授权和未授权成员。下架后确认运行时撤销工具访问。 |
+| [iPolloWork 共用控件](../../plugins/_shared/ui/controls.tsx)与[产品主题](../../plugins/_shared/ui/theme.ts) | 套件通过 `ctx.theme.overrideTokens` 注册主题，表单复用原生公开的 `Button`、`Input`、`Switch`、`Menu` 和 `Modal`。[套件样式](../../plugins/ipollowork-suite/src/client/brand.css)在随包 Studio 的 `data-studio-editor`、`data-studio-overlay` 根节点映射主题变量。 | 更新 DSH 或 Studio 固定版本后，打开设置、项目和智能体创建、设计工作台。在两种主题和桌面、390 px 宽度下检查侧栏选中、菜单磨砂、开关和发送按钮对比度、组织空间标签和设置、焦点、原生下拉、编辑器与弹层颜色及作品预览隔离。将套件的 `theme` 设为 `false`，检查原生外观恢复后各插件仍可使用。 |
 | [品牌和 Windows 标题栏](../../plugins/ipollowork-suite/src/client/brand.css) | 使用套件 theme、原生 slot 及部分 DSH DOM 和 CSS token。工作区顶部的额外 Windows 标志通过移除 `body::before` 覆盖处理。 | 检查标题栏、折叠侧栏、全屏、浅色和暗色。品牌标志和原生窗口控制应各自正确显示。 |
 | [macOS 窗口拖拽](../../plugins/ipollowork-suite/src/client/suite.module.css) | DSH `dsh-v0.2.2-rc.3` 用 `data-global-panel` 标记主内容列，用 `data-window-drag` 标记原生拖拽栏，用 `data-shortcut-modal="settings"` 标记挂在页面根节点外的设置面板。套件按 `--dsh-frame-top-clearance` 设置顶部拖拽区，保留原生窗口控件。 | 在 macOS Electron 中从首页、会话、插件、组织空间、数据、机器人和设置顶部拖动窗口。收起侧栏和缩窄窗口后重试，检查滚动、按钮、弹窗和全屏。 |
 | [登录、profile 和桌面集成](../desktop-host)、[官方启动器接入](../tooling/start.mjs) | `profile-boot`、`app-boot`、Connection 与认证导出，以及 DSH profile 配置和桌面桥接。源码构建和公开 npm 包需要分别核对导出，即使版本号一致。 | 在隔离 home 中启动真实 Electron，打开已有 profile 的测试副本，验证登录注册、模型和 agent 模式、工作区与会话、浏览器和文件操作。 |
@@ -37,7 +42,10 @@ Suite `0.1.39` 携带 Design `1.0.0-beta.37`，使用原生 `ctx.skills.register
 | [插件组合](../../plugins/ipollowork-suite/cordis.patch.yml)、[Studio 市场](../../plugins/ipollowork-suite/catalog/index.json)与[桌面资源打包](../desktop/scripts/prepare-dsh.ts) | Cordis 插入项和依赖、原生插件加载器、DSH ASAR 布局、Host/CLI 启动入口和电脑操作资源路径。官网安装包和 Office 回退在产品打包层。 | 用各平台打包客户端验证启动、市场按需安装、打开已有 Design/Video 项目、Office 打开和电脑操作辅助程序。 |
 | [Design 模板生成和结果打开](https://github.com/Devin-AXIS/deepseek-design) | 基于 `dsh-v0.2.2-rc.3`，Design 使用会话范围的 `resources.source`、右侧栏文件关联、`conversation.chat.turnTail`、原生 `present` 工具和交付卡片。`design-actions.tsx` 打开编辑器，`surface.tsx` 向输入框插入文件引用时保持编辑器打开。 | 套用模板并给出与示例主题明显不同的提示词。保存期间切换会话，再返回检查预览。关闭预览后，从对话结果打开最终 HTML。用原生幻灯片模板发出做 PPT 的请求，点击「在 Design 中编辑」修改一页，核对修改已保存到同一份 HTML 且页数一致。 |
 | [桌面更新频道](../desktop/src/update-channel.ts) | iPolloWork 正式发布源提供稳定版更新清单。桌面预加载对该来源省略可选的 `dshDesktop.updates.channels` 接口，DSH 通用设置不会显示开发版频道选项。 | 用保存过开发版偏好的设置启动正式安装包，确认它使用稳定版且仍可手动检查更新。换用其他更新源，确认频道选择仍可用。 |
-| [Stage 桌面插件](../../plugins/stage) | `main`、`sidebar.panellist`、`plugins.bundle.config`、Host 连接准入、`workspaceRegistry`、`tools` 和 `sandboxPolicy`。桌面组合包含 Stage Bundle。 | 验证手动打开、关联与解除关联、每个工作区授权及只读限制。换账号后重新授权工作区。 |
+| Stage 桌面插件（在 PR #582 中移除） | 曾使用 `main`、`sidebar.panellist`、`plugins.bundle.config`、Host 连接准入、`workspaceRegistry`、`tools` 和 `sandboxPolicy`。 | 检查产品组合是否已移除 Stage Bundle。 |
+| [iPolloWork 共用控件](../../plugins/_shared/ui/controls.tsx) | 套件客户端、项目看板与通知中心在构建时打入同一份产品源码。共用控件使用固定 DSH 的公开 `Button`、`Input`、`Menu`、`MenuSurface`、`Tag`、`Switch` 与主题语义变量。`FieldPopover` 在套件的智能体编辑和看板详情中使用浏览器顶层锚定弹层。看板和通知中心各自随客户端生命周期加载与撤销样式。 | 安装套件，在明暗主题与窄屏用鼠标和键盘检查智能体编辑与看板的下拉。分别停用和启用两个子插件，确认另一个入口的样式仍然可用。单独安装两个归档并验证它们可在没有套件时打开控件。 |
+| [项目看板](../../plugins/collaboration-board) | `plugins/collaboration-board/src/client.tsx` 使用 `conversation.view`、`main`、`sidebar.panellist`、工作区及会话快照、`uiWorkspace.openSession`、`sessions.using` 和原生会话 `prompt`。输入区由 DSH 在看板视图中继续管理。`src/host.ts` 使用所有者准入、兼容 v1 的 v2 存储域、`tools` 注册表及 `sandboxPolicy`。浏览器归档使用 `@deepseek-ai/dsh-client-ui-primitives` 的 `Button`、`Input`、`Menu`、`MenuSurface`、`Tag` 和图标。插件样式使用 DSH 的语义色、标准警示色、圆角和阴影变量。`plugins/_shared/ui/date-time-field.tsx` 和 `controls.tsx` 使用浏览器 Popover API 和 CSS 锚定定位，分别显示日期日历和同一栏内可直接编辑的两个 24 小时时间端点。状态和优先级也使用锚定菜单。套件 Host 提供按账号授权的看板桥接。「智能体」服务通过原生 Agent preset 解析候选，项目会话使用 `ipollo_delegate` 创建专员子会话。Host 使用 `subagents.rootOf` 将该子会话的只读查阅限制在原项目。 | 在临时配置中安装归档，从状态列新增任务，打开任务详情侧栏，依次核对任务名称、进度、排期和协作成员。使用可搜索的选择器，从卡片修改状态，切换项目并刷新，确认看板与对话之间切换时可以使用原生输入区。在明暗主题与窄屏检查中性底色、黄色警示标签、嵌套菜单的键盘关闭和焦点恢复，以及日期键入、每 15 分钟一档的时间列表、精确到分钟的输入、时长以及单个日期和整体清除。使用第二个账号验证指派通知和前置任务解锁。验证 `ipollo_project_tasks` 只使用原生会话所属项目，拒绝跨项目访问及提前开始，并检查专员委派及回传、原生定时、两种主题和窄屏。 |
+| [项目看板的对话权限](../../plugins/ipollowork-suite/src/host/native-sharing.ts) | 可选的客户端桥接 `ipolloProjectConversationShare` 复用套件的 `remote.liveshareShares` 和 PKCE 连接流程。套件 Host 使用原生工作区注册表校验对话，再通过 `liveshareShares.create` 为指定账号创建只读且禁止分叉的分享。 | 确认选择成员本身不会创建分享，明确授权后用指定账号打开当前对话，并验证其他账号无法打开。检查名单标记、阻止只读接收人发送消息和分叉、撤销后的权限。 |
 
 Design `1.0.0-beta.31` 已在固定的 DSH 版本上通过 Windows 隔离测试。客户端从 Design 的 8 类模板各选一个，由测试模型保存，再从对话文件卡片打开。另测了关闭预览期间保存新版，再从同一张卡片打开。
 
@@ -56,6 +64,8 @@ Design `1.0.0-beta.34` 将 HTML 交付约束应用于所有已激活的 Design �
 组织 MCP 代理保留上游 4xx 状态和 `mcp-method`、`mcp-name` 协议头。当前 pin 的 MCP SDK 会先发送 `server/discover`；2025 协议服务器拒绝探测时，客户端需要依据原始 4xx 回退到 `initialize`，不能将其改写成 503。认证失败、权限不足和限流使用脱敏的独立错误码，上游错误正文不外发。升级 pin 时验证原生协议探测、旧版握手、工具列表、会话失效，以及 401/403/429 和上游正文脱敏。
 
 Suite `0.1.36` 与 Design `1.0.0-beta.35` 通过可选客户端服务 `ipolloDesignTemplates` 注册组织模板来源。Cordis 注入与释放控制组织空间的模板页，账号凭证变化时清理旧账号来源。元数据来自已鉴权的账号目录；使用模板先重新校验指定版本的权限，再通过 `/document` 和带版本校验的 `/file` 创建新的 Design 文档。验证停用/启用 Design、不同授权的成员、撤权、切换账号，以及生成 HTML 后继续编辑。组织凭证不传递给 Design。
+
+Design `1.0.0-beta.38` 的 `ipolloDesignTemplates` 目录要求清单版本符合 SemVer 格式。Suite 的 `src/host/enterprise.ts` 为其他发布标签生成稳定别名，`src/client/organization-templates.ts` 在鉴权读取时查找对应的原始标签，切换账号时清除映射。升级时验证名为 `设计验收` 的版本与数字版本同时出现在 Design 原生模板库，并可应用到工作区。
 
 组织 MCP 使用原生公开的 `mcpManager.list`、`register`、`restart`。原生设置页只读取不含凭证的状态，重新连接前刷新授权。云运行凭证仅开放成员目录和连接传输所需方法，服务端仍逐次校验成员和资源权限。验证本地与云运行时的工具发现、原生 Agent 实际调用、撤权和退出登录。模型/工具弹窗通过原生 Modal 的 `contentClassName` 与 `footer` 保持接口路径可滚动、操作按钮可见；表单样式只匹配直接的原始输入框，保留添加插件的原生 Input 外层。以 390px 和两种主题检查，并验证提交资源能区分缺少元数据、非法版本和版本冲突。
 
@@ -95,3 +105,49 @@ Design beta.35 的 [CI](https://github.com/Devin-AXIS/deepseek-design/actions/ru
 2026-11-19，Suite `0.1.36` 通过 176 项测试（11 项可选跳过），账号服务通过 89 项，根目录工具通过 11 项测试及上游、文档检查。两个隔离 Windows 原生配置实际安装 Suite 与 Design beta.35 归档，使用合成管理员/成员账号，验证具体版本异常、名称/说明必填、模板授权过滤、Design 开关、新建 HTML 后手动编辑保存、MCP 设置状态及 Agent 的 `ping`/`pong` 调用。撤权后原生 MCP 工具被移除，模板读取和 MCP 重连均被拒绝。模型/工具弹窗在 390px、1280px 和原生明暗主题下，内容可滚动且底部按钮始终位于 600px 高的窗口内。MCP 测试仅替换合成服务的传输目的地，真实业务授权仍然执行。Windows 开发版沿用原配置重启，Design beta.35 通过原生管理器更新。根目录初始化拒绝覆盖已有的真实 `apps` 目录，该目录保持原样。
 
 2026-11-17，Windows Electron 开发版使用当前 pin 和已有登录会话，成功打开组织 MCP 列表及共享表单。迁移和授权回归使用隔离 PostgreSQL，覆盖从业务 schema `11` 升到 `13`、原组织与登录会话保留、管理员共享及撤销。桌面端共 19 项相关回归通过。真实第三方 MCP 的连接和调用需要配置服务后验证。
+
+## 2026-11-20：发行版账号配置
+
+Suite 0.1.41 和桌面组合保留部署选择的账号来源。应用所有权检查仍依据 `profileContext.installAnchor` 和 `@ipollo/desktop-runtime` 包身份，继续要求桌面必需界面，但不再覆盖 accountOrigin。`integrations/tooling/account-service.mjs`、`desktop-composition.mjs` 及平台/预设环境加载器把公开来源写入原生 application.yml，官方 Include 与 runProfile 分层保持生效。Suite 通过包导出读取发货的 deployment.json，包含嵌套打包入口。下次升级复验文件/预设/单次覆盖优先级、显式旧域名、HTTPS 拒绝、严格来源凭据隔离和真实归档安装。本次 83 项桌面配置/覆盖测试通过；Suite 205 项通过、11 项可选跳过；原生 0.2.2-rc.3 实际安装 0.1.41 归档，并通过自定义回环账号服务完成登录/退出。没有修改官方运行时或 Client slot 行为。
+
+2026 年 11 月 19 日，在当前固定版本的 DSH Web 中单独安装项目看板。使用原生工作区和会话记录，验证了看板位置、项目切换、打开原有对话、进度编辑和刷新保留，并检查了 390 与 1200 像素下的浅色、深色及四个视图。
+
+同一固定版本下，0.2.1 将看板移入原生对话标签。DSH Web 验证了「对话」页面、卡片跳转、升级后保留进度、项目切换，以及 390 和 1200 像素浅色和深色下的看板标签与四个视图。
+
+0.2.2 验证了看板隐藏 DSH 输入区、切回对话后保留草稿。另用真实 iPolloWork 账号 API 和隔离的 PostgreSQL 验证组织指派、拒绝组织外成员和错误项目归属、个人项目省略负责人，以及 390 和 1200 像素下的两种主题。
+
+0.3.0 在相同的 DSH Web 固定版本和隔离 PostgreSQL 账号服务中验证。原生界面检查了新增任务、任务详情、聊天草稿恢复、第二账号接收指派、接收人修改进度和前置任务解锁。测试会话通过原生定时服务向测试模型投递任务，模型调用 `ipollo_project_tasks` 完成看板任务。四个视图及弹窗均在 390 和 1200 像素下检查了两种主题。
+
+0.3.1 验证了选取已启用的套件专员作为负责人，混选人员和 AI 参与人，以及「保存并交给 AI」。原生子 Agent 读取原项目的任务并向父会话回传结果。另一登录账号可读取共享任务，调用指派账号的专员时会被拒绝。单独安装插件也验证了新增个人任务、分配给当前对话 AI 并重新打开详情。
+
+0.4.0 在 390 和 1200 像素的浅色与深色客户端中检查了看板和任务侧栏。实际流程验证了任务搜索、按列新增、快捷修改状态、键鼠选择、跨账号通知及原生专员委派和定时执行。项目归属和邀请入口复用套件的组织弹窗。验证过程生成项目邀请链接，拒绝错误邮箱，由受邀账号接受，确认该账号无权进入另一受限项目，然后指派新加入的成员。看板选中时使用对话视图的内容层，位于原生聊天宽度拖动条之上。
+
+当前固定版本的 DSH Web 已使用账号服务和两个浏览器账号验证 0.4.1 归档。390 像素宽度的两种主题都正常显示姓名和邮箱。指定账号在明确授权后可查看原对话，其他账号被拒绝，转发服务禁止发送消息和分叉，撤销时名单权限标记消失。
+
+已在原生 DSH Web 中以 1200 和 390 像素宽度、两种主题验证 0.4.3。通过现有对话插槽显示紧凑卡片和磨砂任务详情，并检查了键盘焦点和短屏内独立滚动。使用隔离账号服务验证人和 AI 共用协作名单、更换负责人后原负责人转为参与人，以及保存和刷新后的角色。
+
+0.4.4 看板读取账号通讯录中的既有头像，以及套件智能体中已上传的头像。智能体照片路由使用 DSH 所有者准入与同源按需加载。验证实际头像、缺失或加载失败时的圆形首字、所有者准入，以及两种主题中的浅磨砂与日历细网格。
+
+0.4.5 看板样式使用现有 DSH 对话插槽和浏览器原生模态顶层，模糊任务详情背后的看板。当前固定版本的 DSH Web 已在 1200 和 390 像素下验证两种主题的磨砂效果、统一按钮圆角、按键浮起和下压状态，以及圆形头像。减少透明度模式下使用实色详情，减少动态效果模式下按钮无位移。
+
+0.4.6 归档已在原生对话视图中验证英文字母占位、更大的圆形头像和更小的字母。中文姓名采用支持姓氏读音的拼音转换。在 1200 和 390 像素的两种主题中，选择器保留成员姓名和邮箱，头像使用对应的首字母。
+
+0.4.7 看板在 `plugins/collaboration-board/src/host.ts` 通过 `subagents.getProvider` 和 `tools.executable` 读取可选原生委派。打开「参与 AI」时刷新候选，原生对话从任务计划取得允许调用的工具名。升级固定版本时，验证两个官方包加载后显示、禁用后消失，已有任务能报告提供方不可用，且原生工具使用项目工作目录。当前 DSH Web 预览已在 1200 和 390 像素的两种主题验证两个官方选项，并在隔离配置中通过原生工具和确定性的测试提供方验证委派与禁用。
+
+0.4.8 项目看板在 `plugins/collaboration-board/src/host.ts` 和 `src/schedule.ts` 使用可选的 Host `schedule` 服务。「待处理」任务由 AI 主负责且开始时间在未来时，保存使用 `ScheduleService.create` 按 `at` 类型注册一次定时，目标为原生对话。使用 `view` 和 `edit` 核对、改期和撤销。本地 `ipollo_project_board_schedule` 存储域保存定时 ID，以及工作区、账号和目标对话的执行校验。看板工具在模型开始工作前读取实时任务并校验进度版本。更新固定版本时，从实际看板保存并检查原生定时，验证重复保存、改期、自动触发原对话，以及有未完成前置的任务保持「待处理」。 0.4.8 归档在两个独立临时 DSH 配置中安装。使用确定性测试模型，从构建后的客户端验证了个人项目及 PostgreSQL 组织项目的自动启动与完成、重复保存、改期、取消和前置阻塞。定时提示在两种主题的 390 和 1200 像素宽度下均已检查。
+
+独立通知中心 0.1.0 在 `plugins/notification-center/src/client.tsx` 使用原生 `sidebar.footer.action` 槽位。会话适配器读取 `sessions.list`、`workspaces.list` 和 `uiSession.sessionStatus`，通过 `mark` 提交已读，通过 `uiWorkspace.openSession` 打开原对话。项目看板 0.4.9 通过可选 Cordis 客户端服务 `ipolloNotificationCenter` 登记现有账号收件箱，用 `layout.selectPanel` 打开原 `main` 详情，并在中心缺失时保留 `sidebar.panellist` 独立入口。更新固定版本时，核对头像区域、折叠侧栏、多个来源的未读状态、失败会话样式、账号切换、已读转发、原详情导航和独立看板回退。 已在临时 DSH Web 配置中安装归档并验收，两种主题均覆盖 1200 和 390 像素，另验证了独立安装的紧凑侧栏、跨账号指派与确认、原生会话未读及失败提示、刷新和仅安装看板时的回退。
+
+通知中心 0.1.1 沿用原生 `sidebar.footer.action` 注册，`plugins/notification-center/src/style.css` 根据相邻的 `data-slot="sidebar.footer.action"` 和 `data-slot="sidebar.settings"` 布局。展开侧栏且底部只有一个动作时，铃铛与账号放在同一行。紧凑侧栏和多个底部动作沿用原生布局。更新固定版本时，检查展开侧栏和窄屏抽屉内的头像与铃铛对齐，确认紧凑侧栏仍可操作，并验证两种主题下的弹层在视口范围内。 已验证两种主题的 1200 和 390 像素布局、紧凑侧栏的键盘操作，以及当前本地预览中的铃铛和弹层。
+
+通知中心 0.1.3 在 `plugins/notification-center/src/host.ts` 声明来源开关，在 `src/client.tsx` 注册原生 `settings.section` 和 `settings.section.icon`。Host 通过 `settings.configure` 暴露插件条目下可即时生效的 `sourceEnabled` 字典，客户端用 `configForms.get` 读取已保存偏好，用 `mutate` 写入变化的来源键。更新固定版本时，从原生设置关闭各来源，验证列表及未读提示即时更新、刷新后开关保留，以及重新开启时原有未读通知恢复。 开发预览先卸载并重新选入该插件，使新增 Host Config 导出完成设置注册，再确认两个开关可操作。
+
+iPolloWork 套件 0.1.36 在 `plugins/ipollowork-suite/cordis.patch.yml` 将项目看板和通知中心注册为两个原生子插件。套件补丁以安装目录解析 Host 相对路径，`scripts/bundle-subplugins.mjs` 在各自的入口旁生成清单，供 DSH 发现对应浏览器模块。桌面组合生成器从同级 `@ipollo/desktop-host` 包重新定位两个入口。条目 ID、账号路由、看板存储域、定时任务 ID 和通知设置命名空间沿用原值。迁移早期开发配置时移除两个独立安装，只清除设置覆盖中的旧包名断言并以 ID 保留设置。升级固定版本时，只安装套件，在原生插件详情确认两个条目生效，并检查原有任务、排期、账号和通知偏好。已在打包后的 Web 客户端及当前开发预览验收升级。
+
+iPolloWork 套件 0.1.41 保留两个原生子插件入口，并从看板打开组织现有的邀请码弹窗，默认选中参与权限。账号服务在数据库版本 20 运行看板迁移，保留本地看板预览版本 15 的任务及通知已读状态。在当前 DSH 固定版本中，隔离配置从套件 0.1.36 升级后保留了个人和组织任务、原生排期、账号及通知设置。实际构建的客户端验证了新增任务、组织邀请入口，以及两种主题下 390 px 宽度的四种看板视图。
+
+Suite 0.1.42 在安装包生成的 `@ipollo/desktop-runtime` 清单记录公开字段 `ipolloworkAccountOrigin`。私有 Suite 依据 install-anchor 的安装清单选择服务来源，旧版清单回退发货 deployment.json；profile 中残留的地址不能覆盖发行版设置。企业打包仍可显式选择 HTTPS/本机测试地址，普通 DSH 插件继续支持 profile 配置。升级验证覆盖旧 localhost 地址、企业自定义发行版、非法来源拒绝及已安装 Mac 的真实登录。此条替代上文 0.1.41 允许 profile 覆盖私有桌面地址的行为。
+
+### 组织空间工作流
+
+套件通过可选的 `ipolloNotificationCenter` 服务注册组织通知，并用既有 DSH `layout.selectPanel` 打开已授权的来源页面。组织页保留自身的通知入口。复验账号切换、单条已读、显式批量已读、资源或会话撤权以及定位到对应记录。模板管理可在未启用 Design 时使用，应用模板仍依赖既有 Design 集成。使用原生组织页复验分析、成员分页和文件包上传，并分别验证桌面端 `fileActions.save` 和 Web 下载。将桌面端与账号服务联测，并复验 PostgreSQL schema 21 迁移。

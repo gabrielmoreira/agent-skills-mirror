@@ -462,6 +462,18 @@ the working directory and whether the session is already open somewhere else,
 and then starts the OMH frontend in place of its own. Every model call, tool
 run and approval decision stays Hermes'; the screen is OMH's.
 
+On native Windows (no WSL) the OMH TUI runs in Windows Terminal or another
+console that takes virtual terminal input and output: it sets the console to
+VT input and output with UTF-8 code pages, reads keys as the same escape
+sequences a POSIX terminal sends, polls the window size in place of SIGWINCH,
+and puts every console mode back on exit. An old conhost that refuses virtual
+terminal input gets one line saying so, and bare `omh` opens Hermes' own
+terminal. Ctrl+Z does nothing there (no job control), and the TUI's own
+runtime home is not built on Windows (it is a tree of symbolic links, which
+needs Developer Mode), so sessions open on the shared gateway. No real Windows
+console run backs this yet: CI proves the console layer against a fake and the
+wake pipe on real Windows pipes.
+
 - Finished replies, tool summaries and notices go to your terminal's own
   scrollback, so selecting, copying and scrolling back work as they do in any
   shell. Only the region under the last line printed repaints, each repaint
@@ -1154,7 +1166,19 @@ run and approval decision stays Hermes'; the screen is OMH's.
   ends the run. A failed one keeps a row of its own with its error, and
   Ctrl+O unfolds the run, each load saying what it loaded (`loaded skill
   omh-docs`, `loaded references/api.md from skill omh-docs` for a file in
-  it). A shell call whose heredoc feeds an interpreter its script
+  it). Consecutive calls of any other one tool fold the same way, each
+  call's command on its own row under the first, its time after it:
+
+  ```text
+  ┃ ● terminal · 3 calls  0.9s
+  ┃   ⎿  rg DBGM src  0.2s
+  ┃      sed -n 1,9p app.py  0.3s
+  ┃      pnpm test  0.4s
+  ```
+
+  What each printed is left out until Ctrl+O unfolds the run. A call with an
+  answer under it, a diff, recalled records, or a failure keeps a row of its
+  own. A shell call whose heredoc feeds an interpreter its script
   (`python3 - <<'PY'`, `uv run python - <<'PY'`, `bash <<EOF`) names the
   interpreter and counts the script's lines and the commands around it
   (`terminal(python3 script · 23 lines)`), one a line: another heredoc's
@@ -1164,7 +1188,11 @@ run and approval decision stays Hermes'; the screen is OMH's.
   or, when it failed by its exit code alone (a test
   run, say), the last three lines it printed, under the
   count of the lines above them. An edit's diff hangs under the same `⎿`, and a long diff counts
-  its rest the same way. A resumed session's earlier calls (`omh --resume`,
+  its rest the same way. Its code lines take the same syntax colour as fenced
+  code, named by the file's extension (keywords, strings, numbers and comments
+  each in their own colour, over the line's green or red band); a colour that
+  would not read on a band is brightened there, and a file with no syntax
+  table keeps one colour per line. A resumed session's earlier calls (`omh --resume`,
   `/resume`, a switch) are drawn the same way, two blank rows between two,
   with a grey `●` on a grey rail, since Hermes' record of them keeps no
   outcome, and an edit's diff under it where Hermes kept the one it showed.
@@ -1444,7 +1472,7 @@ Esc closes it):
 | Enter | Sends the composer; while a turn runs, typed text goes into it now as a steer (shown as your prompt above the working row, read at the next tool call); a slash command, a `!` line, a prompt with images, one sent in plan mode or behind queued lines queues for the turn's end instead (`/stop`, `/steer`, `/queue`, `/btw`, `/bg`, `/yolo`, `/effort`, `/reasoning <level>` and the commands about this terminal run at once), whatever Hermes' `busy_input_mode` says |
 | `\` then Enter, Alt+Enter, Shift+Enter, Ctrl+J | Adds a line; with a list or menu focused, Ctrl+J moves down instead. Alt+Enter and Shift+Enter still add a line in an open menu; backslash then Enter may accept a completion |
 | Ctrl+Enter | While a turn runs, sends the composer's text into it now as a steer (`/steer <text>` too); with images, stops the turn and sends the prompt with them as soon as it ends; idle, sends as Enter does |
-| Ctrl+Enter, Ctrl+J | While a turn runs, on an empty composer, send the oldest queued prompt into it now as a steer; the row under the queue names the key (Ctrl+J where the terminal has not shown it tells Ctrl+Enter from Enter). A queued `!` line, slash command, skill prompt or plan prompt waits its turn |
+| Ctrl+Enter, Ctrl+J | While a turn runs, on an empty composer, send the oldest queued prompt into it now as a steer, or, with images, stop the turn and send it with them as soon as it ends; the row under the queue names the key (Ctrl+J where the terminal has not shown it tells Ctrl+Enter from Enter). A queued `!` line, slash command, skill prompt or plan prompt waits its turn |
 | Tab | Completes a slash command, or the `@` reference being typed; on an open menu, Enter takes the highlighted row too, and sends a command already typed in full |
 | Shift+Tab | Cycles the input mode: normal, accept all (Hermes asks no approvals in this session), plan (prompts go as /plan); while Hermes itself has approvals off, turns plan on and off |
 | Ctrl+T | Steps the reasoning effort: low, medium, high, xhigh, max; the info line shows it as effort medium |
@@ -1510,7 +1538,7 @@ integration rather than claiming exhaustive Vim parity.
 
 Ctrl+Enter and Shift+Enter reach the OMH TUI as keys of their own only where
 the terminal reports them. On start it asks iTerm2, kitty, WezTerm, tmux, VS
-Code's terminal and Windows Terminal (under WSL) for the kitty keyboard
+Code's terminal and Windows Terminal (native or under WSL) for the kitty keyboard
 protocol and xterm modifyOtherKeys, and Ghostty for modifyOtherKeys only: the
 terminals Hermes' own TUI asks, recognised as Hermes recognises them, from
 `TERM_PROGRAM`, `TERM`, `TMUX`, `KITTY_WINDOW_ID` or `WT_SESSION`. The
@@ -1772,6 +1800,9 @@ lines are already queued, which queue as before. Ctrl+Enter on a prompt with
 images stops the turn instead (Hermes takes text alone into a running turn):
 the prompt shows above the working row as a dim prompt and goes, with its
 images, as soon as that turn ends; Esc again gives it back to the composer.
+A prompt with images that Enter queued gets the same offer: its queue row
+names the send-now key, and that key on an empty composer stops the turn and
+sends it the same way.
 Hermes reads a steer after its
 next tool call, or, while it is compressing the
 context, queues it and sends it as the next prompt once compression is done.
@@ -2030,7 +2061,8 @@ unchanged.
 
 When the OMH TUI cannot start, `omh` says why in one line on stderr and opens
 Hermes instead, so you lose the OMH screen, never the session. For a reason
-that is the OMH TUI's own — Windows or another terminal without `termios`,
+that is the OMH TUI's own — a Windows console that cannot take virtual
+terminal input (an old conhost), a non-Windows platform without `termios`,
 its frontend missing, or a Hermes whose gateway no longer speaks what the TUI
 was built for — that is Hermes' own TUI (`hermes --tui`). A gateway that is
 there but not answering is not such a reason, since Hermes' own TUI would ask
@@ -2110,7 +2142,8 @@ The OMH TUI opens with the theme `omh theme use` saved under the OMH home
 
 A fresh session's launch draws the block logo, the banner's title and a
 launch card in one of nine launch looks: `spectrum` (the logo swept through
-the tool kind hues, a box per section, the default), `violet` (one box),
+the tool kind hues, a box per section, soft violet labels and rails, the
+default), `violet` (one box),
 `gold` (one box in two columns), `graphite` (grey and white with turquoise
 hyphens, a rule above and below), `sakura` (pastel pink, sky blue and cream,
 one box), `moonlit` (moonlight yellow and silver over navy, a rule above and
@@ -3719,7 +3752,6 @@ exist to make a safety claim that Windows cannot back:
 | Cross-harness benchmark sandbox | Linux `bwrap` process confinement | Reports `unsupported`; no real runs |
 | `0600` / `0700` artifact permissions | POSIX mode bits | `chmod` is close to a no-op on NTFS; private artifacts are not enforced private |
 | macOS menu bar helper | Darwin + `swiftc` | Skipped, and says so |
-| OMH TUI (bare `omh`) | `termios` raw mode | Not attempted; bare `omh` opens Hermes' own terminal |
 
 Generic record locking is **not** on that list: `local_store` uses
 `msvcrt.locking` on Windows, so shared-record updates get a real OS lock with

@@ -89,19 +89,19 @@ The application shell reads its destination from the URL query. The native edito
 | Destination | Query parameters |
 | --- | --- |
 | Current editor | Project/session URL, project hash or `page=editor` to resume the active project |
-| Motion Studio | `page=motion` opens editable templates and an action to resume the timeline |
+| Motion Studio | `page=motion` opens the Motion Studio banner and template catalog. Open Motion Editor opens the first available project, New project starts a blank project, and Template library opens the global catalog with the selected collection. The project sidebar opens in the editor. |
 | Shorts, Marketing and Explainer Studios | `page=shorts`, `page=marketing` or `page=explainer`. Add a supported `scene` to open the generator. A registered `skill` restores its brief on return. |
 | Model overview | `page=model&model=<provider-qualified-id>` lists compatible scenes and links to its provider and generation setup. |
 | Model hub | `page=model-hub&hub=<hub-id>`, for example `hub=gemini-4`. Opens a model family's landing page from its Explore spotlight slide: community videos with their detail preview, plus sign-in and own-key paths. It is a standalone page, so a session's first artifact does not return the viewer to the editor. An unknown `hub` shows a page-unavailable notice. |
-| 3D Studio | `page=3d&skill=three-js` opens the technique brief. Add `scene=text-to-video` for a 3D-style clip. The Agent handoff builds the editable scene. |
+| 3D Studio | `page=3d` shows Coming soon and six 3D creative Skills. `page=3d&skill=three-js` opens a brief to copy to a connected Agent, which builds the editable scene. Direct `scene=text-to-video` and `scene=image-to-video` links show the Coming soon fallback; in-Studio generation is unavailable. |
 | Asset detail | `page=assets&asset=<assetId>&version=<versionId>` opens the selected local version |
 | Explore | The workspace root or `page=explore` opens featured scenes and template previews. Optional filters such as `community=3d-motion` or `medium=video` restore discovery context |
 | Scene landing page | `page=create&scene=image-edit` opens the focused generator. The optional `model` identifies the provider and model. |
 | Creative studio | `page=design`, `page=cinema`, or `page=sound` with a `scene` and optional provider-qualified `model`. For example, `page=cinema&scene=shot-image` opens an image composer inside Cinema. |
 | Asset workspace | `page=assets` opens the shared asset library independently of the retained project |
-| API | `page=api` lists models and registered tools. `tool=openmotion_media_use` opens its input schema. |
 | MCP onboarding | `page=mcp&host=codex`; `setup=manual` opens manual configuration |
 | Settings | `page=settings&section=general` |
+| MCP setup in Settings | `page=settings&section=mcp&host=codex`; `setup=manual` opens manual configuration in the settings content pane |
 | Provider detail | `page=settings&section=providers&provider=openai` |
 | Template library | `templates=1` |
 | Creators and credited works | `templates=1&view=creators`, optionally with `creator=<credit-id>` and `template=<catalog-id>`. The underlying workspace survives closing the gallery. |

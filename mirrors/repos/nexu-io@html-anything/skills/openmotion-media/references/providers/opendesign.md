@@ -74,10 +74,12 @@ Wire mapping (all paths are relative to the dashboard API origin):
 
 | Type | POST path | JSON body | Poll path |
 | --- | --- | --- | --- |
-| Image | `/api/v1/media/images/generations` | `{model,prompt,...parameters}` | `/api/v1/media/images/tasks/{task_id}` |
+| Image | `/api/v1/media/images/generations` (or `/api/v1/media/images/edits` with references) | `{model,prompt,...parameters}` (top-level `aspect_ratio` + `resolution` packed as `output:{aspect_ratio,resolution}`) | `/api/v1/media/images/tasks/{task_id}` |
 | Video | `/api/v1/media/videos/tasks` | `{model,prompt,...parameters}` | `/api/v1/media/videos/tasks/{task_id}` |
 | Speech | `/api/v1/media/audio/speech` | `{model,voice,parameters:{text,...options}}` | `/api/v1/media/audio/tasks/{task_id}` |
 | Music | `/api/v1/media/audio/music` | `{model,parameters:{prompt,...options}}` | `/api/v1/media/audio/tasks/{task_id}` |
+
+For Cloud image requests, `aspect_ratio` and `resolution` represent a paired output profile: when the synced catalogue publishes `capabilities.profiles` (using the `edits` envelope when input references or `parameters.images` are present, and `generations` otherwise), OpenMotion validates against the active envelope, completes a missing half using the envelope's default or first matching pair, and packs the pair into `output: { aspect_ratio, resolution }` on the wire. Unpublished ratios, resolutions, or pairs, as well as combining `size` or `output` with `aspect_ratio`/`resolution`, are rejected before submission. An explicit `parameters.output` object passes through unchanged. When a model publishes no `capabilities.profiles`, passing only one of `aspect_ratio` or `resolution` is rejected before submission; supply both together or pass an explicit `output` object.
 
 The speech adapter extracts `parameters.voice` and nests the remaining options, using the tool's prompt as `parameters.text`. Do not send fal-style flat speech fields.
 
@@ -103,7 +105,7 @@ The supplied contract does **not** define a complete authoritative Cloud HTTP er
 | --- | --- |
 | HTTP 401 | Authentication was not accepted. Check dashboard API origin/path, Bearer header, selected workspace key and saved-vs-environment source. Do not assert expired key, wrong key or insufficient balance without provider evidence. |
 | HTTP 403 / 404 | Check workspace/model/task ownership, endpoint path and access. Confirm the actual Cloud code/message; HTTP status alone does not identify the exact permission/resource issue. |
-| HTTP 400 / 422 | Check current contract fields: image/video fields are flat, speech text is nested and voice must match the model. Inspect actual validation detail if available. |
+| HTTP 400 / 422 | Check current contract fields: paired image `aspect_ratio`/`resolution` are sent inside `output`, other image/video fields are flat, speech text is nested and voice must match the model. Inspect actual validation detail if available. |
 | Quota/balance rejection | Check workspace model allowance and recharge balance. The contract does not assign one guaranteed HTTP status to this case. |
 | HTTP 429 / 5xx / network timeout | Possible limits/transient failure or uncertain outcome. Check the original task/history before another paid submit; do not assume a timeout means no task was created. |
 | `audio_outcome_unknown` | Explicit unknown audio outcome. Query the original task and workspace usage before considering another generation. Do not treat it as a definite failure or a refund. |

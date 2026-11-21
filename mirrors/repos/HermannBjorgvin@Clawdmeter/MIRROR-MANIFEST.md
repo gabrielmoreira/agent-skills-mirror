@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HermannBjorgvin/Clawdmeter` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
+Mirror of `HermannBjorgvin/Clawdmeter` — 26 default patterns, 0 followed patterns, 40 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `HermannBjorgvin/Clawdmeter` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 39 |
+| Files         | 40 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,28 +76,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | ✓ | [`firmware/src/boards/freenove_s3_display_nontouch/CLAUDE.md`](firmware/src/boards/freenove_s3_display_nontouch/CLAUDE.md) |
 | 16 | ✓ | [`firmware/src/boards/lilygo_t_display_s3/CLAUDE.md`](firmware/src/boards/lilygo_t_display_s3/CLAUDE.md) |
 | 17 | ✓ | [`firmware/src/boards/lilygo_t4s3/CLAUDE.md`](firmware/src/boards/lilygo_t4s3/CLAUDE.md) |
-| 18 | ✓ | [`firmware/src/boards/m5stack_fire/CLAUDE.md`](firmware/src/boards/m5stack_fire/CLAUDE.md) |
-| 19 | ✓ | [`firmware/src/boards/m5sticks3/CLAUDE.md`](firmware/src/boards/m5sticks3/CLAUDE.md) |
-| 20 | ✓ | [`firmware/src/boards/sensecap_indicator_d1l/CLAUDE.md`](firmware/src/boards/sensecap_indicator_d1l/CLAUDE.md) |
-| 21 | ✓ | [`firmware/src/boards/spotpear_s3_154/CLAUDE.md`](firmware/src/boards/spotpear_s3_154/CLAUDE.md) |
-| 22 | ✓ | [`firmware/src/boards/waveshare_amoled_132/CLAUDE.md`](firmware/src/boards/waveshare_amoled_132/CLAUDE.md) |
-| 23 | ✓ | [`firmware/src/boards/waveshare_amoled_143/CLAUDE.md`](firmware/src/boards/waveshare_amoled_143/CLAUDE.md) |
-| 24 | ✓ | [`firmware/src/boards/waveshare_amoled_175c/CLAUDE.md`](firmware/src/boards/waveshare_amoled_175c/CLAUDE.md) |
-| 25 | ✓ | [`firmware/src/boards/waveshare_amoled_18_c6/CLAUDE.md`](firmware/src/boards/waveshare_amoled_18_c6/CLAUDE.md) |
-| 26 | ✓ | [`firmware/src/boards/waveshare_amoled_18/CLAUDE.md`](firmware/src/boards/waveshare_amoled_18/CLAUDE.md) |
-| 27 | ✓ | [`firmware/src/boards/waveshare_amoled_206/CLAUDE.md`](firmware/src/boards/waveshare_amoled_206/CLAUDE.md) |
-| 28 | ✓ | [`firmware/src/boards/waveshare_amoled_216_c6/CLAUDE.md`](firmware/src/boards/waveshare_amoled_216_c6/CLAUDE.md) |
-| 29 | ✓ | [`firmware/src/boards/waveshare_amoled_216/CLAUDE.md`](firmware/src/boards/waveshare_amoled_216/CLAUDE.md) |
-| 30 | ✓ | [`firmware/src/boards/waveshare_epaper_154/CLAUDE.md`](firmware/src/boards/waveshare_epaper_154/CLAUDE.md) |
-| 31 | ✓ | [`firmware/src/boards/waveshare_lcd_147_c6/CLAUDE.md`](firmware/src/boards/waveshare_lcd_147_c6/CLAUDE.md) |
-| 32 | ✓ | [`firmware/src/boards/waveshare_lcd_147/CLAUDE.md`](firmware/src/boards/waveshare_lcd_147/CLAUDE.md) |
-| 33 | ✓ | [`firmware/src/boards/waveshare_lcd_154/CLAUDE.md`](firmware/src/boards/waveshare_lcd_154/CLAUDE.md) |
-| 34 | ✓ | [`firmware/src/boards/waveshare_lcd_183/CLAUDE.md`](firmware/src/boards/waveshare_lcd_183/CLAUDE.md) |
-| 35 | ✓ | [`firmware/src/boards/waveshare_lcd_2/CLAUDE.md`](firmware/src/boards/waveshare_lcd_2/CLAUDE.md) |
-| 36 | ✓ | [`firmware/src/boards/waveshare_lcd_21/CLAUDE.md`](firmware/src/boards/waveshare_lcd_21/CLAUDE.md) |
-| 37 | ✓ | [`firmware/src/boards/waveshare_lcd_4/CLAUDE.md`](firmware/src/boards/waveshare_lcd_4/CLAUDE.md) |
-| 38 | ✓ | [`firmware/src/boards/xingzhi_cube_183/CLAUDE.md`](firmware/src/boards/xingzhi_cube_183/CLAUDE.md) |
-| 39 | ✓ | [`research/clawd-official/CLAUDE.md`](research/clawd-official/CLAUDE.md) |
+| 18 | ✓ | [`firmware/src/boards/m5stack_core2/CLAUDE.md`](firmware/src/boards/m5stack_core2/CLAUDE.md) |
+| 19 | ✓ | [`firmware/src/boards/m5stack_fire/CLAUDE.md`](firmware/src/boards/m5stack_fire/CLAUDE.md) |
+| 20 | ✓ | [`firmware/src/boards/m5sticks3/CLAUDE.md`](firmware/src/boards/m5sticks3/CLAUDE.md) |
+| 21 | ✓ | [`firmware/src/boards/sensecap_indicator_d1l/CLAUDE.md`](firmware/src/boards/sensecap_indicator_d1l/CLAUDE.md) |
+| 22 | ✓ | [`firmware/src/boards/spotpear_s3_154/CLAUDE.md`](firmware/src/boards/spotpear_s3_154/CLAUDE.md) |
+| 23 | ✓ | [`firmware/src/boards/waveshare_amoled_132/CLAUDE.md`](firmware/src/boards/waveshare_amoled_132/CLAUDE.md) |
+| 24 | ✓ | [`firmware/src/boards/waveshare_amoled_143/CLAUDE.md`](firmware/src/boards/waveshare_amoled_143/CLAUDE.md) |
+| 25 | ✓ | [`firmware/src/boards/waveshare_amoled_175c/CLAUDE.md`](firmware/src/boards/waveshare_amoled_175c/CLAUDE.md) |
+| 26 | ✓ | [`firmware/src/boards/waveshare_amoled_18_c6/CLAUDE.md`](firmware/src/boards/waveshare_amoled_18_c6/CLAUDE.md) |
+| 27 | ✓ | [`firmware/src/boards/waveshare_amoled_18/CLAUDE.md`](firmware/src/boards/waveshare_amoled_18/CLAUDE.md) |
+| 28 | ✓ | [`firmware/src/boards/waveshare_amoled_206/CLAUDE.md`](firmware/src/boards/waveshare_amoled_206/CLAUDE.md) |
+| 29 | ✓ | [`firmware/src/boards/waveshare_amoled_216_c6/CLAUDE.md`](firmware/src/boards/waveshare_amoled_216_c6/CLAUDE.md) |
+| 30 | ✓ | [`firmware/src/boards/waveshare_amoled_216/CLAUDE.md`](firmware/src/boards/waveshare_amoled_216/CLAUDE.md) |
+| 31 | ✓ | [`firmware/src/boards/waveshare_epaper_154/CLAUDE.md`](firmware/src/boards/waveshare_epaper_154/CLAUDE.md) |
+| 32 | ✓ | [`firmware/src/boards/waveshare_lcd_147_c6/CLAUDE.md`](firmware/src/boards/waveshare_lcd_147_c6/CLAUDE.md) |
+| 33 | ✓ | [`firmware/src/boards/waveshare_lcd_147/CLAUDE.md`](firmware/src/boards/waveshare_lcd_147/CLAUDE.md) |
+| 34 | ✓ | [`firmware/src/boards/waveshare_lcd_154/CLAUDE.md`](firmware/src/boards/waveshare_lcd_154/CLAUDE.md) |
+| 35 | ✓ | [`firmware/src/boards/waveshare_lcd_183/CLAUDE.md`](firmware/src/boards/waveshare_lcd_183/CLAUDE.md) |
+| 36 | ✓ | [`firmware/src/boards/waveshare_lcd_2/CLAUDE.md`](firmware/src/boards/waveshare_lcd_2/CLAUDE.md) |
+| 37 | ✓ | [`firmware/src/boards/waveshare_lcd_21/CLAUDE.md`](firmware/src/boards/waveshare_lcd_21/CLAUDE.md) |
+| 38 | ✓ | [`firmware/src/boards/waveshare_lcd_4/CLAUDE.md`](firmware/src/boards/waveshare_lcd_4/CLAUDE.md) |
+| 39 | ✓ | [`firmware/src/boards/xingzhi_cube_183/CLAUDE.md`](firmware/src/boards/xingzhi_cube_183/CLAUDE.md) |
+| 40 | ✓ | [`research/clawd-official/CLAUDE.md`](research/clawd-official/CLAUDE.md) |
 
 ---
 

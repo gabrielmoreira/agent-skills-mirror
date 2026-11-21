@@ -21,12 +21,12 @@ For an independent native folder, use the pinned CLI to inspect/render that dire
 
 When comparing:
 
-- Compare the same actual timestamps, including content, wording, composition, motion, pacing and missing stretches.
+- Apply the shared [fidelity checks](../../openmotion-production/references/reference-video.md#check-fidelity-and-edit-dependencies) at the same actual timestamps, including composition, motion, pacing and missing stretches.
 - Open the relevant source/rendered frames; optional similarity diagnostics only locate differences, never define visual acceptance.
-- Verify detected cuts against adjacent source frames, then inspect rendered boundaries. Restore missing original hard cuts; automatic candidates can be false positives. Before packaging, run `measure cuts` on both the reference and the rendered preview and pair each verified reference cut with a rendered cut within about three frames. Inspect every unpaired cut on both sides: restore it, or list its time and what the viewer sees instead under `Differences from the original`. Fast collage and montage passages lose quick cuts most often.
+- Before packaging, run the shared cut audit on the reference and the rendered preview. List each unpaired cut that remains under `Differences from the original`.
 - Check duration, retained sound and audio offset through actual media evidence. A stream can contain only silence; inspect decoded audio before choosing the export mode and verify the actual content and synchronization when sound is present. At a cut, cue or narration anchor that depends on precise timing, compare its position in the decoded source and final file; container timestamps alone do not establish alignment. Record listening separately from decoded timing using the [shared audiovisual evidence rules](../../openmotion-production/references/verification.md#verification-scope). For mixed-media shots, compare representative start, action and cut frames for product/subject continuity and for the intended layering and readability. Check narration against the actual voice and caption timing when present.
 
-Fix locatable issues relevant to the request, then re-export the changed source. Use the cause and expected benefit to choose a further correction, a different approach or delivery with a clear limitation. Repeating an unproductive change is not progress; there is no fixed number of permitted rounds. A limitation note does not turn an unresolved defect into a passed check. For reference-to-rebuild comparison, similarity scores locate differences; humans decide visual acceptance. The package self-containment check is below.
+Fix locatable issues relevant to the request, then re-export the changed source. When a fix stops reducing the difference, follow the shared bounded repair in the same fidelity checks and record the issue in `TEMPLATE.md`. A limitation note does not turn an unresolved defect into a passed check. Similarity scores locate differences; humans decide visual acceptance. The package self-containment check is below.
 
 **Record checks in one of three states** in `TEMPLATE.md`:
 - Ran, passed

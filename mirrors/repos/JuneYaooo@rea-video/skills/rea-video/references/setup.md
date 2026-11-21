@@ -8,6 +8,18 @@ pip install "rea-video[ocr] @ git+https://github.com/JuneYaooo/rea-video"   # �
 rea-video --help
 ```
 
+**Windows**（`install_skill.sh` 是 bash 脚本，没装 Git Bash 时手动做这几步）：
+
+```powershell
+winget install Gyan.FFmpeg     # 或 choco install ffmpeg；装完新开一个终端
+git clone https://github.com/JuneYaooo/rea-video; cd rea-video
+pip install ".[ocr]"
+New-Item -ItemType Directory -Force "$HOME\.claude\skills" | Out-Null
+New-Item -ItemType Junction -Path "$HOME\.claude\skills\rea-video" -Target "$PWD\skills\rea-video"
+```
+
+`Junction` 不需要管理员权限（`SymbolicLink` 需要）；仓库路径带中文或空格不用特殊处理。`rea-video pdf` 会用 `Program Files` 或 `%LOCALAPPDATA%` 下的 Chrome / Edge，装在别处就设 `REA_CHROME`。
+
 pip 报 `externally-managed-environment`（Homebrew / 新版 Ubuntu 的系统 Python）时，不要加 `--break-system-packages`，改用
 `pipx install "rea-video[ocr] @ git+https://github.com/JuneYaooo/rea-video"`，或直接跑 `install_skill.sh`（会自动改用 pipx 或仓库内 `.venv`）。
 
@@ -41,6 +53,7 @@ pip install "rea-video[ocr,asr] @ git+https://github.com/JuneYaooo/rea-video"   
 
 1. `REA_VLM_BASE_URL` / `REA_VLM_API_KEY` / `REA_VLM_MODEL`（`REA_VLM_MODEL` 可写多个模型、逗号分隔，前一个失败自动换下一个）
 2. 如果没有，回落到 capsule-cinema 的 `VIDEO_ANALYSIS_*` 或 `GEMINI3_*`
+3. 只有 Gemini 的 key（`GEMINI_API_KEY`，模型用 `REA_GEMINI_MODEL` 改）：特殊时刻（`moments`）走 Gemini 自己的接口，连声音一起看视频片段；视频会上传到 Google，用完即删
 
 用 `--env-file <某个 .env>` 读取配置（例如复用 capsule-cinema 的）。**不要把密钥写进对话、仓库或报告，也不要打开 .env 看内容。**
 

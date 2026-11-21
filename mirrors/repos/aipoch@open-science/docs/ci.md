@@ -145,6 +145,24 @@ already signed Windows build artifact and the previous stable installer. To exer
 path on a branch, dispatch Windows Upgrade Smoke with `candidate_dry_run=true` for temporary
 signing, or with `signed_run_id` set to a Release run for its existing signed bytes.
 
+Stable Windows x64 installers include `resources/windows-delta/windows-delta.exe`. Packaging
+builds the helper from pinned HDiffPatch, Zstandard and 7-Zip sources using Python 3, CMake and
+the Visual Studio C++ toolchain. Azure signing covers the helper with the other packaged PE files.
+
+After validating a signed upgrade, release owners can set the repository Actions variable
+`WINDOWS_DELTA_ENABLED=true` to publish an optional patch from the previous stable installer.
+Release generates the patch after signing and verifies that applying it reproduces the exact target
+bytes. The mirror validates the patch before promoting the feed. To replay the release transform
+without publishing, point `node build/windows-delta/publish.mjs OLD NEW WORKER HDIFFZ [7Z]` at
+two local release directories containing their installers and original `latest.yml`. Use a copy
+for `NEW` because the transform writes the verified sidecar and updates the feed there.
+
+Clients first acquire the capable updater via the existing blockmap. Subsequent eligible updates
+reuse the cached old installer, reconstruct the new installer in the pending cache and verify its
+SHA-512 and publisher. Cancel stops reconstruction. Missing patches, unsupported pairs or
+insufficient space use the existing download path. Release owners can omit future sidecars by
+clearing the Actions variable.
+
 Process Lifecycle runs its fixed source process collection daily on
 macOS, Linux and Windows at **19:23 UTC** (02:23 the next day in Asia/Saigon), even when the
 default-branch SHA is unchanged. Its manual `core`, `detector` and `update-occupancy` modes are focused no-publish
@@ -321,6 +339,32 @@ Automatic PRs use the affected Windows mainline groups;
 queue uses short Mac core plus focused native checks for sensitive changes. Full Mac presentation,
 regression and Delegation matrices are not repeated in the queue. Capacity profiling remains in
 Source Regression; manual callers without an explicit capacity input retain complete coverage.
+
+## Default Agent conversation release certification
+
+Every normal Release and publishable Nightly runs eleven mandatory default-Agent conversation
+journeys inside Package Smoke, against each downloaded native candidate: macOS arm64/x64,
+Windows x64, and Linux x64/arm64. The real packaged UI, backend, built-in Agent and Notebook
+permission boundary run with a deterministic localhost model fixture. First/second turns and
+provider failure recovery cover Chat Completions, Responses and Messages; shared lifecycle cases
+cover approval, denial/cancel, user questions, plan approval, normal restart and crash recovery
+without repeated tool effects. Other frameworks retain their existing validation; this gate does
+not certify all live vendors, subscriptions or models.
+
+The gate requires exactly the eleven selected cases, one worker and zero retries. Missing,
+skipped, failed, cancelled, interrupted or retried execution cannot generate certification.
+Platform evidence binds the passing inventory and report digest to the package source, platform
+and certifying workflow attempt. Release aggregation and both Nightly publication paths reject
+missing conversation evidence, including older otherwise-successful source runs. Existing updater,
+database, signing and other publication requirements remain mandatory.
+
+For a nonpublishing focused dry-run, dispatch Package Smoke with `conversation_only=true`,
+`install_only=false`, `artifact_run_id=<same-repository build run>`, and a native platform or `all`.
+Release exposes the same path using `package_smoke_run_id` plus `conversation_only=true`.
+This reuses the production installer preparation, test runner and report verifier, skips unrelated
+smoke scenarios, and emits diagnostic artifacts only. It cannot certify different-source packages
+for publication. Reuse immutable packages after diagnosis; do not enable Playwright retries to
+turn a failed case into passing release evidence.
 
 ## Focused macOS release diagnostics
 

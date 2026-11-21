@@ -412,6 +412,10 @@ Poll a fan-out by `id`. Returns `{ ok, id, status, results: [{ agent, engine, mo
 `status` is `running`, `done`, `error` or `aborted`. `synthesisError` is set when synthesis was requested
 and failed; without it, a missing `synthesis` means none was requested or fewer than two agents succeeded.
 
+These four statuses (`fanout_status`, `council_status`, `ultraplan_status`, `ultrareview_status`) carry
+`suspended: { at, reason }` while the `clawo serve` process running the mode has stopped and its run waits for
+`workflow_resume <id>`; `status` still reads `running` then.
+
 ### `fanout_abort`
 
 Abort a running fan-out by `id`. Agents already running finish, agents still waiting for a session
@@ -474,7 +478,7 @@ Start a multi-agent council. Runs in background, returns session ID immediately.
 
 ### `council_status`
 
-Get status of a running or recently completed council.
+Get status of a running or recently completed council. `suspended` as for `fanout_status`.
 
 | Parameter | Type   | Required |
 | --------- | ------ | -------- |
@@ -582,7 +586,7 @@ Start a dedicated Opus planning session (up to 30 min). Runs in background.
 
 ### `ultraplan_status`
 
-Get status and plan text when completed.
+Get status and plan text when completed. `suspended` as for `fanout_status`.
 
 | Parameter | Type   | Required |
 | --------- | ------ | -------- |
@@ -607,7 +611,7 @@ Start 1–20 reviewer agents that review the code in parallel, each from a diffe
 
 ### `ultrareview_status`
 
-Get status and findings when completed.
+Get status and findings when completed. `suspended` as for `fanout_status`.
 
 | Parameter | Type   | Required |
 | --------- | ------ | -------- |
@@ -742,7 +746,8 @@ retried automatically.
 ### `autoloop_status`
 
 Get the current state: `status`, `iter`, `push_log_count`, `subagents_spawned`, `status_reason`,
-`pending_dispatch`, `unconfirmed_chat` and the recent phase errors and metrics. Returns `{ ok, state }`.
+`pending_dispatch`, `unconfirmed_chat`, `parked` (the identities of messages held during a pause, present only
+while there are any) and the recent phase errors and metrics. Returns `{ ok, state }`.
 
 | Parameter | Type   | Required |
 | --------- | ------ | -------- |
@@ -952,7 +957,10 @@ Codex `/goal` on one `codex-app` thread, then the contract, then repairs on the 
 
 `{ runId, events? }` → run state, per-node status, `outcome`, `outcomeReason`,
 `verdict`, `evidenceId`, `costUsd`, `consensusVotes`, and the last N events when
-`events` is given.
+`events` is given; plus three answers kept apart: `execution` (did the nodes run to
+the end; `suspended` while a run whose process stopped waits for a resume), `resume` (`count` and the `last` resume) and `verification` (outcome,
+evidence, and the fingerprints of the rules behind the verdict and of the run's
+contract, with any `contractDrift`; `unknown` on a record from before fingerprints).
 
 `outcome` is `verified` (a contract passed), `refuted` (it failed), or
 `unverified` (**nothing checked the work**, which is not the same as a failure):
@@ -966,10 +974,13 @@ changed after it or an abandoned attempt was still running, in which case
 - `workflow_list({ workflow?, state?, limit? })` — newest first (`limit` default 25), survives
   restarts. `state` is one of `pending`, `running`, `awaiting_human`, `verifying`, `completed`,
   `failed`, `cancelled`.
-- `workflow_resume({ runId, agentCustomEngineRefs? })` — nodes already succeeded are not re-run;
-  the node that was in flight is retried, because a half-finished node left no result to trust.
-  A run whose agents used a custom engine needs `agentCustomEngineRefs`
+- `workflow_resume({ runId, agentCustomEngineRefs?, contract?, nodeContracts? })` — nodes already
+  succeeded are not re-run; the node that was in flight is retried, because a half-finished node left
+  no result to trust. A run whose agents used a custom engine needs `agentCustomEngineRefs`
   (`{ "<agent>": "<REF>" }`, resolved from `CLAWO_CUSTOM_ENGINE_<REF>` on the orchestrator's host).
+  `contract` (and `nodeContracts`, by verifier node id) declare the rules as you hold them now: never
+  applied, and when they differ from the run's the result carries `contractDrift` (see
+  [verification.md](./verification.md#which-rules-a-verdict-was-reached-under)).
 - `workflow_cancel({ runId })` → `{ cancelled }`.
 - `workflow_steer({ runId, text })` → `{ steered }` — the text is **prepended** to the next agent
   node's prompt. Steers not yet consumed are delivered after a restart too.
@@ -986,9 +997,11 @@ outside the team. `{ runId, action, postId?, title?, body?, as? }` → `{ result
 - `list` — every post's `id`, `ts`, `from`, `tags`, `to`, `title` and `score`.
 - `read` — one post (`postId`) in full.
 - `post` — adds one, as `orchestrator` unless `as` names someone; `title` starts with a tag and
-  `@name` addresses an agent. Members get it by the forum's push rules while the run is live.
+  `@name` addresses an agent on the forum. Members get it by the forum's push rules while the run is live.
 - `metrics` — posts by agent and tag, every ASK with its first answer and the time to it, the
-  open ASKs, and for each post that names an agent when that agent first had it (pushed or read).
+  open ASKs, and for each post that names an agent when that agent first had it (pushed, in a
+  digest, in its brief, or read) or, if it never did, the later agent that had it instead
+  (`handedTo`); `unseenMentions` counts the posts nobody saw, `handedMentions` the handed ones.
 
 Reading through this tool is not recorded as an agent's read. A fan-out goal agent's child run
 reaches its parent's forum.

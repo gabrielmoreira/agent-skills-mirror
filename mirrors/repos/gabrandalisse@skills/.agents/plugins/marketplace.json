@@ -1,0 +1,9 @@
+{
+  "name": "gabrandalisse-skills",
+  "plugins": [
+    {
+      "name": "gabrandalisse-skills",
+      "source": "./"
+    }
+  ]
+}

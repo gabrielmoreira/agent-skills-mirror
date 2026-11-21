@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 16 followed patterns, 65 file(s) materialized.
+Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 17 followed patterns, 66 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 16 followed
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 16 |
-| Files         | 65 |
+| Followed pats | 17 |
+| Files         | 66 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -58,6 +58,7 @@ Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 16 followed
 - `docs/team-management/team-provisioning-target-architecture.md`
 - `docs/team-management/debugging-agent-teams.md`
 - `docs/GIT_DELIVERY_POLICY.md`
+- `docs/development/ui-form-conventions.md`
 - `docs/research/desktop-comparison-2026-11-06.md`
 - `src/features/organizations/README.md`
 - `docs/research/openrig-comparison-2026-10-06.md`
@@ -128,17 +129,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 52 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
 | 53 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
 | 54 | → | [`AGENT_CRITICAL_GUARDRAILS.md`](AGENT_CRITICAL_GUARDRAILS.md) |
-| 55 | → | [`docs/FEATURE_ARCHITECTURE_STANDARD.md`](docs/FEATURE_ARCHITECTURE_STANDARD.md) |
-| 56 | → | [`docs/GIT_DELIVERY_POLICY.md`](docs/GIT_DELIVERY_POLICY.md) |
-| 57 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
-| 58 | → | [`docs/research/desktop-comparison-2026-11-06.md`](docs/research/desktop-comparison-2026-11-06.md) |
-| 59 | → | [`docs/research/gastown-paperclip-comparison-2026-06-25.md`](docs/research/gastown-paperclip-comparison-2026-06-25.md) |
-| 60 | → | [`docs/research/openrig-comparison-2026-10-06.md`](docs/research/openrig-comparison-2026-10-06.md) |
-| 61 | → | [`docs/team-management/debugging-agent-teams.md`](docs/team-management/debugging-agent-teams.md) |
-| 62 | → | [`docs/team-management/team-provisioning-target-architecture.md`](docs/team-management/team-provisioning-target-architecture.md) |
-| 63 | → | [`README.md`](README.md) |
-| 64 | → | [`src/features/organizations/README.md`](src/features/organizations/README.md) |
-| 65 | → | [`src/features/README.md`](src/features/README.md) |
+| 55 | → | [`docs/development/ui-form-conventions.md`](docs/development/ui-form-conventions.md) |
+| 56 | → | [`docs/FEATURE_ARCHITECTURE_STANDARD.md`](docs/FEATURE_ARCHITECTURE_STANDARD.md) |
+| 57 | → | [`docs/GIT_DELIVERY_POLICY.md`](docs/GIT_DELIVERY_POLICY.md) |
+| 58 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
+| 59 | → | [`docs/research/desktop-comparison-2026-11-06.md`](docs/research/desktop-comparison-2026-11-06.md) |
+| 60 | → | [`docs/research/gastown-paperclip-comparison-2026-06-25.md`](docs/research/gastown-paperclip-comparison-2026-06-25.md) |
+| 61 | → | [`docs/research/openrig-comparison-2026-10-06.md`](docs/research/openrig-comparison-2026-10-06.md) |
+| 62 | → | [`docs/team-management/debugging-agent-teams.md`](docs/team-management/debugging-agent-teams.md) |
+| 63 | → | [`docs/team-management/team-provisioning-target-architecture.md`](docs/team-management/team-provisioning-target-architecture.md) |
+| 64 | → | [`README.md`](README.md) |
+| 65 | → | [`src/features/organizations/README.md`](src/features/organizations/README.md) |
+| 66 | → | [`src/features/README.md`](src/features/README.md) |
 
 ---
 

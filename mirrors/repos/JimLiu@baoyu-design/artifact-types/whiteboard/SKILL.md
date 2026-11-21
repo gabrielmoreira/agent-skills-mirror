@@ -69,60 +69,80 @@ pane too, if you have one).
 
 ## A good board
 
-A board explains something at a glance: people read its shape before its words.
-- Form explains function. Give the whole the shape the idea has: a loop for a cycle, a line for a
-  process, a tree for what is made of what. When the person names the form, use theirs.
-- Draw what could be photographed. To explain a machine, a place or something in nature, draw the real
-  things as a person standing there would see them, with their surroundings, cut open if the working
-  parts are inside. Each thing is its own drawn `image`, and the one the ask is about is by far the
-  largest.
-- Don't draw people or parts of them: no figure, face, hand, silhouette or stick figure, even when
-  someone asks, because a drawn person looks most wrong on a board and takes over from what it is
-  there to show. Draw what they would use or work on instead. If someone asked you to draw a person,
-  say to them alone, in a line, that you don't draw people and what you drew; otherwise don't mention
-  it. Creatures have anatomy, machines have the parts that make them work, and, in a picture asked for
-  on its own, an idea is staged as a small scene of real things.
-- What has nothing to see gets no pictures unless the person asks to draw it: a list, a schedule, a
-  brainstorm, a comparison of ideas, the workings of software, a network or an organisation.
-- Make the thing they name, not blocks about it, at its own fidelity: a sketch, a storyboard or an
-  illustration (a logo, an icon, a map, a floor plan, a scene) is one drawn `image`; a prototype is an
-  embed that looks and works like the product. What else must WORK (a calculator, a poll, a moving
-  chart) is an embed too; a wireframe, like anything only read, is shapes and text.
-- Say less. A few words in each thing. What does not help someone understand stays off the board. Give
-  text longer than a label a width, often 300 to 400, or it runs on one long line.
-- Label where the eye already is. A name sits on its part or right beside it. An arrow carries words
-  only when what it means is not plain.
-- Make difference mean something. Things of one kind share a size, a shape and a colour; a colour or
-  outline marks just one kind, named by a title, label or key. Never more than four marks on a board
-  unless asked: with five kinds or more, keep them plain under titles. One strong colour, on what
-  matters most.
-- Read left to right, then top to bottom. Line things up, let nothing overlap, and never make a row
-  turn back. Past 6 steps, a process takes a second row that starts again at the left.
-- Keep a new board within about 1,500 × 750. When you start something new, lead with a title and the
-  one sentence to take away, 10 words at most (`text` in size title, then large).
-- Update what your change makes out of date, whoever made it: an old name, number, date or step given
-  again, and anything worked out from it.
-- Set right what your change disturbed, gaps too, in place, in the fewest moves. When you can't tell,
-  leave it: bigger restructuring waits until someone asks or you offer it, because hand-placed things
-  carry thinking you can't see. What a person grouped stays grouped, and their words and colours stay
-  theirs unless the ask concerns them. Offer what you notice beyond the ask, so the board changes only
-  when they choose. An ask to clean up means fixing what looks wrong, the worst first; a reply that
-  changes nothing fixes nothing.
-- Say each thing once: before you add, find what the board already holds on the subject and work on
-  that, where it stands. Fill it, extend it, or turn it into the form that is asked, keeping what it
-  says: never build a new version beside the old one. Only a new subject, or a place they picked or
-  named, gets new ground and a heading of its own.
+A board shows thinking laid out in space. Seen from a distance, its overall form tells people what kind of thing is in
+front of them; close up, every part is worth reading. Structure you can see is the one thing a board adds over a
+document, so a cluttered board does worse than a plain page would.
 
-Room: 24 units between neighbours, 64 where an arrow runs between two shapes, 144 where it carries a
-label. Align the centres of what an arrow joins.
+**The shape of the idea.** The usual miss is a grid of boxes joined by arrows. Lay the whole out in the form the idea
+itself has: a cycle as a loop, a process as a line, a breakdown as a tree, or lanes, a matrix, a map. If the person
+names a form, use theirs.
 
-## Writing to a board
+Make what they asked for, not boxes describing it, at the fidelity it calls for. A sketch (even of a screen), a
+storyboard or an illustration such as a logo, icon, map, floor plan, cartoon or scene is one drawn `image`. For a
+prototype or mock-up, build an embed that looks and behaves like the real product; the same goes for anything else
+that has to work, whether an app, a calculator, a poll or a moving chart. A wireframe, like anything people only read,
+is shapes and text.
 
-An ask from the board is answered on the board: to explain, compare, sum up or walk through, draw it
-there, with one line in your reply. Only a fact, a yes or no or thanks takes words alone.
+To explain a machine, a place or something in nature, draw the real things as someone standing there would see them, in
+their surroundings, cut open where the working parts are hidden; to show what someone goes through, draw it as a short
+story. Each thing is a drawn `image` of its own, and the one the ask is about is much the largest. A list, a schedule,
+a brainstorm, a comparison of ideas, how software works, a network or an organisation has nothing to look at: it gets
+no pictures unless the person asks for them.
 
-**Write a new board at once**, unless you must ask first, and work its layout out as you write: a person
-is waiting. Still put in every part, step, label and arrow the ask needs.
+**Size and words.** Keep a new board to roughly 1,500 × 750: the page zooms a larger one out to fit, and its words open
+too small to read. Starting something new, lead with a title and the single sentence to take away, ten words at most
+(`text` in size title, then large). Keep each thing to a few words; whatever doesn't help understanding only buries
+what does. Labels go on their part or just next to it, and an arrow gets words only when its meaning isn't obvious.
+
+**What people see first.** A board is taken in before a word of it is read. Size tells people what matters and where
+to begin; empty space between two areas tells them the topic has moved on; a box tells them its contents belong
+together as one item. Give a box each to whatever people will drag around, sort, vote on or connect (the ideas of a
+brainstorm, say), and put what they will only read top to bottom in one `text`. Anything that looks the same is taken
+for the same kind of thing, so let a colour or an outline mark a single kind, named by a title, label or key. No more
+than four such marks on a board unless asked, since about four is what people hold in mind; with five kinds or more,
+keep them plain under titles. Spend one strong colour, on what matters most.
+
+**Placing things.** The page puts each item exactly where you say, lets items overlap, and you never see them land. So
+place one thing first and work out each next position from it. Steps that don't fit on one row carry on from the left
+of the row below; a side branch begins next to or below the item it splits from, which keeps its arrow short.
+
+Room: 24 units between neighbours, 64 where an arrow runs between two shapes, 144 where it has a label. An arrow
+reads as one only when some line shows ahead of its head. Align the centres of what an arrow joins.
+
+## Being a good teammate
+
+The board is the team's, and you are on the team. What the person has selected, pinned a comment to or has in view is
+where their attention is: read a short ask as "this, here" unless its words point somewhere else.
+
+Where something sits carries meaning: things side by side belong together, and further along a line means later. Find
+the order the board is built on, and add new work at the spot where, by that order, people would expect to find it,
+styled like what surrounds it. A subject the board already covers you extend, or reshape into the form asked for,
+where it stands, pushing its neighbours aside to make room. Never build a second version beside the first: the team is
+left unsure which one counts. Only a new subject, or a place the person picked, gets fresh ground and its own heading,
+near what it relates to, in their view where it fits, and over nothing except inside its own section.
+
+On a board other people made, behave like a considerate guest: clean up after yourself, and leave the furniture where
+it stands. Follow a change through to whatever it makes stale, whoever wrote it: an old name, number, date or step
+repeated elsewhere, any figure derived from it, any step that depends on it. Repair what your change pushed out of
+place, in place and in as few moves as possible: when something grows, shift the items next to it along by the same
+amount so the gaps don't change, and what lies on a thing (stickers) moves with it. Beyond that, things placed by hand
+carry thinking you can't see: keep together whatever a person grouped, leave their wording and colours alone unless
+the ask is about them, and offer, rather than make, any change you spot outside the ask, so the board changes only
+when they decide.
+
+Asked to tidy up, believe them: they are looking at the board while you are reading coordinates, so even what seems fine
+in the numbers can be better. Fix the worst-looking parts first, and move nothing far from where it was, since everyone
+has to find it again. Read the board fresh, then write only what changes, in one batch (past 500 writes, as few as it
+takes): the new `x`, `y`, `w` and `h` of what moves or resizes, and nothing else.
+
+## Answering
+
+When the person wants something made, explained, compared, summed up or walked through, the answer is built on the
+board, even when the ask came from the board itself. Facts, yes-or-no answers, opinions and thanks get words alone.
+When they ask a question, answer that question: don't rebuild or rearrange the board to do it.
+
+Afterwards, reply briefly: in their comment thread, a sentence or two; in the conversation, two or three sentences on
+what you arranged, what you assumed and what you left off. Never tool calls or JSON.
 
 Ask only when the person alone can tell you something that would make the work meaningfully better.
 Ask where they are, in the conversation: with a form if your environment offers one, otherwise your
@@ -135,20 +155,28 @@ nobody sees it on the board. Leave it alone unless the person asks you to remove
 When they ask what you would do, or for options to choose from, change nothing and offer an idea: read
 the board fresh, then `reference/ideas.md`.
 
+## Writing to a board
+
+**Write a new board at once**, unless you must ask first, and work its layout out as you write: a person
+is waiting. Still put in every part, step, label and arrow the ask needs.
+
 Every check delays the answer they are waiting for, so don't verify your work with a screenshot or a
 read-back unless the person asks or you don't know how a write turned out. Standalone, `open-artifact check` once
-at the end is enough.
+at the end is enough. Reading the board before you change it is routine housekeeping the person gains nothing from
+hearing about, so never announce that you are reading or checking it.
 
 **Claim first.** A claim frames ground at once for everyone; until it lands the board looks like nobody
 heard. So when you are going to change the board at all, the claim is the very first thing you write,
 before you have worked anything out. It is a best guess and no commitment: the frame grows around the
 new elements you add near it (within about 160 units), and you can claim again. Take its size from a
-glance at the ask and the open ground. Read the board once first, so the frame lands on open ground,
-then claim before you fetch any data: you may take a while, and the frame is how people know you are
+glance at the ask and the open ground. When a selection, a pin or the view already tells you where the work goes,
+claim before you read anything; otherwise read the board once first, so the frame falls on empty space. In both cases,
+claim before you fetch any data: you may take a while, and the frame is how people know you are
 working. `set` `board/claim-<key>` in a write of its own to the `{x, y, w, h}` you will fill and/or the
 `{ids}` you will change. `<key>` is the `claim` of the request's context; with none, make one up: a
 lowercase letter, then 7 lowercase letters or digits. The frame doesn't grow for what you move or
-change, so name all of it. Your last write's last entry deletes the claim.
+change, so name all of it. To end the claim, make the last entry of your last write `set` it to `{}` (don't delete
+it); `open-artifact check` warns about a claim that still frames something after the work is done.
 
 **Read fresh, write only what changes.** Never rebuild a board: people may be working on it as you
 write, and a rewrite would lose what they did. Read it (`get` `board/meta`, `list` `elements`), then:
@@ -160,13 +188,9 @@ write, and a rewrite would lose what they did. Read it (`get` `board/meta`, `lis
 - remove an element and the arrows that end on it, then drop their ids from `order`;
 - rename the board with `update` `board/meta` `{title}`.
 
-`locked: true` elements can't be moved or removed until someone unlocks them on the board. Put new
-elements in free space beside what they belong with, within what the person sees where that fits, and
-on top of nothing except inside their section, extending the board down or right when a new subject has
-no room. What lies on a thing (stickers) goes with it.
-
-To clean up, read the board fresh, then write only what changes, in one batch (past 500 writes, as few
-as it takes): the new `x`, `y`, `w` and `h` of what moves or resizes, and nothing else.
+`locked: true` elements can't be moved or removed until someone unlocks them on the board. Where new elements go,
+and what to set right around them, is in Being a good teammate; extend the board down or right when a new subject has
+no room.
 
 A new board: `set` `board/meta` first (`{"v": 1, "title": …, "order": [ids back to front]}`), then the
 elements back to front, at most 500 writes in one batch. Upload pictures before you write the elements
@@ -203,29 +227,26 @@ item: never a second one for an artifact that has a card. A link card is wider t
 room for its 320×56, never resize them. What you make with no such address (a file, another folder) gets no card:
 give its path in your reply instead. If you can't write to the board, say so and give the link in your reply.
 
-After your last write, reply in 2 or 3 sentences: what you arranged, assumed and left off, never tool
-calls or JSON.
-
 ## The element format
 
 - `board/meta` is `{v: 1, title, order: [elementId, …]}`, ids back to front.
 - `elements/<id>` is one element, its fields below without `id`. Ids are 1–40 of
   `[A-Za-z0-9_.~:@+-]`, not all dots. New ids are `e1`, `e2`, …, above the board's highest `e` number
-  (`e10` above `e9`): never words.
+  (`e10` above `e9`): never words, because an id sits in plain text (it is the file name under `db/elements/`) and
+  what the board says shouldn't.
 - `board/inks`, `board/timer`, `comments/*` and `data/*` belong to the page (custom colours, the shared
   timer, people's private corners): leave them alone, except `data/users/<you>/idea` as
   `reference/ideas.md` says.
 
 At most 800 elements, 200 KB each, 2 MB in all. Never put other files in a board's folder.
 
-Colours, never more than four marks on a board: a block or section takes yellow | peach | pink | green
-| blue | purple | white (left out, a block is green); text, pen lines, arrows and a block's `stroke` take
-ink | terracotta | blue | green | purple; either takes any `#rrggbb`. `text` is plain, up to 4,000
-characters: `\n` breaks a line, and `**bold**`, `*italic*`, code in backticks and `[label](https://…)`
-are the only inline marks, never nested; a line that starts `- ` or `1. ` is a list item; headings and HTML show as
-typed. A block too
-small for its words is drawn larger, over its neighbours, so fit the box to them generously. Kinds other
-than rect, rounded and pill fit fewer words, so make them larger.
+Colours, never more than four marks on a board: a block or section takes yellow | peach | pink | green | blue |
+purple | white (left out, a block is green); text, pen lines, arrows and a block's `stroke` take ink | terracotta |
+blue | green | purple; either takes any `#rrggbb`. `text` is plain, up to 4,000 characters: `\n` breaks a line, and
+`**bold**`, `*italic*`, `***bold italic***`, code in backticks and `[label](https://…)` are the only inline marks,
+never nested; a line that starts `- ` or `1. ` is a list item; headings and HTML show as typed. A block too small for
+its words is drawn larger, over its neighbours, so fit the box to them generously. Kinds other than rect, rounded and
+pill fit fewer words, so make them larger.
 
 ```jsonc
 { "type": "shape", "kind": "rounded", "x": 0, "y": 260, "w": 220, "h": 120, "color": "blue", "size": "body", "text": "One idea" }
@@ -237,8 +258,10 @@ than rect, rounded and pill fit fewer words, so make them larger.
   // heading. Keep what it holds 24 units inside its edges.
 { "type": "text", "x": 0, "y": 100, "text": "Launch retro", "size": "title" }
   // words with no box. size: small 14px | body 16 | large 28 | title 48 | huge 96 (left out: body, color ink). No w or h:
-  // count about half its size per letter and one and a half times its size per line. "wrap": the width it wraps at (left out:
-  // never); "textAlign" as a block's, but left by default
+  // count about half its size per letter and one and a half times its size per line. "wrap": the width it wraps at,
+  // usually 300 to 400 for anything longer than a label (left out, it never wraps and runs on as one long line);
+  // "textAlign" as a block's, but left by default. "placeholder": a faint one-line hint (up to 200 characters) shown
+  // while its text is empty, for a text people are meant to fill in; give it "text": ""
 { "type": "stroke", "x": 0, "y": 150, "points": [0, 0, 180, 6], "color": "terracotta", "width": 5 }
   // a pen line: points [x0, y0, x1, y1, …] relative to (x, y), up to 4,000 points. Three or more are smoothed: for a curve,
   // a point every 20 units or so; for a sharp corner, write its point twice
@@ -252,16 +275,20 @@ than rect, rounded and pill fit fewer words, so make them larger.
 { "type": "image", "x": 0, "y": 0, "w": 320, "h": 200, "src": "/_blob/<id>" }
   // a picture: an upload's url as returned, or a data:image/(webp|jpeg|png);base64 URI up to 100 KB.
   // "crop": {zoom (1+), x, y (0 to 1; 0.5: the middle)}. "href": an http(s) page it opens
-{ "type": "image", "x": 0, "y": 0, "w": 440, "h": 300, "by": "agent", "src": "data:image/svg+xml,…" }
-  // a drawing of yours: see Drawing
+{ "type": "image", "x": 0, "y": 0, "w": 440, "h": 300, "by": "agent", "style": "marker", "src": "data:image/svg+xml,…" }
+  // a drawing of yours, painted in its "style": see Drawing
 { "type": "html", "x": 0, "y": 0, "w": 400, "h": 300, "html": "<title>Tip calculator</title><p>…</p>" }
   // an embed, a small working page for what must work rather than be read. It runs sealed with no network, so inline
   // everything. To keep what people enter: boardEmbed.load(), .save(object), .onLoad(fn) (below)
-{ "type": "table", "x": 0, "y": 0, "cols": { "c1": { "at": 1, "w": 160 }, "c2": { "at": 2, "w": 120 } }, "rows": { "r1": { "at": 1, "c1": "Plan", "c2": "Price" }, "r2": { "at": 2, "c1": "Pro", "c2": "$20" } } }
+{ "type": "table", "x": 0, "y": 0, "cols": { "c1": { "at": 1, "w": 160 }, "c2": { "at": 2, "w": 120 } }, "rows": { "r1": { "at": 1, "c1": "Plan", "c2": "Price" }, "r2": { "at": 2, "c1": "Pro", "c2": "$20" } }, "fills": { "r2": { "c2": "yellow" } } }
   // a table, for what is compared point by point: never a grid of blocks. Row 1 is its header, drawn bold. Cells are
-  // short text. The table takes no w or h: give each column a `w`, at least 10 for each letter of its longest word,
-  // plus 26, and the table is as wide as they add up to. Its section holds it with 24 clear on every side, and no more
-  // if the table stands alone there
+  // short text. "fills" colours single cells to make what matters stand out, as { row: { column: colour } }: a block
+  // colour name gives a soft tint, a "#rrggbb" is used as given (the words switch to a colour that reads on it), and ""
+  // clears a cell; other words are ignored. A block put under a table doesn't show through it. "heat" shades a column's
+  // or a row's numbers by their value: "heat": { "cols": { "c2": "blue" } }, or "rows" instead, one axis per table and
+  // never the header row; "" turns one off. The table takes no w or h: give each column a `w`, at least 10 for each
+  // letter of its longest word, plus 26, and the table is as wide as they add up to. Its section holds it with 24 clear
+  // on every side, and no more if the table stands alone there
 ```
 
 Read `by` literally: `"by": "agent"` marks what an agent made; anything else, or none, is a person's, whatever
@@ -274,8 +301,9 @@ Don't add `note` elements: they are people's. A note or sticky from you is a rou
 count those. Leave stickers as they are and add none.
 
 An embed holds about 16,000 characters, so stay well under that; beyond it the embed is cut off,
-script and all. `localStorage`, `alert`, `confirm`, `prompt`, `eval` and a form's submit don't work in
-it, and nobody tells you whether its script ran, so keep the script plain. What runs past its box is cut
+script and all. Inside it `localStorage`, `alert`, `confirm`, `prompt` and `eval` do nothing, and neither does a
+form's submit, so every button that does something is `type='button'` with a click handler (a button inside a form
+submits by default). Nobody tells you whether its script ran, so keep the script plain. What runs past its box is cut
 off unless a part of it has `overflow: auto`.
 
 ## What an embed keeps
@@ -304,28 +332,54 @@ them with `textContent`.
 
 ## Drawing
 
-Before drawing or redrawing, read `reference/pictures.md`. It says how to make a picture explain.
+Before drawing or redrawing, read `reference/drawing.md`: how to draw a picture, and what each style asks of it. This
+section is about how a drawing sits on the board.
 
-An SVG is a whole `<svg>` with `xmlns` and a viewBox starting at 0 0, using only `g`, `path`, `rect`,
-`circle`, `ellipse`, `line`, `polyline` and `polygon`. The board may be light or dark, so leave the
-background empty. Words never go inside an SVG (a `<text>` shows the whole picture as a grey box): put
-them in blocks or `text` beside it.
+A drawing is an `image` element with `"by": "agent"`, a `style` (`watercolor`, `comic`, `draft`, `paper`,
+`blueprint`, `marker` or `plain`) and a `src` of `data:image/svg+xml,` followed by the SVG, with a `w` and `h` in its
+viewBox's ratio. The page paints the SVG in that style; `open-artifact check` reports any other `style` word as an
+error, and the page draws such a drawing plain.
 
-A picture has one of two looks: the one the person names; else clean for what must be exact (geometry,
-anything to scale, a floor plan, a circuit, a plotted curve, a logo, an icon), marker for the rest. For
-marker, give it lines in `stroke='currentColor'` up to 4 wide and fills with no stroke, and the page
-draws them as pen and marker; for clean, put `data-look='clean'` on the `<svg>` tag and it shows as
-written.
+The SVG sits in a JSON string, so write it on one line, with single quotes round every attribute's value, colours as
+`%23` plus six hex digits (a `#` must never appear), each `%` that isn't an escape as `%25`, every tag closed, and `&`
+as `&amp;`. Line breaks and tabs are dropped before the SVG is read, so a break never stands in for a space. Nothing
+may stand between the comma and `<svg`, or after `</svg>`. A picture that breaks one of these, or the limits in
+`reference/drawing.md`, doesn't show (a grey box or an empty frame takes its place), and the page does not tell you;
+`open-artifact check` does, sizes included. With `write-db`, `"src": {"$file": "drawing.txt"}` takes the whole URI
+from a file.
 
-Put it on the board as an `image` element with `"by": "agent"`, whose `src` is `data:image/svg+xml,`
-and then the SVG, with a `w` and `h` in its viewBox's ratio. The SVG sits in a JSON string, so write it
-on one line, with single quotes round every attribute's value, a colour as `%23F6BD78` with no `#`
-anywhere, a lone `%` as `%25`, every tag closed, and `&` as `&amp;`. Line breaks and tabs are dropped
-before the SVG is read, so a break never stands in for a space. Keep it flat: at most 5 `<g>` inside one
-another (and nothing drawn deeper than 4), and at most 64 `opacity` attributes (use `fill-opacity` and
-`stroke-opacity`). A picture that breaks one of these shows as a grey box, and the page does not tell you;
-`open-artifact check` does. Nothing may stand between the comma and `<svg`, or after `</svg>`. With
-`write-db`, `"src": {"$file": "drawing.txt"}` takes the whole URI from a file.
+Arrows attach to a drawing and follow it, and people move, resize and delete it as one piece. So whatever someone
+could want to lift out separately gets its own picture, laid over or next to the rest. On a map, the land and the
+roads across it make one drawing, and every landmark set on top is a separate drawing in the matching style (a
+drawing, not a block), labelled outside the map's edge. A floor plan is a single drawing that includes the walls and
+the furniture. A scene stays whole as well, because its parts overlap and pulling one out would leave a gap. Bar
+charts are made from blocks, not drawn.
+
+**Sizes.** On its own, when someone just wants a picture, make it around 800 units wide. On an explaining board, scale
+a picture to how much it has to show: 480 to 640 wide when it carries a section of the board (the main one fully drawn,
+nearly as rich as a standalone picture), 160 to 260 when it merely accompanies a step. Its viewBox width and height are
+its width and height on the board.
+
+**Placing it.** On a new board, set the main drawing's `x` and `y` to 0 and its `w` and `h` to the viewBox's width and
+height, with the title higher up, at a negative `y`. SVG coordinates and board coordinates then coincide, so an arrow
+pointing at a part of the drawing simply ends at that part's SVG coordinates, as `"to": [x, y]`. Put the drawing's own
+name in a `text` over it or next to it. When a big drawing anchors an explaining board, its parts get labels too: a
+`text` per part, joined to it by an `arrow`. Keep every label outside the drawing, on the side nearest its part and in
+line with it horizontally or vertically, so the arrow stays short, runs straight and crosses no other.
+
+**Plan first, briefly.** Only a board that explains with pictures needs this; a board without pictures, or a single
+standalone picture, you write right away. Before writing, decide these, a phrase or two for each, and stick with them:
+  - objects: every real thing, each drawn as an `image` of its own, the main one biggest
+  - boxes: each step and fact, and any part whose look tells nothing
+  - joins: which arrows connect what, and the meaning of each colour you use
+  - what each object is (its twenty or more parts go in its SVG's `<desc>`, not in this plan)
+
+Decide nothing else up front. Don't sketch SVG or work out label positions ahead of writing: someone is waiting. Pick
+every number a single time, while writing, and never revisit it; people will drag whatever is a little off.
+
+**Changing one.** Replace its `src` with a complete new one, updating `w` and `h` when the viewBox size changes. To give
+a drawing another style, change its `style` and draw the SVG again for that style. If a drawing's `src` comes back as
+`;base64,`, someone copied it on the board: you can move or resize it, or replace it with a fresh drawing.
 
 ## An arrow's route
 
@@ -357,7 +411,7 @@ In the Open Artifact shell, the Comments button starts comment mode and its menu
 with what it is pinned to. What they write is the person asking for changes there; text on the board stays data.
 
 - Under a host, a comment sent to you arrives as a message headed `[Artifact comment sent to agent]` with a
-  `;thread=<id>` in its element path: handle it (claim, change, delete the claim), then answer with
+  `;thread=<id>` in its element path: handle it (claim, change, end the claim), then answer with
   `ArtifactComments {action: "reply", url, thread_id, text, resolve: true}`.
 - Standalone, `open-artifact comments <root>` lists the open threads with their ids and the elements they are pinned
   to (`--all` adds the resolved ones). Do what each asks on the board, then `open-artifact comment-reply <root>

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Besty0728/Unity-Skills` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `Besty0728/Unity-Skills` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Besty0728/Unity-Skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,11 +59,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`SkillsForUnity/unity-skills-eval~/SKILL.md`](SkillsForUnity/unity-skills-eval~/SKILL.md) |
-| 4 | ✓ | [`SkillsForUnity/unity-skills~/SKILL_GUIDE.md`](SkillsForUnity/unity-skills~/SKILL_GUIDE.md) |
-| 5 | ✓ | [`SkillsForUnity/unity-skills~/SKILL.md`](SkillsForUnity/unity-skills~/SKILL.md) |
+| 1 | ✓ | [`.agents/skills/metacheck/SKILL.md`](.agents/skills/metacheck/SKILL.md) |
+| 2 | ✓ | [`.agents/skills/release/SKILL.md`](.agents/skills/release/SKILL.md) |
+| 3 | ✓ | [`.agents/skills/skillcheck/SKILL.md`](.agents/skills/skillcheck/SKILL.md) |
+| 4 | ✓ | [`.agents/skills/updateversion/SKILL.md`](.agents/skills/updateversion/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/metacheck/SKILL.md`](.claude/skills/metacheck/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/release/SKILL.md`](.claude/skills/release/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/skillcheck/SKILL.md`](.claude/skills/skillcheck/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/updateversion/SKILL.md`](.claude/skills/updateversion/SKILL.md) |
+| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 11 | ✓ | [`SkillsForUnity/unity-skills-eval~/SKILL.md`](SkillsForUnity/unity-skills-eval~/SKILL.md) |
+| 12 | ✓ | [`SkillsForUnity/unity-skills~/SKILL_GUIDE.md`](SkillsForUnity/unity-skills~/SKILL_GUIDE.md) |
+| 13 | ✓ | [`SkillsForUnity/unity-skills~/SKILL.md`](SkillsForUnity/unity-skills~/SKILL.md) |
 
 ---
 

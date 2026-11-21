@@ -94,9 +94,8 @@ No other copy or way of writing gets around that, so don't retry: tell them it w
 replace. Use `set` to change a source's kind, or the two merge. `{"__delete__": true}` removes a key. A `null` is
 stored. In `args` it is sent, and inside `rules` it makes all the rules unreadable. `dash/settings` holds `updates`,
 how old a result may be when someone opens the page, which the page's Refresh data menu also writes: `update` it,
-and use `set` only to create it. Stamp each dataset and file you write with `edit: {via: "agent", at: <UTC ISO,
-now>}`: History names who changed what by it. A `str_replace` can't carry it, so an `update` of `edit` goes before
-each one, as a write of its own (a batch names each path once).
+and use `set` only to create it. `edit` on a dataset or file is the page's own record of the person who last changed
+it there. Don't write it yourself: History tells your changes apart without it.
 
 You may also write `db/<path>.json` with your file tool: an open page picks the change up within a moment. Prefer
 `write-db` or ArtifactData: they check paths and sizes and are all or nothing.
@@ -137,7 +136,8 @@ answer loads as it came, and only a `dash.loader` makes rows of it.
 
 **An attached file** — `source: {kind: "file", url, name, format}`. `url` is what `upload` gave (`/_blob/<id>`). No
 other URL is read. `format` is `"csv"`, `"tsv"`, `"json"` or `"text"`. CSV is split at commas only: one with
-semicolons loads as a single column, and only a `dash.loader`, which gets its text, makes rows of it. Everyone who
+semicolons loads as a single column, and only a `dash.loader`, which gets its text, makes rows of it. Without rows,
+JSON still loads, as the value it is, and a text file as its text: a calc can read either. Everyone who
 can open the dashboard can read the whole file, however little the page shows. Tell the person when you attach one.
 `updated: {at, by}` goes on every file write, or readers see a warning. `fixed: true` marks a file that can't be
 live or that they want kept. Write it when they say no to live data. Don't offer live data for such a file, now or
@@ -148,6 +148,13 @@ send every reader. The rest is a `dash.calc`, which stays live. The file keeps i
 CSV has no room for it, so the script writes JSON, `{rows, meta}`, reading its own text from disk, since retyped code
 drifts: `meta: [{label: "fit.py", value, type: "code", lang: "python"}, {label: "Input", value: "users.csv"}]`.
 Readers see it all: no secrets. `NaN` isn't JSON.
+
+**Saved rows** — `source: {kind: "store", path}` — hold what readers type or tick on the page: a note, a done
+box, a goal. `path` is under `data/`. With an odd number of parts (`data/team/notes`) it is a collection, one row per
+document in order of its ID, and past 1,000 rows the rest are left out and `truncated` is true. With an even number
+(`data/team/notes/today`) it is one document, one row once it exists. Each row carries the document's ID as `id`.
+Write the dataset with the page: it loads, with no rows, before anyone has saved one. Who saves, who sees what, and
+how the page writes them: "Saved rows" in `reference/features.md`.
 
 A CSV's cells are text, an empty one null, and a query's numbers and dates are often text too. A nested object is
 JSON text. Compared or added without converting, they go wrong silently.
@@ -160,13 +167,17 @@ drawn. Scripts run in order once the page is in place, each in its own scope. An
 `window`. The page is mounted in `<div id="dash-root">` in the dashboard's own document, so CSS for `body`, `html` or
 a bare tag restyles the dashboard: the page's styles and selectors are on classes of its own. These are silently
 dropped: a `<script src>` or `<link>` naming anything but the dashboard's files, a `type="module"` script (there is
-no React), `on…=` attributes, and each `<iframe>`, `<object>`, `<embed>`, `<base>` and `<form>` with its contents.
-Images are `data:` URLs. Use no network, storage or cookies: rows kept in a reader's browser would outlast their
-access. Data values are untrusted: `textContent` and d3's `.text()` show them, but `innerHTML` and `.html()` would
-run what they hold.
+no React), `on…=` attributes, and each `<iframe>`, `<object>`, `<embed>` and `<base>` with its contents. A
+`<form>` stays: submitting it runs your listeners and never leaves the page, as long as it is submitted by a button,
+Enter or `requestSubmit()` (`form.submit()` skips the listeners and navigates). An image's `src` is a `data:` URL or
+the `/_blob/<id>` url that `open-artifact upload` printed for the image file. Use no
+network, storage or cookies: rows kept in a reader's browser would outlast their access, so what people enter goes
+in the store as saved rows. Data values are untrusted, saved rows as much as any: `textContent` and d3's
+`.text()` show them, but `innerHTML` and `.html()` would run what they hold.
 
 **Every figure, chart and table comes from a dataset**, so its source can be shown. Only a fixed reference the person
-chose, like a goal, is a constant in a script.
+chose, like a goal, is a constant in a script. Something that never came from data, such as a countdown or the total
+of what a reader is typing, is ordinary code.
 
 **Marks.** The smallest element that shows a value has `data-source="<id>"` and `data-field="<column>"`. When the
 value comes from one row, it also has `data-where="col=value"` or `data-row="0"`, the row's number. A number in a
@@ -191,14 +202,16 @@ Scripts get `d3` v7 (all but d3-dsv, d3-fetch, d3-polygon and d3-random) and `da
   `"connect"`, `"declined"`, `"error"` or `"missing"`. `data` is the rows, objects by column, with their order in
   `dash.data(id).columns`, or whatever else the source holds. Until `"ok"` it is `[]`, or `null` for a calc. Reading a
   source loads it, and while it refreshes it stays `"ok"` with the last data. `truncated` is true if a parser or
-  loader said rows are missing. A calc's stays false: its inputs carry it.
+  loader said rows are missing, or saved rows passed 1,000. A calc is `refreshing` while any input is, and
+  `truncated` when any input is.
 - `dash.onData(fn)` runs `fn` now, and again whenever data, a filter or the width changes, whatever the status. A
   `fn` that returns early on a bad status leaves the last chart up instead of the placeholder (`—`).
 - `dash.calc(id, {inputs, fn, title, description})` declares a value worked out from datasets, such as a share or a
   total. It is read like a dataset. One that returns rows is marked as a dataset is, so several numbers can be one row
   of one calc. One that returns a single value is marked by its id alone, and a record's fields can't be marked. `fn`
-  gets each input's rows and returns plain data. A source that isn't rows gives `[]`, and another calc gives its
-  value. It runs again when an input changes, and when a filter does if `fn` calls `dash.params()`. Anything else it
+  gets each input's rows and returns plain data. A source that holds a value instead of rows (a JSON object, say)
+  gives that value, as another calc does, and a text file `[]`. It runs again when an input changes, and when a
+  filter does if `fn` calls `dash.params()`. Anything else it
   uses goes stale in silence. Readers see `fn`'s text, so name its parameters, as in `(signups, targets) =>`.
 - `dash.loader(id, {description, fn})` says how an answer becomes rows. Before you write one, for a file too, read
   "A loader" in `reference/sources.md`. It should only reshape: anything that changes a number belongs in the query
@@ -206,6 +219,13 @@ Scripts get `d3` v7 (all but d3-dsv, d3-fetch, d3-polygon and d3-random) and `da
 - `dash.draw` fills drawings (`reference/one-writer.md`). `dash.colors` is the series colors. `dash.refresh(id)` runs
   a source again, and from a draw or `onData` would never stop. `dash.params()`, `dash.setParams({name: value})` and
   `dash.resetParams()` handle filters, `dash.setLink(name)` links.
+
+A script also gets `openartifact`, whose `use(name)` resolves to what the page may reach, or `null`: `"db"`, the
+store for saved rows ("Saved rows" in `reference/features.md`); `"user"`, whose `me()` says who is reading;
+`"downloads"`, whose `save({name, data})` hands the reader a file; and `"assets"`, uploads, only for those who can
+edit. In the embedded view (`#view-inline`, under Sharing) only `"db"`, to read, and `"user"` are there. There is no
+top-level `await`, so call it inside a function, on what the reader does. What the page shows from
+saved rows still comes from their dataset, through `dash.data`.
 
 ## Building one
 
@@ -255,7 +275,8 @@ it's for, where the numbers come from, how it should look), in one form, and whe
    read in part (`items_unread`: a loader that reads `items` clears it). If a query never gave a result and nothing
    else is wrong, `check` disappears and `runs` names that query.
 
-   `runs` exists only while something is wrong. It lists each query's `status` and message, what the code threw, and
+   `runs` exists only while something is wrong. It lists each query's `status` and message, what the code threw
+   (with `where`, the drawing it threw in, when it was one), and
    marks that disagree with the data. `reauth`, `absent`, `connect` and `unchosen` wait on the person: `reauth` is a
    server that refused its credentials, `absent` a connector that isn't in their `connectors.json`, is turned off
    there or can't be started or reached, though `absent` can also be a tool the connector lacks, a mistake in the
@@ -283,7 +304,9 @@ it's for, where the numbers come from, how it should look), in one form, and whe
 
 Step 3 applies to a change too. Read `check` before it as well. A `failed` is yours to fix now, and its `at` tells
 the old page's report from the new one's. Before a fix, run the dataset's call yourself exactly as stored, if it only
-reads, and compare its columns with the ones the code reads. Change only what was asked.
+reads, and compare its columns with the ones the code reads. Change only what was asked. If a number on the page
+comes out different after your change, say which, from what to what, most of all where they asked for something else:
+nothing on the page keeps the number it showed before.
 
 Read fresh, write only what changes: people may be editing the page's words, or Sources, as you write. Read
 `reference/sources.md` before you write a query, make a saved file live, keep one current or remove a source. Before
@@ -330,8 +353,8 @@ Speak of their dashboard in their words, not of the store, its documents and dat
 ## Sharing
 
 The person can open the dashboard to people on the same Wi-Fi or LAN, one link per role: `editor` changes it,
-`commenter` comments, `viewer` looks. Whoever opens a link types a name and is in as that role; their page goes
-read-only (or comment-only) by itself and the server refuses the rest. Only the owner's page runs the dashboard's
+`commenter` comments and saves rows in their own `data/users/me/`, `viewer` looks. Whoever opens a link types a name
+and is in as that role; their page goes read-only (or comment-only) by itself and the server refuses the rest. Only the owner's page runs the dashboard's
 live queries: a guest's page shows "Live data isn't available in this view." in their place, while every attached
 file, and what is worked out from files, shows to every guest. A guest editor's change to a query or the page's code
 runs in the owner's page, with the owner's access. Say so before it is shared. Only the owner, the person at this
@@ -351,17 +374,23 @@ even when they open a link.
   working after a restart while the server gets its port back; otherwise `share` prints new ones to give out again.
 - The links and the people who joined are in `<root>/.sharing.json`: leave it, and keep it out of git.
 
+To show the dashboard read-only inside another page, put its address with `#view-inline` at the end in an
+`<iframe>`. In a frame that address has no toolbar, comments or requests, saves nothing (a page script's writes are
+refused) and keeps its own address when the page sets a link; data still loads and filters still work. Opened on its
+own, the same address is the full dashboard.
+
 ## Exports
 
 From the page's Export menu (`Artifact {action: "open", url, panel: "export"}` under a host) the person saves a
 copy: a PDF of the page, JSON with every source's call, and a static HTML copy of the page whose numbers no longer
-change. From Sources
+change. The PDF, and the browser's own Print, end with a line under the page saying when its data was loaded and
+whether some of it is missing, so nothing on the page needs to say it for print. From Sources
 they download a source's rows as CSV. To rebuild it in another product, read `reference/exporting.md`.
 
 ## History
 
 Every change to the dashboard is kept in `<root>/history/`: one version per burst of edits by one author (the person
-in the page, you, or the original files), the newest 500. Each person's own documents (`data/users/…`) and drafts aren't kept.
+in the page, you, or the original files), the newest 500. What the page saves under `data/` (each person's own documents too), drafts and `dash/settings` aren't kept.
 `open-artifact history <root> [--json]` lists them, newest first, with who made each and what it changed (it records
 your own latest edits first); `open-artifact history <root> show <n> <path>` prints a file as version `n` left it;
 `open-artifact history <root> restore <n> [path…]` brings version `n` back, whole or only those paths
